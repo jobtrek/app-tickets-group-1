@@ -99,6 +99,10 @@ Is there like categories regarding the type of problems like if it’s physical 
 Comment les admins sont gerer, like adding new admins or removing new admins.
 Can you add images/videos within the conversion between the admin and client on the issues.
 
-How can the statistics will eb displayed, like with what diagram.
+How can the statistics will be displayed, like with what diagram.
+
+(Design question): On the dashboard where all the tickets are diplayed, is the users name and admin's name display on the dashboard on said ticket.2
+
+Design: Can the admin change the urgency level on the dashboard or when they see the ticket, or they have to open the ticket to change the urgency level.
 
 
