@@ -32,4 +32,4 @@ const createTableQuery = `
 `;
 
 
-db.run(createTableQuery);
+db.run(createTableQuery); 
