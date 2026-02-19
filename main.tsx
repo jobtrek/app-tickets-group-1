@@ -4,16 +4,13 @@
  *
  * It is included in `src/index.html`.
  */
-import './index.css'
 
 import { createRoot } from "react-dom/client";
 import { App } from "./frontend/src/App";
 
-
 function start() {
   const root = createRoot(document.getElementById("root")!);
   root.render(<App />);
-  
 }
 
 if (document.readyState === "loading") {

@@ -1,6 +1,12 @@
-import { RouterProvider } from '@tanstack/react-router'
-import { router } from './router'
+import '../../index.css';
+import TicketCreation from './pages/TicketCreation';
 
 export function App() {
-  return <RouterProvider router={router} />
+  return (
+    <div className='flex flex-col'>
+      <TicketCreation />
+    </div>
+  );
 }
+
+export default App;
