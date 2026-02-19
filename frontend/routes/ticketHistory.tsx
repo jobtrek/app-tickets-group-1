@@ -4,5 +4,5 @@ import { createRoute } from "@tanstack/react-router";
 export const ticketHistoryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/tickethistory",
-  component: () => <h1>Dashboard</h1>,
+  component: () => <h1>Ticket History</h1>,
 });

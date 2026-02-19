@@ -4,7 +4,7 @@ import { Navbar } from "../src/pages/Navbar";
 export const rootRoute = createRootRoute({
   component: () => (
   <> 
-    <nav className="w-2xl h-2xl">
+    <nav>
       <Navbar />
     </nav>
     <Outlet /> 

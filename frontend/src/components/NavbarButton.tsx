@@ -1,9 +1,15 @@
-export function NavbarButton( { text }: {text: string}) {
+import { Link } from "@tanstack/react-router";
+type NavbarButtonProps = {
+  text: string;
+  to: string;
+};
+export function NavbarButton({ text, to }: NavbarButtonProps) {
   return (
-    <div> 
-      <button className="px-5 py-2.5 font-medium text-white bg-zinc-900 rounded-lg border border-zinc-700 w-[10em]">
+    <Link
+      to={to}
+      className="w-[10em] rounded-lg border border-zinc-700 bg-zinc-900 px-5 py-2.5 text-center font-medium text-white"
+    >
       {text}
-      </button>
-    </div>
+    </Link>
   );
 }
