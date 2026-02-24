@@ -4,13 +4,13 @@ import { indexRoute } from '../routes/index'
 
 import { dashboardRoute } from '../routes/dashboard'
 import { ticketHistoryRoute } from '../routes/ticketHistory'
-import { ticketInformationRoute } from '../routes/ticket.$ticketId'
+import { ticketCreationRoute } from '../routes/ticket'
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   dashboardRoute,
   ticketHistoryRoute,
-  ticketInformationRoute,
+  ticketCreationRoute,
 ])
 
 export const router = createRouter({ routeTree })

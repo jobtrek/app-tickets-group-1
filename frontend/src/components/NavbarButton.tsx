@@ -1,6 +1,6 @@
 import type React from "react";
 import { useNavigate } from '@tanstack/react-router'
-import { ticketInformationRoute } from 'frontend/routes/ticket.$ticketId.tsx';
+import { ticketCreationRoute } from 'frontend/routes/ticket';
 import type { ReactNode } from "react";
 
 
@@ -14,7 +14,7 @@ export function NavbarButton( { text, Icon }: NavbarButtonProps) {
   const navigate = useNavigate();
 
   const handleNavigation = () =>{
-    navigate({ to: ticketInformationRoute.id, params: { ticketId: "123" }});
+    navigate({ to: ticketCreationRoute.id, params: { ticketId: "123" }});
   }
   
   return (
