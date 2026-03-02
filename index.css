@@ -1,5 +1,7 @@
 @import 'tailwindcss';
-
+@theme {
+  --font-sans: 'Inter', sans-serif;
+}
 @layer base {
   :root {
     @apply text-[rgba(0,0,0,0.87)] bg-[#f8f8f8] font-sans;
