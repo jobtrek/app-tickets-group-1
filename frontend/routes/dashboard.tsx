@@ -1,8 +1,9 @@
-import { rootRoute } from "./__root";
-import { createRoute } from "@tanstack/react-router";
+import { createRoute } from '@tanstack/react-router';
+import TicketView from 'frontend/src/pages/TicketView';
+import { rootRoute } from './__root';
 
 export const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/dashboard",
-  component: () => <h1>Dashboard</h1>,
+  path: '/dashboard',
+  component: () => <TicketView />,
 });
