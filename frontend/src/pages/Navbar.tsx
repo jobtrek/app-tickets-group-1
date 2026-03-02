@@ -8,15 +8,11 @@ import { StatisticsIcon } from "../components/svg/StatisticsIcon";
 
 export function Navbar() {
   const navigate = useNavigate();
-  
-  const NavigateToTicketCreation = () =>{
-    navigate({ to: '/create'});
-  }
 
   return (
     <div className="flex flex-col gap-3 m-3 h-full w-48 items-center px-8 py-4 ">
       <NavbarButton Icon={<DashboardIcon />} text="Dashboard" />
-      <NavbarButton Icon={<TicketHistoryIcon />} text="Create Ticket" onClick={NavigateToTicketCreation} />
+      <NavbarButton Icon={<TicketHistoryIcon />} text="Create Ticket" onClick={() => navigate({ to: '/create'})} />
       <NavbarButton Icon={<StatisticsIcon />} text="Statistics" />
     </div>
   );
