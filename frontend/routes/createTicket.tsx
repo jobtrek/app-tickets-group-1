@@ -2,8 +2,8 @@ import { rootRoute } from "./__root.tsx";
 import { createRoute } from "@tanstack/react-router";
 import TicketCreation from "../src/pages/TicketCreation.tsx"
 
-export const ticketViewRoute = createRoute({
+export const ticketCreationRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/ticket",
-  component: () => <div>test</div>
+  path: "/create",
+  component: () => <TicketCreation />
 });
