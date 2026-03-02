@@ -6,7 +6,7 @@ export default function TicketView() {
       <div className='w-full max-w-6xl border-2 rounded-xl p-10 border-gray-400'>
         <div className='flex justify-between'>
           <h1 className='text-3xl'>Titre du ticket</h1>
-          <span className='p-4 border-[#001AB0] bg-[#1641c052] text-[#001AB0] border-2 border-solid rounded-4xl w-50 text-center text-xl'>
+          <span className='p-4 border-open-dark bg-open-light text-open-dark border-2 rounded-4xl w-52 text-center text-xl'>
             Ouvert
           </span>
         </div>
@@ -28,7 +28,7 @@ export default function TicketView() {
 
         <h2 className='text-gray-400 text-xl pb-20'>Pièces jointes</h2>
 
-        <div className='w-full bg-gray-200 p-5 pb-20 rounded-xl flex gap-130'>
+        <div className='w-full bg-gray-200 p-5 pb-20 rounded-xl flex gap-120'>
           <div className='flex flex-col gap-2 pl-4'>
             <p className='text-xs font-semibold text-gray-500'>
               NIVEAU D'URGENCE
