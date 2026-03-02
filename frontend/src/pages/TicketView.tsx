@@ -1,17 +1,33 @@
 import User from '../components/User';
 
-export default function TicketView() {
+interface TicketViewProps {
+  id: number;
+  title: string;
+  date: string;
+  description: string;
+  level: string;
+  attachment: string;
+}
+
+export default function TicketView({
+  id,
+  title,
+  description,
+  date,
+  level,
+  attachment,
+}: TicketViewProps) {
   return (
     <div className='min-h-screen w-full flex flex-col items-center py-24 px-4'>
       <div className='w-full max-w-6xl border-2 rounded-xl p-10 border-gray-400'>
         <div className='flex justify-between'>
-          <h1 className='text-3xl'>Titre du ticket</h1>
+          <h1 className='text-3xl'>{title}</h1>
           <span className='p-4 border-open-dark bg-open-light text-open-dark border-2 rounded-4xl w-52 text-center text-xl'>
             Ouvert
           </span>
         </div>
 
-        <p className='text-gray-400 text-lg pb-10'>Crée le 2026.10.23</p>
+        <p className='text-gray-400 text-lg pb-10'>Crée le {date}</p>
         <hr className='border-t-2 border-gray-200 pb-10' />
 
         <div className='pb-20'>
@@ -19,12 +35,7 @@ export default function TicketView() {
         </div>
 
         <h2 className='text-gray-400 text-xl pb-5'>Description</h2>
-        <p className='pb-10'>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Explicabo,
-          in similique rerum corporis aut dolores omnis ullam, repudiandae
-          corrupti magni a sint laborum pariatur laboriosam eligendi enim
-          excepturi nostrum illum!
-        </p>
+        <p className='pb-10'>{description}</p>
 
         <h2 className='text-gray-400 text-xl pb-20'>Pièces jointes</h2>
 
@@ -33,7 +44,7 @@ export default function TicketView() {
             <p className='text-xs font-semibold text-gray-500'>
               NIVEAU D'URGENCE
             </p>
-            <p className='font-bold text-xl'>Haut</p>
+            <p className='font-bold text-xl'>{level}</p>
           </div>
           <div className='flex flex-col gap-2'>
             <p className='text-xs font-semibold text-gray-500'>ASSIGNÉ À</p>
