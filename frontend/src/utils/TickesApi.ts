@@ -5,7 +5,7 @@ export interface TicketApi {
   description: string;
   image: string;
   level: string | null;
-  created_at: boolean;
+  created_at: string;
 }
 
 export type SavedTicketApi = TicketApi & { id_ticket: number, id_status: number, id_user: number  };
@@ -13,22 +13,22 @@ export type SavedTicketApi = TicketApi & { id_ticket: number, id_status: number,
 const API_URL = 'http://localhost:8001/api/ticket';
 
 
-export const handleClickSaveButton = async (Ticket: TicketApi) => {
+export const handleClickSaveButton = async (ticket: TicketApi) => {
   const payload = {
-        title: Ticket.title,
-        description: Ticket.description,
-        image: Ticket.image || null,
-        created_at: Ticket.created_at,
+        title: ticket.title,
+        description: ticket.description,
+        image: ticket.image || null,
+        level: ticket.level,
+        created_at: ticket.created_at,
   };
-  const [getRes, postRes] = await Promise.all([
-    axios.post(API_URL, payload),
-    axios.get(API_URL)
-  ]);
+  const postResponse = await axios.post(API_URL, payload);
+  const getResponse = await axios.get(API_URL);
 
-  const getData = getRes.data;
-  const postData = postRes.data;
+  const createdTicket = postResponse.data;
+  const allTickets = getResponse.data;
 
-  return {getData, postData}
+  return { createdTicket, allTickets };
+
 };
 
 
