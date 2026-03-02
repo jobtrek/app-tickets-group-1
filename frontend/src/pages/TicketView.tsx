@@ -6,7 +6,6 @@ interface TicketViewProps {
   date: string;
   description: string;
   level: string;
-  attachment: string;
 }
 
 export default function TicketView({
@@ -15,7 +14,6 @@ export default function TicketView({
   description,
   date,
   level,
-  attachment,
 }: TicketViewProps) {
   return (
     <div className='min-h-screen w-full flex flex-col items-center py-24 px-4'>

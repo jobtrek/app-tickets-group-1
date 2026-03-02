@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export interface TicketApi {
   title: string;
@@ -8,18 +8,21 @@ export interface TicketApi {
   created_at: string;
 }
 
-export type SavedTicketApi = TicketApi & { id_ticket: number, id_status: number, id_user: number  };
+export type SavedTicketApi = TicketApi & {
+  id_ticket: number;
+  id_status: number;
+  id_user: number;
+};
 
-const API_URL = 'http://localhost:8001/api/ticket';
+const API_URL = 'http://localhost:3001/api/tickets';
 
-
-export const handleClickSaveButton = async (ticket: TicketApi) => {
+export const handleClickSaveButton = async (ticket: FormData) => {
   const payload = {
-        title: ticket.title,
-        description: ticket.description,
-        image: ticket.image || null,
-        level: ticket.level,
-        created_at: ticket.created_at,
+    title: ticket.get('title'),
+    description: ticket.get('description'),
+    image: ticket.get('attachement') || null,
+    level: ticket.get('level'),
+    created_at: ticket.get('date'),
   };
   const postResponse = await axios.post(API_URL, payload);
   const getResponse = await axios.get(API_URL);
@@ -28,12 +31,7 @@ export const handleClickSaveButton = async (ticket: TicketApi) => {
   const allTickets = getResponse.data;
 
   return { createdTicket, allTickets };
-
 };
-
-
-
-
 
 // export const fetchTasks = async (): Promise<SavedTicketApi[]> => {
 //   const data = await RequestData<SavedTicketApi[]>(API_URL, 'GET');
@@ -63,14 +61,12 @@ export const handleClickSaveButton = async (ticket: TicketApi) => {
 //     done: Boolean(task.done),
 //   };
 
-  
 //   const response = await RequestData<{ success: boolean; data: SavedApiTask }>(
 //     `${API_URL}/${task.id}`,
 //     'PATCH',
 //     updateBody,
 //   );
-  
-  
+
 //   return response.data;
 // };
 
