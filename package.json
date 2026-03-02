@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-router": "^1.161.1",
+    "axios": "^1.13.6",
     "react": "^19",
     "react-dom": "^19",
     "tailwindcss": "^4.1.11",
