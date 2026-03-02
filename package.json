@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"bun --hot index.ts\"",
+    "dev": "concurrently \"vite\" \"bun --hot backend/src/middleware/index.ts\"",
     "build": "vite build",
     "preview": "vite preview"
   },
