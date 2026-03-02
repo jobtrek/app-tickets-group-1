@@ -14,6 +14,7 @@ export default function Form() {
         return 'Ticket added !';
       } catch (e) {
         console.error(e);
+        return 'Une erreur est survenue lors de la création du ticket.';
       }
     },
     null,
