@@ -26,7 +26,7 @@ function DashboardPage() {
 
   // Si vous voulez afficher le PREMIER ticket ou une liste,
   // il faut adapter ici. Voici pour le premier ticket par exemple :
-  const ticket = tickets[0];
+  const ticket = tickets[tickets.length - 1];
 
   if (!ticket) return <div>Aucun ticket trouvé.</div>;
 

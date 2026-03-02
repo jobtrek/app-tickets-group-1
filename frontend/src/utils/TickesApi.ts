@@ -20,9 +20,9 @@ export const handleClickSaveButton = async (ticket: FormData) => {
   const payload = {
     title: ticket.get('title'),
     description: ticket.get('description'),
-    image: ticket.get('attachement') || null,
-    level: ticket.get('level'),
-    created_at: ticket.get('date'),
+    image: ticket.get('img') || null,
+    level: ticket.get('urgence'),
+    id_user: 1,
   };
   const postResponse = await axios.post(API_URL, payload);
   const getResponse = await axios.get(API_URL);

@@ -17,14 +17,16 @@ const server = Bun.serve({
         console.log('HELL FROM GET TICKETS');
 
         try {
-          const tickets = db.query(
-            `
+          const tickets = db
+            .query(
+              `
             SELECT t.*
 
             FROM ticket t 
 
           `,
-          );
+            )
+            .all();
 
           return Response.json(tickets, { status: 200, headers });
         } catch (e) {
@@ -44,7 +46,7 @@ const server = Bun.serve({
             RETURNING *
           `);
 
-          const result = insert.run(
+          const result = insert.get(
             title,
             description,
             level,
@@ -52,13 +54,10 @@ const server = Bun.serve({
             id_user,
           );
 
-          return Response.json(
-            { result },
-            {
-              status: 201,
-              headers,
-            },
-          );
+          return Response.json(result, {
+            status: 201,
+            headers,
+          });
         } catch (e) {
           console.error('Erreur insertion DB:', e); // <--- AJOUTE CECI
           return new Response('Error', { status: 400, headers });
