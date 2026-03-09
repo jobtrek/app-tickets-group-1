@@ -33,9 +33,10 @@ const createTableQuery = `
 
     create trigger if not exists update_ticket_timestamp
     after update on ticket
-    for each row 
+    for each row
+    when new.updated_at = old.updated_at
     begin
-      update ticket set updated_at = current_timestamp where id_ticket = old.id_ticket;
+      update ticket set updated_at = current_timestamp where id_ticket = new.id_ticket;
     end;
 
 `;
