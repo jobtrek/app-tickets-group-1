@@ -6,13 +6,16 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false,
+		"ignoreUnknown": true,
 		"includes": [
 			"**",
 			"!frontend/routeTree.gen.ts",
 			"!frontend/index.css",
 			"!node_modules",
-			"!build.ts"
+			"!build.ts",
+			"!**/*.sqlite3",
+			"!**/*.sqlite",
+			"!**/*.db"
 		]
 	},
 	"formatter": {
