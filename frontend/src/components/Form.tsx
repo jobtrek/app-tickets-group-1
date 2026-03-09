@@ -7,6 +7,14 @@ import InputText from './InputText';
 import Select from './Select';
 import TextArea from './TextArea';
 
+export const urgenceOptions = [
+  { value: '', label: "Indiquez le niveau d'urgence" },
+  { value: 'bas', label: 'Bas' },
+  { value: 'moyen', label: 'Moyen' },
+  { value: 'haut', label: 'Haut' },
+  { value: 'urgent', label: 'Urgent' },
+];
+
 export default function Form() {
   const [state, action, pending] = useActionState(
     async (_: unknown, formData: FormData) => {
@@ -38,7 +46,7 @@ export default function Form() {
         </FormField>
 
         <FormField id='urgence' label="Niveau d'urgence">
-          <Select id='urgence' />
+          <Select id='urgence' options={urgenceOptions} />
         </FormField>
 
         <FormField label='Pièce jointe' id='img'>
