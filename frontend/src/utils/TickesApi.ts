@@ -23,6 +23,7 @@ export const handleClickSaveButton = async (ticket: FormData) => {
 		level: ticket.get("urgence"),
 		id_user: 1,
 	};
+	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);
 	const getResponse = await axios.get(API_URL);
 
