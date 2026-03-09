@@ -1,8 +1,7 @@
+import { TicketStatus } from "backend/utils/constants";
 import { headers } from "../../utils/headers";
 import { db } from "../db/database";
 import { queries } from "../repositories/ticketQuery";
-
-import { TicketStatus } from "backend/utils/constants";
 export const getResponse = () => {
 	try {
 		const tickets = db.query(queries.tickets.getAll).all();
