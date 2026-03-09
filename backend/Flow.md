@@ -74,13 +74,13 @@ export const getTickets = async (req: Request) => {
 
 export const createTicket = async (req: Request) => {
   try {
-    const { title, description, urgence, id_user } = await req.json()
+    const { title, description, urgency, id_user } = await req.json()
     const insert = db.prepare(`
-      INSERT INTO ticket (title, description, urgence, id_user)
+      INSERT INTO tickets (title, description, urgency, id_user)
       VALUES (?, ?, ?, ?)
       RETURNING *
     `)
-    const result = insert.get(title, description, urgence, id_user)
+    const result = insert.get(title, description, urgency, id_user)
     return Response.json(result, { status: 201 })
   } catch (e) {
     return new Response('DB Error', { status: 500 })

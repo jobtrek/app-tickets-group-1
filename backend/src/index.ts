@@ -36,7 +36,7 @@ const _server = Bun.serve({
 			POST: async (req) => {
 				try {
 					const body = await req.json();
-					const { title, description, urgency, idUser } = body;
+					const { title, description, urgency, id_user } = body;
 
 					const defaultStatus = 1;
 
@@ -51,7 +51,7 @@ const _server = Bun.serve({
 						description,
 						urgency,
 						defaultStatus,
-						idUser,
+						id_user,
 					);
 
 					return Response.json(result, {
