@@ -1,8 +1,14 @@
+type Option = {
+  value: string;
+  label: string;
+};
+
 interface SelectProps {
   id: string;
+  options: Option[];
 }
 
-export default function Select({ id }: SelectProps) {
+export default function Select({ id, options }: SelectProps) {
   return (
     <>
       <select
@@ -10,11 +16,11 @@ export default function Select({ id }: SelectProps) {
         id={id}
         className='w-full border-gray-400 border border-solid rounded-xl p-4 placeholder:text-gray-400'
       >
-        <option value=''>Indiquez le niveau d'urgence</option>
-        <option value='bas'>Bas</option>
-        <option value='moyen'>Moyen</option>
-        <option value='haut'>Haut</option>
-        <option value='urgent'>Urgent</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
       </select>
     </>
   );
