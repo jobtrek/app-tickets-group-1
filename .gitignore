@@ -34,4 +34,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 2
 
+routeTree.gen.ts
+
 
