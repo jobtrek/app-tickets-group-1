@@ -5,7 +5,7 @@ interface TicketViewProps {
 	title: string;
 	date: string;
 	description: string;
-	level: string;
+	urgency: string;
 }
 
 export default function TicketView({
@@ -13,7 +13,7 @@ export default function TicketView({
 	title,
 	description,
 	date,
-	level,
+	urgency,
 }: TicketViewProps) {
 	return (
 		<div className="min-h-screen w-full flex flex-col items-center py-24 px-4">
@@ -42,7 +42,7 @@ export default function TicketView({
 						<p className="text-xs font-semibold text-gray-500">
 							NIVEAU D'URGENCE
 						</p>
-						<p className="font-bold text-xl">{level}</p>
+						<p className="font-bold text-xl">{urgency}</p>
 					</div>
 					<div className="flex flex-col gap-2">
 						<p className="text-xs font-semibold text-gray-500">ASSIGNÉ À</p>

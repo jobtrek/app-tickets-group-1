@@ -23,7 +23,7 @@ function DashboardPage() {
 			title={ticket.title}
 			description={ticket.description}
 			date={ticket.created_at}
-			level={ticket.level}
+			urgency={ticket.urgency}
 		/>
 	);
 }

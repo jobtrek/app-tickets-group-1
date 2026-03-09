@@ -9,12 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TicketHistoryRouteImport } from './routes/ticket-history'
 import { Route as TicketRouteImport } from './routes/ticket'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreateTicketRouteImport } from './routes/create-ticket'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TicketHistoryTsxRouteImport } from './routes/ticket-history.tsx'
 
+const TicketHistoryRoute = TicketHistoryRouteImport.update({
+  id: '/ticket-history',
+  path: '/ticket-history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TicketRoute = TicketRouteImport.update({
   id: '/ticket',
   path: '/ticket',
@@ -35,25 +40,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TicketHistoryTsxRoute = TicketHistoryTsxRouteImport.update({
-  id: '/ticket-history/tsx',
-  path: '/ticket-history/tsx',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
   '/ticket': typeof TicketRoute
-  '/ticket-history/tsx': typeof TicketHistoryTsxRoute
+  '/ticket-history': typeof TicketHistoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
   '/ticket': typeof TicketRoute
-  '/ticket-history/tsx': typeof TicketHistoryTsxRoute
+  '/ticket-history': typeof TicketHistoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -61,7 +61,7 @@ export interface FileRoutesById {
   '/create-ticket': typeof CreateTicketRoute
   '/dashboard': typeof DashboardRoute
   '/ticket': typeof TicketRoute
-  '/ticket-history/tsx': typeof TicketHistoryTsxRoute
+  '/ticket-history': typeof TicketHistoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -70,16 +70,16 @@ export interface FileRouteTypes {
     | '/create-ticket'
     | '/dashboard'
     | '/ticket'
-    | '/ticket-history/tsx'
+    | '/ticket-history'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-ticket' | '/dashboard' | '/ticket' | '/ticket-history/tsx'
+  to: '/' | '/create-ticket' | '/dashboard' | '/ticket' | '/ticket-history'
   id:
     | '__root__'
     | '/'
     | '/create-ticket'
     | '/dashboard'
     | '/ticket'
-    | '/ticket-history/tsx'
+    | '/ticket-history'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,11 +87,18 @@ export interface RootRouteChildren {
   CreateTicketRoute: typeof CreateTicketRoute
   DashboardRoute: typeof DashboardRoute
   TicketRoute: typeof TicketRoute
-  TicketHistoryTsxRoute: typeof TicketHistoryTsxRoute
+  TicketHistoryRoute: typeof TicketHistoryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ticket-history': {
+      id: '/ticket-history'
+      path: '/ticket-history'
+      fullPath: '/ticket-history'
+      preLoaderRoute: typeof TicketHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ticket': {
       id: '/ticket'
       path: '/ticket'
@@ -120,13 +127,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ticket-history/tsx': {
-      id: '/ticket-history/tsx'
-      path: '/ticket-history/tsx'
-      fullPath: '/ticket-history/tsx'
-      preLoaderRoute: typeof TicketHistoryTsxRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -135,7 +135,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreateTicketRoute: CreateTicketRoute,
   DashboardRoute: DashboardRoute,
   TicketRoute: TicketRoute,
-  TicketHistoryTsxRoute: TicketHistoryTsxRoute,
+  TicketHistoryRoute: TicketHistoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

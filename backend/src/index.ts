@@ -22,7 +22,7 @@ const _server = Bun.serve({
 							`
             SELECT t.*
 
-            FROM ticket t 
+            FROM tickets t 
 
           `,
 						)
@@ -36,12 +36,12 @@ const _server = Bun.serve({
 			POST: async (req) => {
 				try {
 					const body = await req.json();
-					const { title, description, level, id_user } = body;
+					const { title, description, urgency, idUser } = body;
 
 					const defaultStatus = 1;
 
 					const insert = db.prepare(`
-            INSERT INTO ticket (title, description, level, id_status, id_user)
+            INSERT INTO tickets (title, description, urgency, id_status, id_user)
             VALUES (?, ?, ?, ?, ?)
             RETURNING *
           `);
@@ -49,9 +49,9 @@ const _server = Bun.serve({
 					const result = insert.get(
 						title,
 						description,
-						level,
+						urgency,
 						defaultStatus,
-						id_user,
+						idUser,
 					);
 
 					return Response.json(result, {

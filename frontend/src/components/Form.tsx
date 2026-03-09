@@ -1,5 +1,5 @@
 import { useActionState } from "react";
-import { handleClickSaveButton } from "../utils/TickesApi";
+import { handleClickSaveButton } from "../utils/TicketsApi";
 import Button from "./Button";
 import FormField from "./FormField";
 import InputFile from "./InputFile";
@@ -7,7 +7,7 @@ import InputText from "./InputText";
 import Select from "./Select";
 import TextArea from "./TextArea";
 
-const urgenceOptions = [
+const urgencyOptions = [
 	{ value: "", label: "Indiquez le niveau d'urgence" },
 	{ value: "bas", label: "Bas" },
 	{ value: "moyen", label: "Moyen" },
@@ -45,8 +45,8 @@ export default function Form() {
 					<TextArea id="description" placeholder="Fournissez plus de détails" />
 				</FormField>
 
-				<FormField id="urgence" label="Niveau d'urgence">
-					<Select id="urgence" options={urgenceOptions} />
+				<FormField id="urgency" label="Niveau d'urgence">
+					<Select id="urgency" options={urgencyOptions} />
 				</FormField>
 
 				<FormField label="Pièce jointe" id="img">
