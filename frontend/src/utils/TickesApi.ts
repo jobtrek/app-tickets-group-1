@@ -1,5 +1,5 @@
 import axios from "axios";
-import API_URL from "@/config/api";
+import API_URL from "../../../src/config/api";
 
 export interface TicketApi {
 	title: string;
