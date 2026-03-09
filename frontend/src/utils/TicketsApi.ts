@@ -1,7 +1,8 @@
 import axios from "axios";
 import API_URL from "../../../src/config/api";
 
-export interface TicketApi {
+// Response types match database column names (snake_case)
+export interface TicketApiResponse {
 	title: string;
 	description: string;
 	image: string;
@@ -9,19 +10,19 @@ export interface TicketApi {
 	created_at: string;
 }
 
-export type SavedTicketApi = TicketApi & {
+export type SavedTicketApiResponse = TicketApiResponse & {
 	id_ticket: number;
 	id_status: number;
 	id_user: number;
 };
 
-export const handleClickSaveButton = async (ticket: FormData) => {
+export const createTicketFromForm = async (ticket: FormData) => {
 	const payload = {
 		title: ticket.get("title"),
 		description: ticket.get("description"),
 		image: ticket.get("img") || null,
 		level: ticket.get("urgence"),
-		id_user: 1,
+		idUser: 1,
 	};
 	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);

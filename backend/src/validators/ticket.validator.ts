@@ -14,8 +14,8 @@ export const TicketPostSchema = v.object({
 	description: v.pipe(v.string(), v.minLength(1, "Description is required")),
 	image: v.object({}),
 	level: v.optional(TicketLevelEnum),
-	id_status: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
-	id_user: v.pipe(
+	idStatus: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+	idUser: v.pipe(
 		v.number(),
 		v.integer(),
 		v.minValue(1, "A valid user ID is required"),
