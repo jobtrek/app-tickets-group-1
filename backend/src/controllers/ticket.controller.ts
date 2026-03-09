@@ -32,7 +32,13 @@ export const insertResponse = async (req: Request): Promise<Response> => {
 		const defaultStatus = TicketStatus.Opened;
 		const insert = db.prepare(queries.tickets.insert);
 
-		insert.get(title, description, level ?? null, defaultStatus, id_user);
+		const result = insert.get(
+			title,
+			description,
+			level ?? null,
+			defaultStatus,
+			id_user,
+		);
 		return new Response("Ticket created successfully", {
 			status: 201,
 			headers,
