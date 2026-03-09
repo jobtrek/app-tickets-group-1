@@ -9,11 +9,11 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!frontend/src/routeTree.gen.ts",
+			"!frontend/routeTree.gen.ts",
 			"!frontend/index.css",
-			"!node_modules"
+			"!node_modules",
+			"!build.ts"
 		]
-		
 	},
 	"formatter": {
 		"enabled": true,
