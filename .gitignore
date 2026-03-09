@@ -36,4 +36,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 routeTree.gen.ts
 
+backend/index
+
 
