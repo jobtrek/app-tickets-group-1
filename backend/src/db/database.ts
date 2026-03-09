@@ -1,6 +1,6 @@
-import { Database } from 'bun:sqlite';
+import { Database } from "bun:sqlite";
 
-export const db = new Database('./mydb.sqlite');
+export const db = new Database("./backend/src/data/mydb.sqlite");
 
 const createTableQuery = `
     create table if not exists status(
@@ -34,22 +34,22 @@ const createTableQuery = `
 db.run(createTableQuery);
 
 const tickets = [
-  ['Fix Login Button', "Button doesn't click on mobile", 'High', 1, 1],
-  ['Update Logo', 'Use the new SVG logo in header', 'Low', 2, 2],
-  ['Database Timeout', 'Intermittent 504 errors on search', 'Urgent', 1, 1],
-  ['User Profile CSS', 'Alignment is off on tablet view', 'Medium', 2, 3],
-  ['Add Export to PDF', 'Feature request for invoice page', 'Low', 1, 2],
-  ['Security Patch', 'Update dependencies for CVE-2024', 'Urgent', 3, 1],
-  ['Dark Mode Bug', 'Text remains black in dark mode', 'Medium', 2, 3],
-  [
-    'Email Notification',
-    'Welcome email not sending to new users',
-    'High',
-    1,
-    2,
-  ],
-  ['API Documentation', 'Swagger docs are missing new endpoints', 'Low', 4, 1],
-  ['Optimize Images', 'Homepage loading too slowly', 'Medium', 2, 2],
+	["Fix Login Button", "Button doesn't click on mobile", "High", 1, 1],
+	["Update Logo", "Use the new SVG logo in header", "Low", 2, 2],
+	["Database Timeout", "Intermittent 504 errors on search", "Urgent", 1, 1],
+	["User Profile CSS", "Alignment is off on tablet view", "Medium", 2, 3],
+	["Add Export to PDF", "Feature request for invoice page", "Low", 1, 2],
+	["Security Patch", "Update dependencies for CVE-2024", "Urgent", 3, 1],
+	["Dark Mode Bug", "Text remains black in dark mode", "Medium", 2, 3],
+	[
+		"Email Notification",
+		"Welcome email not sending to new users",
+		"High",
+		1,
+		2,
+	],
+	["API Documentation", "Swagger docs are missing new endpoints", "Low", 4, 1],
+	["Optimize Images", "Homepage loading too slowly", "Medium", 2, 2],
 ];
 
 const insertTicket = db.prepare(`
@@ -58,5 +58,5 @@ const insertTicket = db.prepare(`
 `);
 
 for (const ticket of tickets) {
-  insertTicket.run(...ticket);
+	insertTicket.run(...ticket);
 }
