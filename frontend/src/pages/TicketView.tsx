@@ -9,7 +9,7 @@ interface TicketViewProps {
 }
 
 export default function TicketView({
-	id,
+	id: _id,
 	title,
 	description,
 	date,

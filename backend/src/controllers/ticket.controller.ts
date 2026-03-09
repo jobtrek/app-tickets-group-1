@@ -1,20 +1,20 @@
 import { TicketStatus } from "backend/utils/constants";
 import * as v from "valibot";
-import { headers } from "../../utils/headers";
+import { corsHeaders } from "../../utils/headers";
 import { db } from "../db/database.ts";
-import { queries } from "../repositories/ticketQuery";
+import { ticketQueries } from "../repositories/ticketQuery";
 import { TicketPostSchema } from "../validators/ticket.validator.ts";
 
-export const getResponse = () => {
+export const getAllTickets = () => {
 	try {
-		const tickets = db.query(queries.tickets.getAll).all();
-		return Response.json(tickets, { status: 200, headers });
+		const tickets = db.query(ticketQueries.getAll).all();
+		return Response.json(tickets, { status: 200, headers: corsHeaders });
 	} catch (_e) {
-		return new Response("DB Error", { status: 500, headers });
+		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
 
-export const insertResponse = async (req: Request): Promise<Response> => {
+export const createTicket = async (req: Request): Promise<Response> => {
 	try {
 		const body = await req.json();
 
@@ -23,28 +23,28 @@ export const insertResponse = async (req: Request): Promise<Response> => {
 		if (!validBody.success) {
 			return Response.json(
 				{ errors: validBody.issues.map((i) => i.message) },
-				{ status: 400, headers },
+				{ status: 400, headers: corsHeaders },
 			);
 		}
 
-		const { title, description, level, id_user } = validBody.output;
+		const { title, description, level, idUser } = validBody.output;
 
 		const defaultStatus = TicketStatus.Opened;
-		const insert = db.prepare(queries.tickets.insert);
+		const insert = db.prepare(ticketQueries.insert);
 
-		const result = insert.get(
+		const _result = insert.get(
 			title,
 			description,
 			level ?? null,
 			defaultStatus,
-			id_user,
+			idUser,
 		);
 		return new Response("Ticket created successfully", {
 			status: 201,
-			headers,
+			headers: corsHeaders,
 		});
 	} catch (e) {
 		console.error("DB insertion error", e);
-		return new Response("Error", { status: 400, headers });
+		return new Response("Error", { status: 400, headers: corsHeaders });
 	}
 };

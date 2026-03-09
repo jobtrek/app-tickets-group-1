@@ -10,16 +10,16 @@ export function Navbar() {
 	return (
 		<div className="flex flex-col gap-3 m-3 h-full w-48 items-center px-8 py-4 ">
 			<NavbarButton
-				Icon={<DashboardIcon />}
+				icon={<DashboardIcon />}
 				text="Dashboard"
 				onClick={() => navigate({ to: "/dashboard" })}
 			/>
 			<NavbarButton
-				Icon={<TicketHistoryIcon />}
+				icon={<TicketHistoryIcon />}
 				text="Create Ticket"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
-			<NavbarButton Icon={<StatisticsIcon />} text="Statistics" />
+			<NavbarButton icon={<StatisticsIcon />} text="Statistics" />
 		</div>
 	);
 }

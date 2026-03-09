@@ -1,5 +1,5 @@
 import { useActionState } from "react";
-import { handleClickSaveButton } from "../utils/TickesApi";
+import { createTicketFromForm } from "../utils/TicketsApi";
 import Button from "./Button";
 import FormField from "./FormField";
 import InputFile from "./InputFile";
@@ -19,7 +19,7 @@ export default function Form() {
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
-				await handleClickSaveButton(formData);
+				await createTicketFromForm(formData);
 				return "Ticket added !";
 			} catch (e) {
 				console.error(e);
