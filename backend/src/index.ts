@@ -4,4 +4,4 @@ const _server = Bun.serve({
 	port: 3001,
 	routes: ticketRoutes,
 });
-2;
+

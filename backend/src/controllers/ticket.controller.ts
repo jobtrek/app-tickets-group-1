@@ -1,7 +1,8 @@
-import { headers } from "backend/utils/headers";
+import { headers } from "../../utils/headers";
 import { db } from "../db/database";
 import { queries } from "../repositories/ticketQuery";
 
+import { TicketStatus } from "backend/utils/constants";
 export const getResponse = () => {
 	try {
 		const tickets = db.query(queries.tickets.getAll).all();
@@ -16,7 +17,7 @@ export const insertResponse = async (req: Request): Promise<Response> => {
 		const body = await req.json();
 
 		const { title, description, level, id_user } = body;
-		const defaultStatus = 1;
+		const defaultStatus = TicketStatus.Opened;
 		const insert = db.prepare(queries.tickets.insert);
 
 		const result = insert.get(
@@ -32,7 +33,7 @@ export const insertResponse = async (req: Request): Promise<Response> => {
 			headers,
 		});
 	} catch (e) {
-		console.error("Erreur insertion DB:", e);
+		console.error("DB insertion error", e);
 		return new Response("Error", { status: 400, headers });
 	}
 };
