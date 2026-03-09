@@ -1,35 +1,35 @@
-import API_URL from '@/config/api';
-import axios from 'axios';
+import axios from "axios";
+import API_URL from "@/config/api";
 
 export interface TicketApi {
-  title: string;
-  description: string;
-  image: string;
-  level: string | null;
-  created_at: string;
+	title: string;
+	description: string;
+	image: string;
+	level: string | null;
+	created_at: string;
 }
 
 export type SavedTicketApi = TicketApi & {
-  id_ticket: number;
-  id_status: number;
-  id_user: number;
+	id_ticket: number;
+	id_status: number;
+	id_user: number;
 };
 
 export const handleClickSaveButton = async (ticket: FormData) => {
-  const payload = {
-    title: ticket.get('title'),
-    description: ticket.get('description'),
-    image: ticket.get('img') || null,
-    level: ticket.get('urgence'),
-    id_user: 1,
-  };
-  const postResponse = await axios.post(API_URL, payload);
-  const getResponse = await axios.get(API_URL);
+	const payload = {
+		title: ticket.get("title"),
+		description: ticket.get("description"),
+		image: ticket.get("img") || null,
+		level: ticket.get("urgence"),
+		id_user: 1,
+	};
+	const postResponse = await axios.post(API_URL, payload);
+	const getResponse = await axios.get(API_URL);
 
-  const createdTicket = postResponse.data;
-  const allTickets = getResponse.data;
+	const createdTicket = postResponse.data;
+	const allTickets = getResponse.data;
 
-  return { createdTicket, allTickets };
+	return { createdTicket, allTickets };
 };
 
 // export const fetchTasks = async (): Promise<SavedTicketApi[]> => {
