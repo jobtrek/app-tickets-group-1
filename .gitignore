@@ -32,10 +32,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
-
-backend/src/data/*.sqlite
-backend/src/data/*.sqlite3
-backend/src/data/*.db
+2
 
 routeTree.gen.ts
 

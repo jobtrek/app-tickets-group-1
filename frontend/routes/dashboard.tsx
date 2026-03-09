@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
-import API_URL from "@/config/api";
+import API_URL from "../../src/config/api";
 import TicketView from "../src/pages/TicketView";
 
 export const Route = createFileRoute("/dashboard")({
