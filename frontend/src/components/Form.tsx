@@ -7,7 +7,7 @@ import InputText from './InputText';
 import Select from './Select';
 import TextArea from './TextArea';
 
-export const urgenceOptions = [
+const urgenceOptions = [
   { value: '', label: "Indiquez le niveau d'urgence" },
   { value: 'bas', label: 'Bas' },
   { value: 'moyen', label: 'Moyen' },
