@@ -36,9 +36,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const TicketHistoryTsxRoute = TicketHistoryTsxRouteImport.update({
-  id: '/ticket-history/tsx',
-  path: '/ticket-history/tsx',
-  getParentRoute: () => rootRouteImport,
+  id: '/tsx',
+  path: '/tsx',
+  getParentRoute: () => TicketHistoryRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -87,7 +87,6 @@ export interface RootRouteChildren {
   CreateTicketRoute: typeof CreateTicketRoute
   DashboardRoute: typeof DashboardRoute
   TicketRoute: typeof TicketRoute
-  TicketHistoryTsxRoute: typeof TicketHistoryTsxRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,10 +121,10 @@ declare module '@tanstack/react-router' {
     }
     '/ticket-history/tsx': {
       id: '/ticket-history/tsx'
-      path: '/ticket-history/tsx'
+      path: '/tsx'
       fullPath: '/ticket-history/tsx'
       preLoaderRoute: typeof TicketHistoryTsxRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof TicketHistoryRoute
     }
   }
 }
@@ -135,7 +134,6 @@ const rootRouteChildren: RootRouteChildren = {
   CreateTicketRoute: CreateTicketRoute,
   DashboardRoute: DashboardRoute,
   TicketRoute: TicketRoute,
-  TicketHistoryTsxRoute: TicketHistoryTsxRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
