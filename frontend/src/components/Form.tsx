@@ -22,6 +22,7 @@ export default function Form() {
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
+				console.log(userId);
 				await createTicketFromForm(formData, userId);
 				return "Ticket added !";
 			} catch (e) {

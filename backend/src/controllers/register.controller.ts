@@ -20,8 +20,6 @@ export const postUser = async (req: Request) => {
 		const securedPassword = await hashPassword(validated.password);
 
 		const insert = db.prepare(userQueries.insertUser);
-		insert.run(validated.username, validated.email, securedPassword, "user");
-
 		const result = insert.get(
 			validated.username,
 			validated.email,

@@ -53,9 +53,9 @@ export default function RegisterForm() {
 						S'inscrire
 					</h1>
 					<form className="space-y-6" onSubmit={handleSubmit}>
-						<FormField id="user" label="Nom d'utilisateur">
+						<FormField id="username" label="Nom d'utilisateur">
 							<InputText
-								id="user"
+								id="username"
 								placeholder="Entrez votre nom d'utilisateur"
 								required
 								onChange={handleInputChange}
@@ -99,11 +99,7 @@ export default function RegisterForm() {
 								Se souvenir de moi
 							</label>
 						</div>
-						<Button
-							type="submit"
-							title="S'inscrire"
-							onClick={() => navigate({ to: "/create-ticket" })}
-						/>
+						<Button type="submit" title="S'inscrire" />
 					</form>
 				</div>
 			</div>
