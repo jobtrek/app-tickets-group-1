@@ -29,7 +29,7 @@ export const createTicket = async (req: Request): Promise<Response> => {
 
 		const { title, description, level, idUser } = validBody.output;
 
-		const defaultStatus = TicketStatus.Opened;
+		const defaultStatus = TicketStatus.Ouvert;
 		const insert = db.prepare(ticketQueries.insert);
 
 		const _result = insert.get(
