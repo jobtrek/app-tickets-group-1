@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useUserStore } from "frontend/src/store/userStore.ts";
+import { useUserStore } from "../store/userStore";
+
 import { useState } from "react";
 import type { RegisterData } from "../utils/UserApi";
 import { registerUserApi } from "../utils/UserApi";
