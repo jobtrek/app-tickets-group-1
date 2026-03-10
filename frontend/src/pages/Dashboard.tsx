@@ -2,10 +2,10 @@ import type { Ticket } from "frontend/routes/dashboard";
 import Select from "../components/Select";
 
 const statutStyles: Record<Ticket["id_status"], string> = {
-    "Ouvert": "bg-indigo-100 text-indigo-600 border border-indigo-300",
-    "En cours": "bg-yellow-100 text-yellow-600 border border-yellow-300",
-    "Fermé": "bg-red-100 text-red-600 border border-red-300",
-    "Résolu": "bg-emerald-100 text-emerald-600 border border-emerald-300",
+	Ouvert: "bg-indigo-100 text-indigo-600 border border-indigo-300",
+	"En cours": "bg-yellow-100 text-yellow-600 border border-yellow-300",
+	Fermé: "bg-red-100 text-red-600 border border-red-300",
+	Résolu: "bg-emerald-100 text-emerald-600 border border-emerald-300",
 };
 
 const urgenceStyles: Record<Ticket["level"], string> = {
