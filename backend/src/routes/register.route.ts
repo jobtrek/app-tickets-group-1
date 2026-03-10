@@ -6,6 +6,6 @@ export const registerRoutes = {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
 
-        POST: postUser,
+		POST: postUser,
 	},
 };

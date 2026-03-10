@@ -19,8 +19,6 @@ export const createTicketFromForm = async (ticket: FormData) => {
 	return { createdTicket, allTickets };
 };
 
-
-
 // export const fetchTasks = async (): Promise<SavedTicketApi[]> => {
 //   const data = await RequestData<SavedTicketApi[]>(API_URL, 'GET');
 //   return data;

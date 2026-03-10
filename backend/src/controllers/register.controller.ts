@@ -5,7 +5,6 @@ import { db } from "../db/database.ts";
 import { userQueries } from "../repositories/RegisterQuery.ts";
 import { UserRegisterSchema } from "../validators/auth.validator";
 
-
 export const postUser = async (req: Request) => {
 	try {
 		const body = await req.json();
@@ -15,7 +14,7 @@ export const postUser = async (req: Request) => {
 		const securedPassword = await hashPassword(validated.password);
 
 		const insert = db.prepare(userQueries.insertUser);
-		insert.run(validated.username, validated.email, 'user', securedPassword);
+		insert.run(validated.username, validated.email, "user", securedPassword);
 
 		return new Response("User created successfully", {
 			status: 201,

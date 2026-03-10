@@ -16,7 +16,6 @@ export const UserRegisterSchema = v.object({
 		v.minLength(8, "Password must be at least 8 characters"),
 		v.maxLength(255, "Password must be 255 characters or less"),
 	),
-
 });
 
 export const UserLoginSchema = v.object({
@@ -32,7 +31,6 @@ export const UserGetSchema = v.object({
 	idUser: v.number(),
 	username: v.pipe(v.string(), v.maxLength(50)),
 	email: v.pipe(v.string(), v.email(), v.maxLength(100)),
-
 });
 
 export type UserRegister = v.InferInput<typeof UserRegisterSchema>;
