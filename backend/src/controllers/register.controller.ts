@@ -22,14 +22,19 @@ export const postUser = async (req: Request) => {
 		const insert = db.prepare(userQueries.insertUser);
 		insert.run(validated.username, validated.email, securedPassword, "user");
 
-		const result = insert.get(validated.username, validated.email, securedPassword, "user") as UserResult;
+		const result = insert.get(
+			validated.username,
+			validated.email,
+			securedPassword,
+			"user",
+		) as UserResult;
 
 		return new Response(
 			JSON.stringify({
 				id_user: result.id_user,
 				username: result.username,
 				email: result.email,
-				role: 'user'
+				role: "user",
 			}),
 			{ status: 201, headers: corsHeaders },
 		);

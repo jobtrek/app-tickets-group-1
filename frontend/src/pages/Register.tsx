@@ -1,5 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import Button from "../components/Button";
+import FormField from "../components/FormField";
+import InputText from "../components/InputText";
 import { useUserStore } from "../store/userStore";
 import type { RegisterData } from "../utils/UserApi";
 import { registerUserApi } from "../utils/UserApi";
@@ -44,52 +47,32 @@ export default function RegisterForm() {
 
 	return (
 		<div className="flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
-			<div className="mx-auto w-full max-w-lg px-4">
+			<div className="mx-auto w-full max-w-2xl px-4">
 				<div className="bg-white px-12 py-14 shadow-md rounded-xl">
 					<h1 className="text-center text-4xl font-extrabold text-gray-900 mb-10">
-						Sign Up
+						S'inscrire
 					</h1>
 					<form className="space-y-6" onSubmit={handleSubmit}>
-						<div>
-							<label
-								htmlFor="username"
-								className="block text-sm font-medium text-gray-700 mb-1.5"
-							>
-								Username
-							</label>
-							<input
-								id="username"
-								name="username"
-								type="text"
-								data-testid="username"
+						<FormField id="user" label="Nom d'utilisateur">
+							<InputText
+								id="user"
+								placeholder="Entrez votre nom d'utilisateur"
 								required
-								className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 								onChange={handleInputChange}
 							/>
-						</div>
-						<div>
-							<label
-								htmlFor="email"
-								className="block text-sm font-medium text-gray-700 mb-1.5"
-							>
-								Email address
-							</label>
+						</FormField>
+						<FormField id="email" label="Email">
 							<input
 								id="email"
 								name="email"
 								type="email"
 								required
+								placeholder="Entrez votre adresse Email"
 								className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 								onChange={handleInputChange}
 							/>
-						</div>
-						<div>
-							<label
-								htmlFor="password"
-								className="block text-sm font-medium text-gray-700 mb-1.5"
-							>
-								Password
-							</label>
+						</FormField>
+						<FormField id="password" label="Mot de passe">
 							<input
 								id="password"
 								name="password"
@@ -97,10 +80,11 @@ export default function RegisterForm() {
 								data-testid="password"
 								autoComplete="current-password"
 								required
+								placeholder="Entrez votre mot de passe"
 								className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 								onChange={handleInputChange}
 							/>
-						</div>
+						</FormField>
 						<div className="flex items-center pt-1">
 							<input
 								id="remember_me"
@@ -112,16 +96,14 @@ export default function RegisterForm() {
 								htmlFor="remember_me"
 								className="ml-2.5 block text-sm text-gray-600"
 							>
-								Remember me
+								Se souvenir de moi
 							</label>
 						</div>
-						<button
-							data-testid="login"
+						<Button
 							type="submit"
-							className="mt-2 flex w-full justify-center rounded-lg border border-transparent bg-blue-400 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-colors"
-						>
-							Sign up
-						</button>
+							title="S'inscrire"
+							onClick={() => navigate({ to: "/create-ticket" })}
+						/>
 					</form>
 				</div>
 			</div>

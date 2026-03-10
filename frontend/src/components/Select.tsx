@@ -13,7 +13,7 @@ export default function Select({ id, options }: SelectProps) {
 		<select
 			name={id}
 			id={id}
-			className="w-full border-gray-400 border border-solid rounded-xl p-4 placeholder:text-gray-400"
+			className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 		>
 			{options.map((o) => (
 				<option key={o.value} value={o.value}>
