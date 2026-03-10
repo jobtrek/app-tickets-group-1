@@ -5,6 +5,7 @@ import InputFile from "../components/InputFile";
 import InputText from "../components/InputText";
 import Select from "../components/Select";
 import TextArea from "../components/TextArea";
+import { useUserStore } from "../store/userStore";
 import { createTicketFromForm } from "../utils/TicketsApi";
 
 const urgenceOptions = [
@@ -16,10 +17,12 @@ const urgenceOptions = [
 ];
 
 export default function TicketCreation() {
+	const user = useUserStore((state) => state.id_user);
+	2;
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
-				await createTicketFromForm(formData);
+				await createTicketFromForm(formData, user);
 				return "Ticket added !";
 			} catch (e) {
 				console.error(e);

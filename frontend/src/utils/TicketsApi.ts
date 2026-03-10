@@ -1,13 +1,16 @@
 import axios from "axios";
 import API_URL from "../../../src/config/api";
 
-export const createTicketFromForm = async (ticket: FormData) => {
+export const createTicketFromForm = async (
+	ticket: FormData,
+	id_user: number,
+) => {
 	const payload = {
 		title: ticket.get("title"),
 		description: ticket.get("description"),
 		image: ticket.get("img") || null,
 		level: ticket.get("urgence"),
-		idUser: 1,
+		id_user: id_user,
 	};
 	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);

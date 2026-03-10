@@ -29,10 +29,16 @@ export default function RegisterForm() {
 
 	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		setUser(formData);
 		registerUserApi(formData)
 			.then((response) => {
 				console.log("User registered successfully:", response);
+				setUser({
+					id_user: response.data.id_user,
+					username: response.data.username,
+					email: response.data.email,
+					role: response.data.role,
+				});
+				navigate({ to: "/create-ticket" });
 			})
 			.catch((error: Error) => {
 				console.error("Error registering user:", error);
@@ -47,9 +53,9 @@ export default function RegisterForm() {
 						S'inscrire
 					</h1>
 					<form className="space-y-6" onSubmit={handleSubmit}>
-						<FormField id="user" label="Nom d'utilisateur">
+						<FormField id="username" label="Nom d'utilisateur">
 							<InputText
-								id="user"
+								id="username"
 								placeholder="Entrez votre nom d'utilisateur"
 								required
 								onChange={handleInputChange}
@@ -93,11 +99,7 @@ export default function RegisterForm() {
 								Se souvenir de moi
 							</label>
 						</div>
-						<Button
-							type="submit"
-							title="S'inscrire"
-							onClick={() => navigate({ to: "/create-ticket" })}
-						/>
+						<Button type="submit" title="S'inscrire" />
 					</form>
 				</div>
 			</div>

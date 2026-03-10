@@ -27,19 +27,19 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			);
 		}
 
-		const { title, description, level, idUser } = validBody.output;
+		const { title, description, level, id_user } = validBody.output;
 
 		const defaultStatus = TicketStatus.Ouvert;
 		const insert = db.prepare(ticketQueries.insert);
 
-		const _result = insert.get(
+		const result = insert.get(
 			title,
 			description,
 			level ?? null,
 			defaultStatus,
-			idUser,
+			id_user,
 		);
-		return new Response("Ticket created successfully", {
+		return Response.json(result, {
 			status: 201,
 			headers: corsHeaders,
 		});
