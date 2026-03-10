@@ -1,11 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
 import API_URL from "../../src/config/api";
-import TicketView from "../src/pages/TicketView";
+import Dashboard from "../src/pages/Dashboard";
+
+export interface Ticket {
+	id_ticket: number;
+	title: string;
+	description: string;
+	image: string | null;
+	level: "bas" | "moyen" | "haut" | "urgent";
+	created_at: string;
+	updated_at: string;
+	id_status: number;
+	id_user: number;
+}
 
 export const Route = createFileRoute("/dashboard")({
-	loader: async () => {
-		const response = await axios.get(API_URL);
+	loader: async (): Promise<Ticket[]> => {
+		const response = await axios.get<Ticket[]>(API_URL);
+		console.log(response);
+
 		return response.data;
 	},
 	component: DashboardPage,
@@ -17,13 +31,5 @@ function DashboardPage() {
 
 	if (!ticket) return <div>Aucun ticket trouvé.</div>;
 
-	return (
-		<TicketView
-			id={ticket.id_ticket}
-			title={ticket.title}
-			description={ticket.description}
-			date={ticket.created_at}
-			level={ticket.level}
-		/>
-	);
+	return <Dashboard data={tickets} />;
 }
