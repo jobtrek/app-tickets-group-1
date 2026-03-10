@@ -62,7 +62,7 @@ export default function Dashboard({ data }: DashboardProps) {
 							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
 						>
 							<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
-								{row.id_user}
+								{row.username}
 							</td>
 							<td className="text-left text-sm text-gray-700 pr-6">
 								{row.title}

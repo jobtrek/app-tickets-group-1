@@ -13,6 +13,7 @@ export interface Ticket {
 	updated_at: string;
 	id_status: "Ouvert" | "En cours" | "Fermé" | "Résolu";
 	id_user: number;
+	username: string;
 }
 
 export const Route = createFileRoute("/dashboard")({
