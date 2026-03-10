@@ -1,4 +1,5 @@
 import { useActionState } from "react";
+import { useUserStore } from "../store/userStore";
 import { createTicketFromForm } from "../utils/TicketsApi";
 import Button from "./Button";
 import FormField from "./FormField";
@@ -16,10 +17,12 @@ const urgenceOptions = [
 ];
 
 export default function Form() {
+	const userId = useUserStore((state) => state.id_user);
+
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
-				await createTicketFromForm(formData);
+				await createTicketFromForm(formData, userId);
 				return "Ticket added !";
 			} catch (e) {
 				console.error(e);
