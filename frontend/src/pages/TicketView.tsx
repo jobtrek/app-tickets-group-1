@@ -20,7 +20,7 @@ export default function TicketView({
 			<div className="w-full max-w-6xl border-2 rounded-xl p-10 border-gray-400">
 				<div className="flex justify-between">
 					<h1 className="text-3xl">{title}</h1>
-					<span className="p-4 border-open-dark bg-open-light text-open-dark border-2 rounded-4xl w-52 text-center text-xl">
+					<span className="p-4 border-indigo-300 bg-indigo-100 text-indigo-600 border-2 rounded-4xl w-52 text-center text-xl">
 						Ouvert
 					</span>
 				</div>
