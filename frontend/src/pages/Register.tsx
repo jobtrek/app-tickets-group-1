@@ -1,14 +1,19 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useUserStore } from "frontend/src/store/userStore.ts";
 import { useState } from "react";
 import type { RegisterData } from "../utils/UserApi";
 import { registerUserApi } from "../utils/UserApi";
 
 export default function RegisterForm() {
 	const navigate = useNavigate();
+
+	const setUser = useUserStore((state) => state.setUser);
+
 	const [formData, setFormData] = useState<RegisterData>({
 		username: "",
 		email: "",
 		password: "",
+		role: "user",
 	});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +26,7 @@ export default function RegisterForm() {
 
 	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log(formData);
+		setUser(formData);
 		registerUserApi(formData)
 			.then((response) => {
 				console.log("User registered successfully:", response);
@@ -108,7 +113,7 @@ export default function RegisterForm() {
 							data-testid="login"
 							type="submit"
 							className="mt-2 flex w-full justify-center rounded-lg border border-transparent bg-blue-400 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-colors"
-							onClick={(e) => navigate({ to: "/create-ticket" })}
+							onClick={() => navigate({ to: "/create-ticket" })}
 						>
 							Sign up
 						</button>
