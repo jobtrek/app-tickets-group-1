@@ -19,6 +19,11 @@ export function Navbar() {
 				text="Create Ticket"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
+			<NavbarButton
+				icon={<TicketHistoryIcon />}
+				text="Register Account"
+				onClick={() => navigate({ to: "/register" })}
+			/>
 			<NavbarButton icon={<StatisticsIcon />} text="Statistics" />
 		</div>
 	);
