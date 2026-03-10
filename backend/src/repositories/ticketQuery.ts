@@ -9,3 +9,5 @@ export const ticketQueries = {
       RETURNING *
     `,
 } as const;
+
+export const userQueries = {};
