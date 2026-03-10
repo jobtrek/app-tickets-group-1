@@ -11,7 +11,7 @@ export interface Ticket {
 	level: "bas" | "moyen" | "haut" | "urgent";
 	created_at: string;
 	updated_at: string;
-	id_status: number;
+	id_status: "Ouvert" | "En cours" | "Fermé" | "Résolu";
 	id_user: number;
 }
 
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/dashboard")({
 	loader: async (): Promise<Ticket[]> => {
 		const response = await axios.get<Ticket[]>(API_URL);
 		console.log(response);
+		console.log(response.data);
 
 		return response.data;
 	},
