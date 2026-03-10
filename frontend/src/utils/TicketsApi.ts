@@ -1,21 +1,6 @@
 import axios from "axios";
 import API_URL from "../../../src/config/api";
 
-// Response types match database column names (snake_case)
-export interface TicketApiResponse {
-	title: string;
-	description: string;
-	image: string;
-	level: string | null;
-	created_at: string;
-}
-
-export type SavedTicketApiResponse = TicketApiResponse & {
-	id_ticket: number;
-	id_status: number;
-	id_user: number;
-};
-
 export const createTicketFromForm = async (ticket: FormData) => {
 	const payload = {
 		title: ticket.get("title"),
@@ -33,6 +18,8 @@ export const createTicketFromForm = async (ticket: FormData) => {
 
 	return { createdTicket, allTickets };
 };
+
+
 
 // export const fetchTasks = async (): Promise<SavedTicketApi[]> => {
 //   const data = await RequestData<SavedTicketApi[]>(API_URL, 'GET');
