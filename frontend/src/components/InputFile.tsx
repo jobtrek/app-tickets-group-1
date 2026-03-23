@@ -1,11 +1,45 @@
+import { useState } from "react";
+
 interface InputFileProps {
 	id: string;
 }
 
+interface SelectedFile {
+	id: string;
+	data: File;
+}
+
 export default function InputFile({ id }: InputFileProps) {
+	const [files, setFiles] = useState<SelectedFile[]>([]);
+
+	const addFiles = (newFiles: File[]) =>
+		setFiles((prev) => [
+			...prev,
+			...newFiles.map((data) => ({ id: crypto.randomUUID(), data })),
+		]);
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		addFiles(Array.from(e.target.files ?? []));
+		e.target.value = "";
+	};
+
+	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		addFiles(Array.from(e.dataTransfer.files));
+	};
+
+	const removeFile = (fileId: string) => {
+		setFiles((prev) => prev.filter((f) => f.id !== fileId));
+	};
+
 	return (
 		<div className="col-span-full">
-			<div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-600 px-6 py-10">
+			<section
+				aria-label="Zone de dépôt de fichiers"
+				className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 dark:border-gray-600 px-6 py-10"
+				onDragOver={(e) => e.preventDefault()}
+				onDrop={handleDrop}
+			>
 				<div className="text-center">
 					<svg
 						className="mx-auto size-12 text-gray-300 dark:text-gray-600"
@@ -31,20 +65,7 @@ export default function InputFile({ id }: InputFileProps) {
 								type="file"
 								multiple
 								className="sr-only"
-								onChange={(e) =>
-									Array.from(e.target.files ?? []).forEach((f) => {
-										const li = document.createElement("li");
-										li.textContent = f.name;
-										li.className =
-											"text-sm p-2 flex place-content-between border border-gray-300 shadow-sm rounded-lg";
-										li.innerHTML = `<span>${f.name}</span><button type="button" onclick="this.closest('li').remove()" class="text-slate-400 hover:text-red-500">✕</button>`;
-
-										e.target
-											.closest(".col-span-full")!
-											.querySelector("ul")!
-											.appendChild(li);
-									})
-								}
+								onChange={handleChange}
 							/>
 						</label>
 						<p className="pl-1">ou glisser et déposer</p>
@@ -53,8 +74,24 @@ export default function InputFile({ id }: InputFileProps) {
 						PNG, JPG, GIF jusqu'à 10MB
 					</p>
 				</div>
-			</div>
-			<ul className="mt-3 space-y-2" />
+			</section>
+			<ul className="mt-3 space-y-2">
+				{files.map((file) => (
+					<li
+						key={file.id}
+						className="text-sm p-2 flex place-content-between border border-gray-300 shadow-sm rounded-lg"
+					>
+						<span>{file.data.name}</span>
+						<button
+							type="button"
+							onClick={() => removeFile(file.id)}
+							className="text-slate-400 hover:text-red-500"
+						>
+							✕
+						</button>
+					</li>
+				))}
+			</ul>
 		</div>
 	);
 }
