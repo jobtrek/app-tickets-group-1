@@ -25,8 +25,12 @@ export default function TicketCreation() {
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
-				await createTicketFromForm(formData, user);
-				navigate({ to: "/dashboard" });
+				const { createdTicket } = await createTicketFromForm(formData, user);
+
+				navigate({
+					to: "/ticket/$id",
+					params: { id: createdTicket.id_ticket },
+				});
 				return "Ticket added !";
 			} catch (e) {
 				console.error(e);
