@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import type { Ticket } from "frontend/routes/dashboard";
 import Select from "../components/Select";
 
@@ -35,6 +36,8 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ data }: DashboardProps) {
+	const navigate = useNavigate();
+
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
 			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
@@ -58,6 +61,9 @@ export default function Dashboard({ data }: DashboardProps) {
 				<tbody>
 					{data.map((row) => (
 						<tr
+							onClick={() =>
+								navigate({ to: "/ticket/$id", params: { id: row.id_ticket } })
+							}
 							key={row.id_ticket}
 							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
 						>

@@ -10,7 +10,7 @@ export const createTicketFromForm = async (
 		description: ticket.get("description"),
 		image: ticket.get("img") || null,
 		level: ticket.get("urgence"),
-		id_user: id_user,
+		id_user: 1,
 	};
 	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);

@@ -14,6 +14,19 @@ export const getAllTickets = () => {
 	}
 };
 
+export const getTicketById = (req: Request): Response => {
+	try {
+		const id = new URL(req.url).pathname.split("/").at(-1);
+		if (!id) {
+			return new Response("Missing ID", { status: 400, headers: corsHeaders });
+		}
+		const ticket = db.prepare(ticketQueries.getById).get(id);
+		return Response.json(ticket, { status: 200, headers: corsHeaders });
+	} catch (_e) {
+		return new Response("DB Error", { status: 500, headers: corsHeaders });
+	}
+};
+
 export const createTicket = async (req: Request): Promise<Response> => {
 	try {
 		const body = await req.json();
