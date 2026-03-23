@@ -62,7 +62,10 @@ export default function Dashboard({ data }: DashboardProps) {
 					{data.map((row) => (
 						<tr
 							onClick={() =>
-								navigate({ to: "/ticket/$id", params: { id: row.id_ticket } })
+								navigate({
+									to: "/ticket/$id",
+									params: { id: String(row.id_ticket) },
+								})
 							}
 							key={row.id_ticket}
 							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
