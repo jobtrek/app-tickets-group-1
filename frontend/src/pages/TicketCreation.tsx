@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useActionState } from "react";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
@@ -17,12 +18,15 @@ const urgenceOptions = [
 ];
 
 export default function TicketCreation() {
+	const navigate = useNavigate();
 	const user = useUserStore((state) => state.id_user);
+
 	2;
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
 				await createTicketFromForm(formData, user);
+				navigate({ to: "/dashboard" });
 				return "Ticket added !";
 			} catch (e) {
 				console.error(e);

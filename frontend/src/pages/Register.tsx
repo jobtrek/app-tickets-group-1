@@ -38,7 +38,7 @@ export default function RegisterForm() {
 					email: response.data.email,
 					role: response.data.role,
 				});
-				navigate({ to: "/create-ticket" });
+				navigate({ to: "/login" });
 			})
 			.catch((error: Error) => {
 				console.error("Error registering user:", error);

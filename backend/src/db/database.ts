@@ -3,10 +3,6 @@ import { Database } from "bun:sqlite";
 export const db = new Database("./backend/src/data/mydb.sqlite");
 
 const createTableQuery = `
-    DROP TABLE IF EXISTS ticket_assignment;
-    DROP TABLE IF EXISTS ticket;
-    DROP TABLE IF EXISTS users;
-    DROP TABLE IF EXISTS status;
 
     CREATE TABLE IF NOT EXISTS status(
         id_status INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,6 +39,13 @@ const createTableQuery = `
         id_support INTEGER NOT NULL REFERENCES users(id_user),
         assigned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         is_active BOOLEAN DEFAULT 1
+    );
+    CREATE TABLE IF NOT EXISTS cookies (
+        id_cookie INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_token VARCHAR(255) NOT NULL,
+        user_id INTEGER NOT NULL REFERENCES users(id_user),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
     CREATE TRIGGER IF NOT EXISTS update_ticket_timestamp
