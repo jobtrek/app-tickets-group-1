@@ -10,12 +10,11 @@ export interface cookieType {
 	session_token: string;
 }
 interface UserRow {
-  id_user: number;
-  email: string;
-  password: string;
-  username: string;
+	id_user: number;
+	email: string;
+	password: string;
+	username: string;
 }
-
 
 export const loginUser = async (req: Request) => {
 	try {
