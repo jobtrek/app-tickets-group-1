@@ -24,6 +24,7 @@ const colonnes = [
 	"Niveau d'urgence",
 ];
 
+
 const sortOptions = [
 	{ value: "date", label: "Trier par: Date" },
 	{ value: "status", label: "Trier par: Status" },
