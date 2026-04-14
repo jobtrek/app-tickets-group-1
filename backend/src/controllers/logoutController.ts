@@ -8,7 +8,6 @@ export const loginCorsHeaders = {
 	"Content-Type": "application/json",
 } as const;
 
-
 export const logoutUser = async (req: Request) => {
 	try {
 		const cookieHeader = req.headers.get("cookie");
