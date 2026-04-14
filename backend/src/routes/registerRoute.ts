@@ -1,5 +1,5 @@
 import { corsHeaders } from "backend/utils/headers";
-import { postUser } from "../controllers/register.controller";
+import { postUser } from "../controllers/registerController";
 
 export const registerRoutes = {
 	"/api/User": {

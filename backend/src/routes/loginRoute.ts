@@ -1,4 +1,4 @@
-import { loginCorsHeaders, loginUser } from "../controllers/login.controller";
+import { loginCorsHeaders, loginUser } from "../controllers/loginController";
 
 export const LoginRoutes = {
 	"/api/login": {

@@ -19,10 +19,10 @@ function TicketViewPage() {
 
 	return (
 		<TicketView
-			id={ticket.id_ticket}
+			id={ticket.idTicket}
 			title={ticket.title}
 			description={ticket.description}
-			date={ticket.created_at}
+			date={ticket.createdAt}
 			level={ticket.level}
 		/>
 	);

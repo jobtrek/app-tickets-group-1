@@ -1,6 +1,8 @@
 import { Database } from "bun:sqlite";
 
-export const db = new Database("./backend/src/data/mydb.sqlite");
+export const db = new Database(
+	"/home/igor/Desktop/app-tickets-group-1/backend/src/data/mydb.sqlite",
+);
 
 const createTableQuery = `
 

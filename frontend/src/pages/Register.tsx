@@ -3,8 +3,8 @@ import { useState } from "react";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
-import type { RegisterData } from "../utils/UserApi";
-import { registerUserApi } from "../utils/UserApi";
+import type { RegisterData } from "../utils/userApi";
+import { registerUserApi } from "../utils/userApi";
 
 export default function RegisterForm() {
 	const navigate = useNavigate();

@@ -3,7 +3,7 @@ import {
 	createTicket,
 	getAllTickets,
 	getTicketById,
-} from "../controllers/ticket.controller";
+} from "../controllers/ticketController";
 
 export const ticketRoutes = {
 	"/api/tickets": {
