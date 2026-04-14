@@ -4,14 +4,13 @@ import { CreateTicketIcon } from "../components/svg/CreateTicketIcon";
 import { DashboardIcon } from "../components/svg/DashboardIcon";
 import { StatisticsIcon } from "../components/svg/StatisticsIcon";
 import { useUserStore } from "../store/userStore";
-import { isAuthenticated } from "../utils/IsAuthenticated";
 import { logoutUser } from "../utils/TicketsApi";
 export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
 
 	return (
-		<div className="flex flex-col gap-2 m-3 h-full w-55 px-4 py-4 ml-1.5">
+		<div className="flex flex-col gap-2 m-3 h-full w-56 px-4 py-4 ml-1.5">
 			<NavbarButton
 				icon={<DashboardIcon />}
 				text="Dashboard"
@@ -19,22 +18,30 @@ export function Navbar() {
 			/>
 			<NavbarButton
 				icon={<CreateTicketIcon />}
-				text="Create "
+				text="Create"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
 			<NavbarButton icon={<StatisticsIcon />} text="Statistics" />
 			<div className="my-1 border-t border-zinc-700" />
-			{isAuthenticated() ? (
+			{username ? (
 				<NavbarButton
 					icon={<DashboardIcon />}
 					text="Logout"
-					onClick={() => navigate({ to: "/dashboard" })}
+					onClick={async () => {
+						await logoutUser();
+						useUserStore.getState().clearUser();
+						navigate({ to: "/dashboard" });
+					}}
 				/>
 			) : (
-				<NavbarButton icon={<DashboardIcon />} text="Login" onClick={logoutUser} />
+				<NavbarButton 
+					icon={<DashboardIcon />} 
+					text="Login" 
+					onClick={() => navigate({ to: "/login" })} 
+				/>
 			)}
 			{username && (
-				<div className="mt-auto w-50">
+				<div className="mt-auto w-52">
 					<div className="flex items-center gap-2 px-2 py-2.5 bg-white rounded-lg border border-white ">
 						<div className="relative shrink-0">
 							<div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-sm font-bold uppercase">
