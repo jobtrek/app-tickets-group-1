@@ -1,35 +1,52 @@
 import { useNavigate } from "@tanstack/react-router";
 import { NavbarButton } from "../components/NavbarButton";
+import { CreateTicketIcon } from "../components/svg/CreateTicketIcon";
 import { DashboardIcon } from "../components/svg/DashboardIcon";
 import { StatisticsIcon } from "../components/svg/StatisticsIcon";
-import { TicketHistoryIcon } from "../components/svg/TicketHistoryIcon";
 import { useUserStore } from "../store/userStore";
-
+import { isAuthenticated } from "../utils/IsAuthenticated";
+import { logoutUser } from "../utils/TicketsApi";
 export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
 
 	return (
-		<div className="flex flex-col gap-3 m-3 h-full w-48 items-center px-8 py-4 ">
+		<div className="flex flex-col gap-2 m-3 h-full w-55 px-4 py-4 ml-1.5">
 			<NavbarButton
 				icon={<DashboardIcon />}
 				text="Dashboard"
 				onClick={() => navigate({ to: "/dashboard" })}
 			/>
 			<NavbarButton
-				icon={<TicketHistoryIcon />}
-				text="Create Ticket"
+				icon={<CreateTicketIcon />}
+				text="Create "
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
-			<NavbarButton
-				icon={<TicketHistoryIcon />}
-				text="Register Account"
-				onClick={() => navigate({ to: "/register" })}
-			/>
 			<NavbarButton icon={<StatisticsIcon />} text="Statistics" />
+			<div className="my-1 border-t border-zinc-700" />
+			{isAuthenticated() ? (
+				<NavbarButton
+					icon={<DashboardIcon />}
+					text="Logout"
+					onClick={() => navigate({ to: "/dashboard" })}
+				/>
+			) : (
+				<NavbarButton icon={<DashboardIcon />} text="Login" onClick={logoutUser} />
+			)}
 			{username && (
-				<div className="mt-auto text-sm text-gray-600 truncate w-full text-center mb-3 mr-4 font-extrabold">
-					{username}
+				<div className="mt-auto w-50">
+					<div className="flex items-center gap-2 px-2 py-2.5 bg-white rounded-lg border border-white ">
+						<div className="relative shrink-0">
+							<div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-sm font-bold uppercase">
+								{username.charAt(0)}
+							</div>
+						</div>
+						<div className="flex flex-col min-w-0">
+							<span className="text-sm font-semibold text-gray-800 truncate leading-tight">
+								{username}
+							</span>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>
