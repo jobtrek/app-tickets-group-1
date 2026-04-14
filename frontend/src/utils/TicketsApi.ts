@@ -12,7 +12,6 @@ export const createTicketFromForm = async (
 		level: ticket.get("urgence"),
 		id_user: id_user,
 	};
-	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);
 	const getResponse = await axios.get(API_URL);
 
