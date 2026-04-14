@@ -1,6 +1,5 @@
 import axios from "axios";
-import API_URL from "../../../src/config/api";
-import {LOGOUT_URL} from "../../../src/config/api"
+import API_URL, { LOGOUT_URL } from "../../../src/config/api";
 export const createTicketFromForm = async (
 	ticket: FormData,
 	idUser: number,
@@ -21,5 +20,5 @@ export const createTicketFromForm = async (
 	return { createdTicket, allTickets };
 };
 export const userLogout = async () => {
-	await axios.post(LOGOUT_URL)
-}
+	await axios.post(LOGOUT_URL);
+};

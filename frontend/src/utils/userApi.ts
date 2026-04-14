@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_URL, USER_URL, LOGOUT_URL } from "../../../src/config/api";
+import { LOGIN_URL, LOGOUT_URL, USER_URL } from "../../../src/config/api";
 
 export interface RegisterData {
 	username: string;

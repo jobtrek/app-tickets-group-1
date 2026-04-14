@@ -1,6 +1,4 @@
-
 import { db } from "../db/database";
-
 
 export const loginCorsHeaders = {
 	"Access-Control-Allow-Origin": "http://localhost:5173",
@@ -14,8 +12,6 @@ export interface CookieType {
 	userId: number;
 	sessionToken: string;
 }
-
-
 
 export const logoutUser = async (req: Request) => {
 	try {
@@ -33,7 +29,9 @@ export const logoutUser = async (req: Request) => {
 		}
 
 		// Delete session from DB
-		const deleteQuery = db.query("DELETE FROM sessions WHERE session_token = ?");
+		const deleteQuery = db.query(
+			"DELETE FROM sessions WHERE session_token = ?",
+		);
 		deleteQuery.run(sessionToken);
 
 		const expiredCookie = new Bun.Cookie("session", "", {
