@@ -34,10 +34,10 @@ export function Navbar() {
 					}}
 				/>
 			) : (
-				<NavbarButton 
-					icon={<DashboardIcon />} 
-					text="Login" 
-					onClick={() => navigate({ to: "/login" })} 
+				<NavbarButton
+					icon={<DashboardIcon />}
+					text="Login"
+					onClick={() => navigate({ to: "/login" })}
 				/>
 			)}
 			{username && (
