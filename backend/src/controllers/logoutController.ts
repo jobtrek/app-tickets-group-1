@@ -8,10 +8,6 @@ export const loginCorsHeaders = {
 	"Content-Type": "application/json",
 } as const;
 
-export interface CookieType {
-	userId: number;
-	sessionToken: string;
-}
 
 export const logoutUser = async (req: Request) => {
 	try {
