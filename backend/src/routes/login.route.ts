@@ -1,10 +1,9 @@
-import { corsHeaders } from "backend/utils/headers";
-import { loginUser } from "../controllers/login.controller";
+import { loginCorsHeaders, loginUser } from "../controllers/login.controller";
 
 export const LoginRoutes = {
 	"/api/login": {
 		OPTIONS: (_req: Request) =>
-			new Response(null, { headers: corsHeaders, status: 204 }),
+			new Response(null, { headers: loginCorsHeaders, status: 204 }),
 		POST: loginUser,
 	},
 };

@@ -3,14 +3,11 @@ import { useState } from "react";
 import Button from "../components/Button";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
-import { useUserStore } from "../store/userStore";
 import type { RegisterData } from "../utils/UserApi";
 import { registerUserApi } from "../utils/UserApi";
 
 export default function RegisterForm() {
 	const navigate = useNavigate();
-
-	const setUser = useUserStore((state) => state.setUser);
 
 	const [formData, setFormData] = useState<RegisterData>({
 		username: "",
@@ -32,12 +29,6 @@ export default function RegisterForm() {
 		registerUserApi(formData)
 			.then((response) => {
 				console.log("User registered successfully:", response);
-				setUser({
-					id_user: response.data.id_user,
-					username: response.data.username,
-					email: response.data.email,
-					role: response.data.role,
-				});
 				navigate({ to: "/login" });
 			})
 			.catch((error: Error) => {

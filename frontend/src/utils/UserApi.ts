@@ -20,7 +20,7 @@ export const registerUserApi = async (user: RegisterData) => {
 
 export const loginUserApi = async (user: LoginData) => {
 	const confirmCredentials = await axios.post(LOGIN_URL, user, {
-		withCredentials: false,
+		withCredentials: true,
 	});
 	return confirmCredentials;
 };

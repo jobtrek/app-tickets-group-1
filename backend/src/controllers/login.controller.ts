@@ -1,16 +1,23 @@
-import { corsHeaders } from "backend/utils/headers";
 import * as v from "valibot";
 import { db } from "../db/database";
 import { CookieQuery } from "../repositories/CookiQuery";
 import { LoginUserQuerie } from "../repositories/LoginUserQuery";
 import { UserLoginSchema } from "../validators/auth.validator";
 
+export const loginCorsHeaders = {
+	"Access-Control-Allow-Origin": "http://localhost:5173",
+	"Access-Control-Allow-Methods": "POST, OPTIONS",
+	"Access-Control-Allow-Headers": "Content-Type, Authorization",
+	"Access-Control-Allow-Credentials": "true",
+	"Content-Type": "application/json",
+} as const;
+
 export interface cookieType {
 	user_id: number;
 	session_token: string;
 }
 interface UserRow {
-	id_user: number;
+	id: number;
 	email: string;
 	password: string;
 	username: string;
@@ -24,7 +31,7 @@ export const loginUser = async (req: Request) => {
 		if (!result.success) {
 			return Response.json(
 				{ error: "Validation failed", details: result.issues },
-				{ status: 400, headers: corsHeaders },
+				{ status: 400, headers: loginCorsHeaders },
 			);
 		}
 
@@ -37,7 +44,7 @@ export const loginUser = async (req: Request) => {
 		if (!user) {
 			return Response.json(
 				{ error: "Invalid credentials" },
-				{ status: 401, headers: corsHeaders },
+				{ status: 401, headers: loginCorsHeaders },
 			);
 		}
 		const isMatch = await Bun.password.verify(password, user.password);
@@ -45,14 +52,14 @@ export const loginUser = async (req: Request) => {
 		if (!isMatch) {
 			return Response.json(
 				{ error: "Invalid credentials" },
-				{ status: 401, headers: corsHeaders },
+				{ status: 401, headers: loginCorsHeaders },
 			);
 		}
 
 		const sessionToken = crypto.randomUUID();
 
 		const cookieQuery = db.query(CookieQuery.create);
-		cookieQuery.run(sessionToken, user.id_user);
+		cookieQuery.run(sessionToken, user.id);
 
 		const cookie = new Bun.Cookie("session", sessionToken, {
 			httpOnly: true,
@@ -62,18 +69,23 @@ export const loginUser = async (req: Request) => {
 			maxAge: 86400,
 		});
 
-		const headers = new Headers(corsHeaders);
+		const headers = new Headers(loginCorsHeaders);
 		headers.append("Set-Cookie", cookie.toString());
 
 		return Response.json(
-			{ message: "Login successful" },
+			{
+				message: "Login successful",
+				username: user.username,
+				email: user.email,
+				id: user.id,
+			},
 			{ status: 200, headers },
 		);
 	} catch (error) {
 		console.error("Login error:", error);
 		return Response.json(
 			{ error: "Internal Server Error" },
-			{ status: 500, headers: corsHeaders },
+			{ status: 500, headers: loginCorsHeaders },
 		);
 	}
 };
