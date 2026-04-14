@@ -12,7 +12,6 @@ export const createTicketFromForm = async (
 		level: ticket.get("urgence"),
 		id_user: id_user,
 	};
-	console.log(payload);
 	const postResponse = await axios.post(API_URL, payload);
 	const getResponse = await axios.get(API_URL);
 
@@ -21,45 +20,3 @@ export const createTicketFromForm = async (
 
 	return { createdTicket, allTickets };
 };
-
-// export const fetchTasks = async (): Promise<SavedTicketApi[]> => {
-//   const data = await RequestData<SavedTicketApi[]>(API_URL, 'GET');
-//   return data;
-// };
-
-// export const deleteTasksViaAPI = async (taskid: number): Promise<void> => {
-//   try {
-//     const response = await fetch(`${API_URL}/${taskid}`, {
-//       method: 'DELETE',
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(`Failed to delete task: ${response.statusText}`);
-//     }
-//   } catch (error) {
-//     console.error('Delete Request Failed:', error);
-//     throw error;
-//   }
-// };
-
-// export const updateTask = async (task: SavedApiTask): Promise<SavedTicketApi> => {
-//   const updateBody = {
-//     title: task.title,
-//     content: task.content,
-//     due_date: task.due_date,
-//     done: Boolean(task.done),
-//   };
-
-//   const response = await RequestData<{ success: boolean; data: SavedApiTask }>(
-//     `${API_URL}/${task.id}`,
-//     'PATCH',
-//     updateBody,
-//   );
-
-//   return response.data;
-// };
-
-// export const deleteAllTasksViaAPI = async (): Promise<void> => {
-//   const deleteUrl = `${API_URL}`;
-//   await RequestData<unknown>(deleteUrl, 'DELETE');
-// };
