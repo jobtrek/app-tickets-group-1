@@ -28,7 +28,7 @@ export const UserLoginSchema = v.object({
 });
 
 export const UserGetSchema = v.object({
-	id_user: v.number(),
+	idUser: v.number(),
 	username: v.pipe(v.string(), v.maxLength(50)),
 	email: v.pipe(v.string(), v.email(), v.maxLength(100)),
 });

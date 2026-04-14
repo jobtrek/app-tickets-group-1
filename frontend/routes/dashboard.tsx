@@ -4,15 +4,15 @@ import API_URL from "../../src/config/api";
 import Dashboard from "../src/pages/Dashboard";
 
 export interface Ticket {
-	id_ticket: number;
+	idTicket: number;
 	title: string;
 	description: string;
 	image: string | null;
 	level: "bas" | "moyen" | "haut" | "urgent";
-	created_at: string;
-	updated_at: string;
-	id_status: "Ouvert" | "En cours" | "Fermé" | "Résolu";
-	id_user: number;
+	createdAt: string;
+	updatedAt: string;
+	idStatus: "Ouvert" | "En cours" | "Fermé" | "Résolu";
+	idUser: number;
 	username: string;
 }
 

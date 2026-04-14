@@ -4,8 +4,8 @@ import Button from "../components/Button";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
 import { useUserStore } from "../store/userStore";
-import type { LoginData } from "../utils/UserApi";
-import { loginUserApi } from "../utils/UserApi";
+import type { LoginData } from "../utils/userApi";
+import { loginUserApi } from "../utils/userApi";
 export default function LoginForm() {
 	const navigate = useNavigate();
 	const setUser = useUserStore((state) => state.setUser);
@@ -31,7 +31,7 @@ export default function LoginForm() {
 			setUser({
 				username: response.data.username,
 				email: response.data.email,
-				id_user: response.data.id,
+				idUser: response.data.id,
 			});
 			console.log("User successfully logged in:", response);
 			navigate({ to: "/create-ticket" });
