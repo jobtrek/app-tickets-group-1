@@ -10,7 +10,6 @@ export const Route = createFileRoute("/dashboard")({
 		const response = await axios.get<Ticket[]>(API_URL);
 		return response.data;
 	},
-	staleTime: 0,
 	component: DashboardPage,
 });
 
