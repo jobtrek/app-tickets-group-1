@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
-import Dashboard from "../src/pages/Dashboard";
-import type { Ticket } from "../src/utils/types";
+import Dashboard from "../../src/pages/Dashboard";
+import type { Ticket } from "../../src/utils/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const Route = createFileRoute("/dashboard")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
 	loader: async (): Promise<Ticket[]> => {
 		const response = await axios.get<Ticket[]>(API_URL);
 		return response.data;
