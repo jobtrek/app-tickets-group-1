@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
-import type { Ticket } from "frontend/routes/dashboard";
 import Select from "../components/Select";
+import type { Ticket } from "../utils/types";
 
 const statutStyles: Record<Ticket["idStatus"], string> = {
 	Ouvert: "bg-indigo-100 text-indigo-600 border border-indigo-300",
