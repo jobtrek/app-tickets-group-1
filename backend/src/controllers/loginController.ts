@@ -1,8 +1,8 @@
 import * as v from "valibot";
 import { db } from "../db/database";
-import { CookieQuery } from "../repositories/CookiQuery";
-import { LoginUserQuerie } from "../repositories/LoginUserQuery";
-import { UserLoginSchema } from "../validators/auth.validator";
+import { CookieQuery } from "../repositories/cookieQuery";
+import { LoginUserQuery } from "../repositories/loginUserQuery";
+import { UserLoginSchema } from "../validators/authValidator";
 
 export const loginCorsHeaders = {
 	"Access-Control-Allow-Origin": "http://localhost:5173",
@@ -12,9 +12,9 @@ export const loginCorsHeaders = {
 	"Content-Type": "application/json",
 } as const;
 
-export interface cookieType {
-	user_id: number;
-	session_token: string;
+export interface CookieType {
+	userId: number;
+	sessionToken: string;
 }
 interface UserRow {
 	id: number;
@@ -38,7 +38,7 @@ export const loginUser = async (req: Request) => {
 		const { email, password } = result.output;
 		console.log(result.output);
 
-		const userQuery = db.query(LoginUserQuerie.getByEmail);
+		const userQuery = db.query(LoginUserQuery.getByEmail);
 		const user = userQuery.get(email) as UserRow;
 
 		if (!user) {

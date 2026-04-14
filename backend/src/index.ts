@@ -1,6 +1,6 @@
-import { LoginRoutes } from "./routes/login.route";
-import { registerRoutes } from "./routes/register.route";
-import { ticketRoutes } from "./routes/tickets.route";
+import { LoginRoutes } from "./routes/loginRoute";
+import { registerRoutes } from "./routes/registerRoute";
+import { ticketRoutes } from "./routes/ticketsRoute";
 
 const _server = Bun.serve({
 	port: 3001,

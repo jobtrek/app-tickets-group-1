@@ -1,12 +1,12 @@
-import { hashPassword } from "backend/utils/passwordHash.ts";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
+import { hashPassword } from "../../utils/passwordHash";
 import { db } from "../db/database.ts";
-import { userQueries } from "../repositories/RegisterQuery.ts";
-import { UserRegisterSchema } from "../validators/auth.validator";
+import { userQueries } from "../repositories/registerQuery.ts";
+import { UserRegisterSchema } from "../validators/authValidator";
 
 interface UserResult {
-	id_user: number;
+	idUser: number;
 	username: string;
 	email: string;
 }
@@ -29,7 +29,7 @@ export const postUser = async (req: Request) => {
 
 		return new Response(
 			JSON.stringify({
-				id_user: result.id_user,
+				idUser: result.idUser,
 				username: result.username,
 				email: result.email,
 				role: "user",

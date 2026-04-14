@@ -1,9 +1,9 @@
-import { TicketStatus } from "backend/utils/constants";
 import * as v from "valibot";
+import { TicketStatus } from "../../utils/constants";
 import { corsHeaders } from "../../utils/headers";
 import { db } from "../db/database.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
-import { TicketPostSchema } from "../validators/ticket.validator.ts";
+import { TicketPostSchema } from "../validators/ticketValidator.ts";
 
 export const getAllTickets = () => {
 	try {
@@ -40,7 +40,7 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			);
 		}
 
-		const { title, description, level, id_user } = validBody.output;
+		const { title, description, level, idUser } = validBody.output;
 
 		const defaultStatus = TicketStatus.Ouvert;
 		const insert = db.prepare(ticketQueries.insert);
@@ -50,7 +50,7 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			description,
 			level ?? null,
 			defaultStatus,
-			id_user,
+			idUser,
 		);
 		return Response.json(result, {
 			status: 201,

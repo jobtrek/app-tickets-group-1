@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Ticket } from "frontend/routes/dashboard";
 import Select from "../components/Select";
 
-const statutStyles: Record<Ticket["id_status"], string> = {
+const statutStyles: Record<Ticket["idStatus"], string> = {
 	Ouvert: "bg-indigo-100 text-indigo-600 border border-indigo-300",
 	"En cours": "bg-yellow-100 text-yellow-600 border border-yellow-300",
 	Fermé: "bg-red-100 text-red-600 border border-red-300",
@@ -64,10 +64,10 @@ export default function Dashboard({ data }: DashboardProps) {
 							onClick={() =>
 								navigate({
 									to: "/ticket/$id",
-									params: { id: String(row.id_ticket) },
+									params: { id: String(row.idTicket) },
 								})
 							}
-							key={row.id_ticket}
+							key={row.idTicket}
 							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
 						>
 							<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
@@ -78,16 +78,16 @@ export default function Dashboard({ data }: DashboardProps) {
 							</td>
 							<td className="text-left pr-6">
 								<span
-									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statutStyles[row.id_status]}`}
+									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statutStyles[row.idStatus]}`}
 								>
-									{row.id_status}
+									{row.idStatus}
 								</span>
 							</td>
 							<td className="text-left text-sm pr-6">
 								<span className="italic text-gray-400">En attente</span>
 							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">
-								{row.created_at}
+								{row.createdAt}
 							</td>
 							<td
 								className={`text-left text-sm pr-6 ${urgenceStyles[row.level]}`}
