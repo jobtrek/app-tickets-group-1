@@ -1,6 +1,9 @@
 import axios from "axios";
-import { LOGIN_URL, LOGOUT_URL, USER_URL } from "../../../src/config/api";
 import type { LoginData, RegisterData } from "./types";
+
+const USER_URL = import.meta.env.VITE_USER_URL;
+const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
+const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
 
 export const registerUserApi = async (user: RegisterData) => {
 	const postData = await axios.post(USER_URL, user);

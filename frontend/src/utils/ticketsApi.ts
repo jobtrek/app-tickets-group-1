@@ -1,5 +1,8 @@
 import axios from "axios";
-import API_URL, { LOGOUT_URL } from "../../../src/config/api";
+
+const API_URL = import.meta.env.VITE_API_URL;
+const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
+
 export const createTicketFromForm = async (
 	ticket: FormData,
 	idUser: number,

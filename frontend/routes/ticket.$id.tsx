@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
-import { TICKET_URL } from "../../src/config/api";
 import TicketView from "../src/pages/TicketView";
+
+const TICKET_URL = import.meta.env.VITE_TICKET_URL;
 
 export const Route = createFileRoute("/ticket/$id")({
 	loader: async ({ params }) => {
