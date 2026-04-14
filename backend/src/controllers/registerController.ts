@@ -1,15 +1,10 @@
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { hashPassword } from "../../utils/passwordHash";
+import type { UserResult } from "../../utils/types.ts";
 import { db } from "../db/database.ts";
 import { userQueries } from "../repositories/registerQuery.ts";
 import { UserRegisterSchema } from "../validators/authValidator";
-
-interface UserResult {
-	idUser: number;
-	username: string;
-	email: string;
-}
 
 export const postUser = async (req: Request) => {
 	try {

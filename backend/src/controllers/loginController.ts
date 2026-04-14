@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import type { UserRow } from "../../utils/types";
 import { db } from "../db/database";
 import { CookieQuery } from "../repositories/cookieQuery";
 import { LoginUserQuery } from "../repositories/loginUserQuery";
@@ -11,17 +12,6 @@ export const loginCorsHeaders = {
 	"Access-Control-Allow-Credentials": "true",
 	"Content-Type": "application/json",
 } as const;
-
-export interface CookieType {
-	userId: number;
-	sessionToken: string;
-}
-interface UserRow {
-	id: number;
-	email: string;
-	password: string;
-	username: string;
-}
 
 export const loginUser = async (req: Request) => {
 	try {
