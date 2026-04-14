@@ -11,7 +11,7 @@ export function NavbarButton({ text, icon, onClick }: NavbarButtonProps) {
 		<button
 			type="button"
 			onClick={onClick}
-			className="px-5 py-2.5 font-medium text-white bg-zinc-900 rounded-lg border border-zinc-700 w-[12em] flex items-center gap-2"
+			className="px-3 py-3 text-base font-medium text-white bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-700 transition-colors rounded-md border border-zinc-700 w-full flex items-center gap-3 mr-5"
 		>
 			{icon}
 			{text}
