@@ -1,6 +1,7 @@
 import { useUserStore } from "../store/userStore";
 
+// this is for the protected routes in the future, do not remove.
 export const isAuthenticated = (): boolean => {
-	const { id_user, username } = useUserStore.getState();
-	return id_user !== 0 && username !== "";
+	const { idUser, username } = useUserStore.getState();
+	return idUser !== 0 && username !== "";
 };

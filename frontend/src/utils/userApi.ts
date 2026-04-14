@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_URL, USER_URL } from "../../../src/config/api";
+import { LOGIN_URL, LOGOUT_URL, USER_URL } from "../../../src/config/api";
 import type { LoginData, RegisterData } from "./types";
 
 export const registerUserApi = async (user: RegisterData) => {
@@ -12,4 +12,8 @@ export const loginUserApi = async (user: LoginData) => {
 		withCredentials: true,
 	});
 	return confirmCredentials;
+};
+
+export const logoutUser = async () => {
+	await axios.post(LOGOUT_URL);
 };
