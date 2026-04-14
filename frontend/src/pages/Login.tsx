@@ -10,7 +10,6 @@ export default function LoginForm() {
 	const navigate = useNavigate();
 	const setUser = useUserStore((state) => state.setUser);
 
-
 	const [formData, setFormData] = useState<LoginData>({
 		email: "",
 		password: "",
@@ -33,7 +32,6 @@ export default function LoginForm() {
 				username: response.data.username,
 				email: response.data.email,
 				id_user: response.data.id,
-				
 			});
 			console.log("User successfully logged in:", response);
 			navigate({ to: "/create-ticket" });
