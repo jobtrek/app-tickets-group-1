@@ -4,19 +4,15 @@ import Button from "../components/Button";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
 import { useUserStore } from "../store/userStore";
-import type { RegisterData } from "../utils/UserApi";
-import { registerUserApi } from "../utils/UserApi";
-
+import type { LoginData } from "../utils/UserApi";
+import { loginUserApi } from "../utils/UserApi";
 export default function LoginForm() {
 	const navigate = useNavigate();
-
 	const setUser = useUserStore((state) => state.setUser);
 
-	const [formData, setFormData] = useState<RegisterData>({
-		username: "",
+	const [formData, setFormData] = useState<LoginData>({
 		email: "",
 		password: "",
-		role: "user",
 	});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,22 +23,21 @@ export default function LoginForm() {
 		}));
 	};
 
-	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		registerUserApi(formData)
-			.then((response) => {
-				console.log("User registered successfully:", response);
-				setUser({
-					id_user: response.data.id_user,
-					username: response.data.username,
-					email: response.data.email,
-					role: response.data.role,
-				});
-				navigate({ to: "/create-ticket" });
-			})
-			.catch((error: Error) => {
-				console.error("Error registering user:", error);
+		console.log(formData);
+		try {
+			const response = await loginUserApi(formData);
+			setUser({
+				username: response.data.username,
+				email: response.data.email,
+				id_user: response.data.id,
 			});
+			console.log("User successfully logged in:", response);
+			navigate({ to: "/create-ticket" });
+		} catch (error) {
+			console.error("Error logging in user:", error);
+		}
 	};
 
 	return (
@@ -53,9 +48,9 @@ export default function LoginForm() {
 						Se connecter
 					</h1>
 					<form className="space-y-6 " onSubmit={handleSubmit}>
-						<FormField id="username" label="Nom d'utilisateur">
+						<FormField id="email" label="Adresse e-mail">
 							<InputText
-								id="username"
+								id="email"
 								placeholder="Entrez votre nom d'utilisateur"
 								required
 								onChange={handleInputChange}

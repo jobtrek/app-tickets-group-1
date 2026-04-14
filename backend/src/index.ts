@@ -1,3 +1,4 @@
+import { LoginRoutes } from "./routes/login.route";
 import { registerRoutes } from "./routes/register.route";
 import { ticketRoutes } from "./routes/tickets.route";
 
@@ -6,5 +7,6 @@ const _server = Bun.serve({
 	routes: {
 		...ticketRoutes,
 		...registerRoutes,
+		...LoginRoutes,
 	},
 });

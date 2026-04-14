@@ -20,7 +20,6 @@ const urgenceOptions = [
 export default function TicketCreation() {
 	const navigate = useNavigate();
 	const user = useUserStore((state) => state.id_user);
-	2;
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData) => {
 			try {
