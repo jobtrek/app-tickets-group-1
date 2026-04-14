@@ -21,4 +21,3 @@ export const createTicketFromForm = async (
 
 	return { createdTicket, allTickets };
 };
-
