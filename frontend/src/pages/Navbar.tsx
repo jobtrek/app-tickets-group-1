@@ -4,7 +4,7 @@ import { CreateTicketIcon } from "../components/svg/CreateTicketIcon";
 import { DashboardIcon } from "../components/svg/DashboardIcon";
 import { StatisticsIcon } from "../components/svg/StatisticsIcon";
 import { useUserStore } from "../store/userStore";
-
+import { logoutUser } from "../utils/userApi";
 export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
@@ -28,6 +28,7 @@ export function Navbar() {
 					icon={<DashboardIcon />}
 					text="Logout"
 					onClick={async () => {
+						logoutUser();
 						useUserStore.getState().clearUser();
 						navigate({ to: "/dashboard" });
 					}}

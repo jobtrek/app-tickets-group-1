@@ -1,5 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useUserStore } from "../src/store/userStore";
 
 export const Route = createFileRoute("/")({
-	component: () => <div></div>,
+	beforeLoad: () => {
+		const username = useUserStore.getState().username;
+		throw redirect({ to: username ? "/dashboard" : "/login" });
+	},
 });

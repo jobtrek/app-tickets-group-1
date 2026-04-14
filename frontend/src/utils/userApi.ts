@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LOGIN_URL, USER_URL } from "../../../src/config/api";
+import { LOGIN_URL, USER_URL, LOGOUT_URL } from "../../../src/config/api";
 
 export interface RegisterData {
 	username: string;
@@ -23,4 +23,8 @@ export const loginUserApi = async (user: LoginData) => {
 		withCredentials: true,
 	});
 	return confirmCredentials;
+};
+
+export const logoutUser = async () => {
+	await axios.post(LOGOUT_URL);
 };
