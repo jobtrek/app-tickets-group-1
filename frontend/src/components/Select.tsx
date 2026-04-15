@@ -9,7 +9,7 @@ interface SelectProps {
 	id: string;
 	options: Option[];
 	value?: string;
-	onChange: ChangeEventHandler<HTMLSelectElement>;
+	onChange?: ChangeEventHandler<HTMLSelectElement>;
 }
 
 export default function Select({ id, options, value, onChange }: SelectProps) {
