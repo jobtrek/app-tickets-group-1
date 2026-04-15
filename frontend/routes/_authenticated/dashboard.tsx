@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
+import { useEffect } from "react";
 import Dashboard from "../../src/pages/Dashboard";
+import { useTicketStore } from "../../src/store/ticketStore";
 import type { Ticket } from "../../src/utils/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -14,10 +16,13 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 });
 
 function DashboardPage() {
-	const tickets = Route.useLoaderData();
-	const ticket = tickets[tickets.length - 1];
+	const loaderTickets = Route.useLoaderData();
+	const setTickets = useTicketStore((state) => state.setTickets);
+	const tickets = useTicketStore((state) => state.tickets);
 
-	if (!ticket) return <div>Aucun ticket trouvé.</div>;
+	useEffect(() => {
+		setTickets(loaderTickets);
+	}, [loaderTickets, setTickets]);
 
-	return <Dashboard data={tickets} />;
+	return <Dashboard />;
 }
