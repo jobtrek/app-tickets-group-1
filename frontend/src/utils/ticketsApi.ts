@@ -17,7 +17,7 @@ export const createTicketFromForm = async (
 	const postResponse = await axios.post(API_URL, payload);
 	const getResponse = await axios.get(API_URL);
 
-	const createdTicket = postResponse.data;
+	const createdTicket = postResponse.data.createdTicket;
 	const allTickets = getResponse.data;
 
 	return { createdTicket, allTickets };
