@@ -41,7 +41,6 @@ export const getTicketById = async (req: Request): Promise<Response> => {
 export const createTicket = async (req: Request): Promise<Response> => {
 	try {
 		const body = await req.json();
-		console.log(body);
 
 		const validBody = v.safeParse(TicketPostSchema, body);
 
@@ -59,7 +58,7 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		const result = await ticketQueries.insert(
 			title,
 			description,
-			null,
+			image ?? null,
 			level ?? null,
 			defaultStatus,
 			idUser,
