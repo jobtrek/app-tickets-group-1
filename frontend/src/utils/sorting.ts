@@ -12,15 +12,9 @@ export const getFilteredTickets = (state: TicketStore) => {
 	}
 
 	if (state.sort === "asc") {
-		filtered.sort(
-			(a, b) =>
-				new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-		);
+		filtered.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 	} else if (state.sort === "desc") {
-		filtered.sort(
-			(a, b) =>
-				new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-		);
+		filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 	} else if (state.sort === "az") {
 		filtered.sort((a, b) => a.title.localeCompare(b.title));
 	}

@@ -8,15 +8,17 @@ type Option = {
 interface SelectProps {
 	id: string;
 	options: Option[];
+	value?: string;
 	onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
-export default function Select({ id, options, onChange }: SelectProps) {
+export default function Select({ id, options, value, onChange }: SelectProps) {
 	return (
 		<select
 			name={id}
 			id={id}
 			onChange={onChange}
+			value={value}
 			className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:outline-none focus:ring-0 text-sm"
 		>
 			{options.map((o) => (

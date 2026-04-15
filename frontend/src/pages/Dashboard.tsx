@@ -44,6 +44,7 @@ const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
 export default function Dashboard() {
 	const navigate = useNavigate();
+	const sort = useTicketStore((state) => state.sort);
 	const setSort = useTicketStore((state) => state.setSort);
 	const toggleStatusFilter = useTicketStore(
 		(state) => state.toggleStatusFilter,
@@ -63,6 +64,7 @@ export default function Dashboard() {
 				<div className="w-xs text-gray-500 ">
 					<Select
 						id="sort"
+						value={sort}
 						onChange={(e) => setSort(e.currentTarget.value)}
 						options={sortOptions}
 					/>

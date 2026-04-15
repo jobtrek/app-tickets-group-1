@@ -22,7 +22,7 @@ function DashboardPage() {
 
 	useEffect(() => {
 		setTickets(loaderTickets);
-	}, []);
+	}, [loaderTickets, setTickets]);
 
 	return <Dashboard />;
 }

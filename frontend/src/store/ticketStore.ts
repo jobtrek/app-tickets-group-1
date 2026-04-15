@@ -8,8 +8,8 @@ export interface TicketStore {
 	sort: string;
 	statusFilter: string[];
 	urgencyFilter: string[];
-	toggleStatusFilter: (status: string) => void;
-	toggleUrgencyFilter: (status: string) => void;
+	toggleStatusFilter: (status: Ticket["idStatus"]) => void;
+	toggleUrgencyFilter: (status: Ticket["level"]) => void;
 }
 
 export const useTicketStore = create<TicketStore>((set) => ({
