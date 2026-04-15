@@ -7,4 +7,3 @@ interface ImportMetaEnv {
 	readonly VITE_TICKET_URL: string;
 	readonly VITE_LOGOUT_URL: string;
 }
-

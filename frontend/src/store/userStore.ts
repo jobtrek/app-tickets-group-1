@@ -21,5 +21,3 @@ export const useUserStore = create<UserStore>()(
 		{ name: "user-storage" },
 	),
 );
-
-
