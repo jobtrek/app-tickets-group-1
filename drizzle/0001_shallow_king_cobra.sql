@@ -1,1 +1,0 @@
-ALTER TABLE "ticket" ALTER COLUMN "id_status" SET DATA TYPE integer;
