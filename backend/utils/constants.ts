@@ -1,6 +1,6 @@
 export enum TicketStatus {
-	Ouvert = "Ouvert",
-	EnCours = "En cours",
-	Ferme = "Fermé",
-	Resolu = "Résolu",
+	Ouvert = "1",
+	EnCours = "2",
+	Ferme = "3",
+	Resolu = "4",
 }

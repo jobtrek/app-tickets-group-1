@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+import { cookies } from "../data/schema";
 import { db } from "../db/database";
 
 export const loginCorsHeaders = {
@@ -24,10 +26,7 @@ export const logoutUser = async (req: Request) => {
 		}
 
 		// Delete session from DB
-		const deleteQuery = db.query(
-			"DELETE FROM sessions WHERE session_token = ?",
-		);
-		deleteQuery.run(sessionToken);
+		await db.delete(cookies).where(eq(cookies.sessionToken, sessionToken));
 
 		const expiredCookie = new Bun.Cookie("session", "", {
 			httpOnly: true,

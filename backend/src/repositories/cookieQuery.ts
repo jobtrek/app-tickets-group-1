@@ -1,6 +1,7 @@
+import { cookies } from "../data/schema";
+import { db } from "../db/database";
+
 export const CookieQuery = {
-	create: `
-    INSERT INTO cookies (session_token, user_id)
-    VALUES (?, ?)
-  `,
-} as const;
+	create: (sessionToken: string, userId: number) =>
+		db.insert(cookies).values({ sessionToken, idUser: userId }),
+};

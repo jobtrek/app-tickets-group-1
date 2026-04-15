@@ -1,27 +1,38 @@
 import * as v from "valibot";
-import { TicketStatus } from "../../utils/constants";
 import { corsHeaders } from "../../utils/headers";
-import { db } from "../db/database.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
 
-export const getAllTickets = () => {
+export const getAllTickets = async () => {
 	try {
-		const tickets = db.query(ticketQueries.getAll).all();
+		const tickets = await ticketQueries.getAll();
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
 	} catch (_e) {
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
 
-export const getTicketById = (req: Request): Response => {
+export const getTicketById = async (req: Request): Promise<Response> => {
 	try {
 		const id = new URL(req.url).pathname.split("/").at(-1);
-		if (!id) {
-			return new Response("Missing ID", { status: 400, headers: corsHeaders });
+
+		if (!id || isNaN(Number(id))) {
+			return new Response("Invalid or missing ID", {
+				status: 400,
+				headers: corsHeaders,
+			});
 		}
-		const ticket = db.prepare(ticketQueries.getById).get(id);
-		return Response.json(ticket, { status: 200, headers: corsHeaders });
+
+		const ticket = await ticketQueries.getById(Number(id));
+
+		if (!ticket.length) {
+			return new Response("Ticket not found", {
+				status: 404,
+				headers: corsHeaders,
+			});
+		}
+
+		return Response.json(ticket[0], { status: 200, headers: corsHeaders });
 	} catch (_e) {
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
@@ -30,6 +41,7 @@ export const getTicketById = (req: Request): Response => {
 export const createTicket = async (req: Request): Promise<Response> => {
 	try {
 		const body = await req.json();
+		console.log(body);
 
 		const validBody = v.safeParse(TicketPostSchema, body);
 
@@ -40,22 +52,25 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			);
 		}
 
-		const { title, description, level, idUser } = validBody.output;
+		const { title, description, image, level, idUser } = validBody.output;
 
-		const defaultStatus = TicketStatus.Ouvert;
-		const insert = db.prepare(ticketQueries.insert);
+		const defaultStatus = 1;
 
-		const result = insert.get(
+		const result = await ticketQueries.insert(
 			title,
 			description,
+			null,
 			level ?? null,
 			defaultStatus,
 			idUser,
 		);
-		return Response.json(result, {
-			status: 201,
-			headers: corsHeaders,
-		});
+		return Response.json(
+			{ createdTicket: result[0] },
+			{
+				status: 201,
+				headers: corsHeaders,
+			},
+		);
 	} catch (e) {
 		console.error("DB insertion error", e);
 		return new Response("Error", { status: 400, headers: corsHeaders });

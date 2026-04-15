@@ -76,6 +76,7 @@ export default function Dashboard({ data }: DashboardProps) {
 							<td className="text-left text-sm text-gray-700 pr-6">
 								{row.title}
 							</td>
+
 							<td className="text-left pr-6">
 								<span
 									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statutStyles[row.idStatus]}`}

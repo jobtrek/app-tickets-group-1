@@ -6,6 +6,8 @@ const TICKET_URL = import.meta.env.VITE_TICKET_URL;
 
 export const Route = createFileRoute("/_authenticated/ticket/$id")({
 	loader: async ({ params }) => {
+		console.log("TICKET_URL:", TICKET_URL);
+		console.log("params.id:", params.id);
 		const response = await axios.get(`${TICKET_URL}/${params.id}`);
 		return response.data;
 	},
