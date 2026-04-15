@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import axios from "axios";
+import { useEffect } from "react";
 import API_URL from "../../src/config/api";
 import Dashboard from "../src/pages/Dashboard";
+import { useTicketStore } from "../src/store/ticketStore";
 import type { Ticket } from "../src/utils/types";
 
 export const Route = createFileRoute("/dashboard")({
@@ -16,10 +18,13 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DashboardPage() {
-	const tickets = Route.useLoaderData();
-	const ticket = tickets[tickets.length - 1];
+	const loaderTickets = Route.useLoaderData();
+	const setTickets = useTicketStore((state) => state.setTickets);
+	const tickets = useTicketStore((state) => state.tickets);
 
-	if (!ticket) return <div>Aucun ticket trouvé.</div>;
+	useEffect(() => {
+		setTickets(loaderTickets);
+	}, []);
 
-	return <Dashboard data={tickets} />;
+	return <Dashboard />;
 }

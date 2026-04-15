@@ -1,5 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
+import { useTicketStore } from "../store/ticketStore";
+import { getFilteredTickets } from "../utils/sorting";
 import type { Ticket } from "../utils/types";
 
 const statutStyles: Record<Ticket["idStatus"], string> = {
@@ -26,23 +29,90 @@ const colonnes = [
 ];
 
 const sortOptions = [
-	{ value: "date", label: "Trier par: Date" },
-	{ value: "status", label: "Trier par: Status" },
-	{ value: "urgency", label: "Trier par: Niveau d'urgence" },
+	{ value: "desc", label: "Trier par: Date - les plus récents" },
+	{ value: "asc", label: "Trier par: Date - les plus anciens" },
+	{ value: "az", label: "Trier par: Ordre alphabétique" },
 ];
 
-interface DashboardProps {
-	data: Ticket[];
-}
+const statusOptions: Ticket["idStatus"][] = [
+	"Ouvert",
+	"En cours",
+	"Fermé",
+	"Résolu",
+];
+const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
-export default function Dashboard({ data }: DashboardProps) {
+export default function Dashboard() {
 	const navigate = useNavigate();
+	const setSort = useTicketStore((state) => state.setSort);
+	const toggleStatusFilter = useTicketStore(
+		(state) => state.toggleStatusFilter,
+	);
+	const toggleUrgencyFilter = useTicketStore(
+		(state) => state.toggleUrgencyFilter,
+	);
+	const statusFilter = useTicketStore((state) => state.statusFilter);
+	const urgencyFilter = useTicketStore((state) => state.urgencyFilter);
+	const filteredTickets = useTicketStore(useShallow(getFilteredTickets));
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
 			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
-			<div className="w-xs pb-12 text-gray-500">
-				<Select id="sort" options={sortOptions} />
+
+			<div className="flex gap-8 pb-8">
+				<div className="w-xs text-gray-500 ">
+					<Select
+						id="sort"
+						onChange={(e) => setSort(e.currentTarget.value)}
+						options={sortOptions}
+					/>
+				</div>
+
+				<div className="flex flex-col gap-1 pr-6">
+					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
+					<div className="flex gap-3">
+						{statusOptions.map((status) => (
+							<label
+								key={status}
+								className="flex items-center gap-1.5 cursor-pointer"
+							>
+								<input
+									type="checkbox"
+									checked={statusFilter.includes(status)}
+									onChange={() => toggleStatusFilter(status)}
+								/>
+								<span
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statutStyles[status]}`}
+								>
+									{status}
+								</span>
+							</label>
+						))}
+					</div>
+				</div>
+
+				<div className="flex flex-col gap-1">
+					<span className="text-xs text-gray-400 font-medium pb-1">
+						Urgence
+					</span>
+					<div className="flex gap-3">
+						{urgencyOptions.map((urgency) => (
+							<label
+								key={urgency}
+								className="flex items-center gap-1.5 cursor-pointer"
+							>
+								<input
+									type="checkbox"
+									checked={urgencyFilter.includes(urgency)}
+									onChange={() => toggleUrgencyFilter(urgency)}
+								/>
+								<span className={`text-xs py-0.5 ${urgenceStyles[urgency]}`}>
+									{urgency}
+								</span>
+							</label>
+						))}
+					</div>
+				</div>
 			</div>
 
 			<table className="w-full border-collapse">
@@ -59,7 +129,7 @@ export default function Dashboard({ data }: DashboardProps) {
 					</tr>
 				</thead>
 				<tbody>
-					{data.map((row) => (
+					{filteredTickets.map((row) => (
 						<tr
 							onClick={() =>
 								navigate({
