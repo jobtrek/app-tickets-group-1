@@ -6,7 +6,7 @@ export interface UserRow {
 }
 
 export interface UserResult {
-	idUser: number;
+	id_user: number;
 	username: string;
 	email: string;
 }

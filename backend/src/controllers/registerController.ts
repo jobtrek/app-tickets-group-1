@@ -32,7 +32,7 @@ export const postUser = async (req: Request) => {
 
 		return new Response(
 			JSON.stringify({
-				idUser: user.idUser,
+				idUser: user.id_user,
 				username: user.username,
 				email: user.email,
 				role: "user",
