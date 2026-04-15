@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:18
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -30,5 +30,7 @@ services:
       - .env
     ports:
       - "3001:3001"
+    depends_on:
+      - db
 volumes:
   db_data:
