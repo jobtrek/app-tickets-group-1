@@ -10,12 +10,20 @@ export const postUser = async (req: Request) => {
 	try {
 		const body = await req.json();
 
-		const validated = v.parse(UserRegisterSchema, body);
+		const result = v.safeParse(UserRegisterSchema, body);
 
+		if (!result.success) {
+			return Response.json(
+				{ errors: result.issues.map((i) => i.message) },
+				{ status: 400, headers: corsHeaders },
+			);
+		}
+
+		const validated = result.output;
 		const securedPassword = await hashPassword(validated.password);
 
 		const insert = db.prepare(userQueries.insertUser);
-		const result = insert.get(
+		const user = insert.get(
 			validated.username,
 			validated.email,
 			securedPassword,
@@ -24,9 +32,9 @@ export const postUser = async (req: Request) => {
 
 		return new Response(
 			JSON.stringify({
-				idUser: result.idUser,
-				username: result.username,
-				email: result.email,
+				idUser: user.idUser,
+				username: user.username,
+				email: user.email,
 				role: "user",
 			}),
 			{ status: 201, headers: corsHeaders },
