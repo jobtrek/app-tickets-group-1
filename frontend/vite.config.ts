@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 export default defineConfig({
 	root: "./frontend",
 	envDir: "..",
+	server: {
+		host: "0.0.0.0",
+	},
 	plugins: [
 		tanstackRouter({
 			target: "react",

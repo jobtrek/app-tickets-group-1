@@ -5,4 +5,3 @@ export const isAuthenticated = (): boolean => {
 	const { idUser, username } = useUserStore.getState();
 	return idUser !== 0 && username !== "";
 };
-isAuthenticated;

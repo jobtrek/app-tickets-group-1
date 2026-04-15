@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bun run dev:frontend
+    env_file:
+      - .env
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bun run dev:backend
+    env_file:
+      - .env
+    ports:
+      - "3001:3001"
+volumes:
+  db_data:
