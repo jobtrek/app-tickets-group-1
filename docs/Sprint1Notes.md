@@ -95,9 +95,9 @@ Comment les admins sont gerer, like adding new admins or removing new admins.
 
 
 Design questions:
-1
+
 Can you add images/videos within the conversion between the admin and client on the issues. X
-q
+
 How can the statistics will be displayed, like with what diagram. X 
 
 How the user can confirm that the ticket is resolved, like is it a button or something else. X
