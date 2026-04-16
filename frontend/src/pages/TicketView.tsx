@@ -26,7 +26,7 @@ export default function TicketView({
 				</div>
 
 				<p className="text-gray-400 text-lg pb-10">Crée le {date}</p>
-				<hr className="border-t-2 border-gray-200 pb-10" />
+				<hr className="border-t-2 border-gray-200 pb-5" />
 
 				<div className="pb-10">
 					<User />

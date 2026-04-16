@@ -9,7 +9,7 @@ export default function User() {
 				{username.charAt(0)}
 			</div>
 			<div className="flex flex-col">
-				<p className='text-2xl'>{username}</p>
+				<p className="text-2xl">{username}</p>
 			</div>
 		</div>
 	);
