@@ -6,7 +6,7 @@ export interface Ticket {
 	level: "bas" | "moyen" | "haut" | "urgent";
 	createdAt: string;
 	updatedAt: string;
-	idStatus: "Ouvert" | "En cours" | "Fermé" | "Résolu";
+	statusName: "Ouvert" | "En cours" | "Fermé" | "Résolu";
 	idUser: number;
 	username: string;
 }

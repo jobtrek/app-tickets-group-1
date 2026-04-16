@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { tickets, users } from "../data/schema";
+import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
 
 export const ticketQueries = {
@@ -16,9 +16,11 @@ export const ticketQueries = {
 				idStatus: tickets.idStatus,
 				idUser: tickets.idUser,
 				username: users.username,
+				statusName: status.statusName,
 			})
 			.from(tickets)
-			.innerJoin(users, eq(tickets.idUser, users.idUser)),
+			.innerJoin(users, eq(tickets.idUser, users.idUser))
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus)),
 
 	getById: (idTicket: number) =>
 		db.select().from(tickets).where(eq(tickets.idTicket, idTicket)),
