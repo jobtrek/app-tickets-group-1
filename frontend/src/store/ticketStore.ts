@@ -8,7 +8,7 @@ export interface TicketStore {
 	sort: string;
 	statusFilter: string[];
 	urgencyFilter: string[];
-	toggleStatusFilter: (status: Ticket["idStatus"]) => void;
+	toggleStatusFilter: (status: Ticket["statusName"]) => void;
 	toggleUrgencyFilter: (status: Ticket["level"]) => void;
 }
 
