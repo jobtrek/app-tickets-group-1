@@ -25,6 +25,8 @@ function TicketViewPage() {
 			description={ticket.description}
 			date={ticket.createdAt}
 			level={ticket.level}
+			username={ticket.username}
+			statusName={ticket.statusName}
 		/>
 	);
 }
