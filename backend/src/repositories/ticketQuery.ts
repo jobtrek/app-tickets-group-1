@@ -17,12 +17,10 @@ export const ticketQueries = {
 				idUser: tickets.idUser,
 				username: users.username,
 				statusName: status.statusName,
-
 			})
 			.from(tickets)
 			.innerJoin(users, eq(tickets.idUser, users.idUser))
 			.innerJoin(status, eq(tickets.idStatus, status.idStatus)),
-
 
 	getById: (idTicket: number) =>
 		db.select().from(tickets).where(eq(tickets.idTicket, idTicket)),
