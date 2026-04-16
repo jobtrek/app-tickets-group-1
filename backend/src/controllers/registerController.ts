@@ -1,11 +1,9 @@
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { hashPassword } from "../../utils/passwordHash";
-import type { UserResult } from "../../utils/types.ts";
-import { db } from "../db/database.ts";
-import { userQueries } from "../repositories/registerQuery.ts";
+import { users } from "../data/schema";
+import { db } from "../db/database";
 import { UserRegisterSchema } from "../validators/authValidator";
-
 export const postUser = async (req: Request) => {
 	try {
 		const body = await req.json();
@@ -22,13 +20,25 @@ export const postUser = async (req: Request) => {
 		const validated = result.output;
 		const securedPassword = await hashPassword(validated.password);
 
-		const insert = db.prepare(userQueries.insertUser);
-		const user = insert.get(
-			validated.username,
-			validated.email,
-			securedPassword,
-			"user",
-		) as UserResult;
+		const result = await db
+			.insert(users)
+			.values({
+				username: validated.username,
+				email: validated.email,
+				password: securedPassword,
+				role: "user",
+			})
+			.returning()
+			.onConflictDoNothing();
+
+		if (!result || result.length === 0) {
+			return new Response(JSON.stringify({ error: "Email already exists" }), {
+				status: 400,
+				headers: corsHeaders,
+			});
+		}
+
+		const user = result[0];
 
 		return new Response(
 			JSON.stringify({

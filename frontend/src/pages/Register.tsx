@@ -18,7 +18,7 @@ export default function RegisterForm() {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setFormData((prevData) => ({
+		setFormData((prevData: RegisterData) => ({
 			...prevData,
 			[name]: value,
 		}));

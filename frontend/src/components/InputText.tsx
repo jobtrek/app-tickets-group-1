@@ -2,6 +2,7 @@ import type { ChangeEventHandler } from "react";
 
 interface InputTextProps {
 	placeholder: string;
+	name?: string;
 	id: string;
 	required?: boolean;
 	onChange?: ChangeEventHandler<HTMLInputElement, HTMLInputElement>;

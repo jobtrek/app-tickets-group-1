@@ -1,6 +1,8 @@
+import { eq } from "drizzle-orm";
+import { users } from "../data/schema";
+import { db } from "../db/database";
+
 export const LoginUserQuery = {
-	getByEmail: `
-    SELECT id_user as id, username, email, password, role FROM users
-    WHERE email = ?
-  `,
-} as const;
+	getByEmail: (email: string) =>
+		db.select().from(users).where(eq(users.email, email)),
+};

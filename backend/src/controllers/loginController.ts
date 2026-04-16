@@ -1,6 +1,4 @@
 import * as v from "valibot";
-import type { UserRow } from "../../utils/types";
-import { db } from "../db/database";
 import { CookieQuery } from "../repositories/cookieQuery";
 import { LoginUserQuery } from "../repositories/loginUserQuery";
 import { UserLoginSchema } from "../validators/authValidator";
@@ -28,8 +26,8 @@ export const loginUser = async (req: Request) => {
 		const { email, password } = result.output;
 		console.log(result.output);
 
-		const userQuery = db.query(LoginUserQuery.getByEmail);
-		const user = userQuery.get(email) as UserRow;
+		const users = await LoginUserQuery.getByEmail(email);
+		const user = users[0];
 
 		if (!user) {
 			return Response.json(
@@ -48,8 +46,7 @@ export const loginUser = async (req: Request) => {
 
 		const sessionToken = crypto.randomUUID();
 
-		const cookieQuery = db.query(CookieQuery.create);
-		cookieQuery.run(sessionToken, user.id);
+		await CookieQuery.create(sessionToken, user.idUser);
 
 		const cookie = new Bun.Cookie("session", sessionToken, {
 			httpOnly: true,
@@ -67,7 +64,7 @@ export const loginUser = async (req: Request) => {
 				message: "Login successful",
 				username: user.username,
 				email: user.email,
-				id: user.id,
+				id: user.idUser,
 			},
 			{ status: 200, headers },
 		);

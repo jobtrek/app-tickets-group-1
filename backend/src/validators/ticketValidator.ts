@@ -12,7 +12,7 @@ export const TicketPostSchema = v.object({
 		v.maxLength(100, "Title must be 100 characters or less"),
 	),
 	description: v.pipe(v.string(), v.minLength(1, "Description is required")),
-	image: v.optional(v.nullable(v.unknown())),
+	image: v.optional(v.nullable(v.string())),
 	level: v.optional(TicketLevelEnum),
 	idStatus: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
 	idUser: v.pipe(
