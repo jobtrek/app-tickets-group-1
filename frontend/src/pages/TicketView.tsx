@@ -1,5 +1,5 @@
 import User from "../components/User";
-import { statutStyles } from "../utils/statutStyles";
+import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
 interface TicketViewProps {
@@ -9,7 +9,7 @@ interface TicketViewProps {
 	description: string;
 	level: string;
 	username: string;
-	statusName: string;
+	statusName: Ticket["statusName"];
 }
 
 export default function TicketView({
@@ -27,7 +27,7 @@ export default function TicketView({
 				<div className="flex justify-between">
 					<h1 className="text-3xl">{title}</h1>
 					<span
-						className={`p-4 ${statutStyles[statusName as Ticket["statusName"]]} border-2 rounded-4xl w-52 text-center text-xl`}
+						className={`p-4 ${statusStyles[statusName]} border-2 rounded-4xl w-52 text-center text-xl`}
 					>
 						{statusName}
 					</span>

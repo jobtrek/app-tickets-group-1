@@ -3,7 +3,7 @@ import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
 import { useTicketStore } from "../store/ticketStore";
 import { getFilteredTickets } from "../utils/sorting";
-import { statutStyles } from "../utils/statutStyles";
+import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
 const urgenceStyles: Record<Ticket["level"], string> = {
@@ -78,7 +78,7 @@ export default function Dashboard() {
 									onChange={() => toggleStatusFilter(status)}
 								/>
 								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statutStyles[status]}`}
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
 								>
 									{status}
 								</span>
@@ -145,7 +145,7 @@ export default function Dashboard() {
 
 							<td className="text-left pr-6">
 								<span
-									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statutStyles[row.statusName]}`}
+									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[row.statusName]}`}
 								>
 									{row.statusName}
 								</span>
