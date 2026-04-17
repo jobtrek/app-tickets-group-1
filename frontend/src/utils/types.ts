@@ -9,6 +9,7 @@ export interface Ticket {
 	statusName: "Ouvert" | "En cours" | "Fermé" | "Résolu";
 	idUser: number;
 	username: string;
+	supportUsername: string;
 }
 
 export interface RegisterData {

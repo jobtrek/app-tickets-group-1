@@ -1,6 +1,9 @@
 import { eq, getTableColumns } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
+
+const supportUsers = alias(users, "support_users");
 
 export const ticketQueries = {
 	getAll: () =>
@@ -9,10 +12,12 @@ export const ticketQueries = {
 				...getTableColumns(tickets),
 				username: users.username,
 				statusName: status.statusName,
+				supportUsername: supportUsers.username,
 			})
 			.from(tickets)
 			.innerJoin(users, eq(tickets.idUser, users.idUser))
-			.innerJoin(status, eq(tickets.idStatus, status.idStatus)),
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser)),
 
 	getById: (idTicket: number) =>
 		db
@@ -20,10 +25,12 @@ export const ticketQueries = {
 				...getTableColumns(tickets),
 				username: users.username,
 				statusName: status.statusName,
+				supportUsername: supportUsers.username,
 			})
 			.from(tickets)
 			.innerJoin(users, eq(tickets.idUser, users.idUser))
 			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idTicket, idTicket)),
 
 	insert: (

@@ -1,8 +1,10 @@
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
+import { ticketAssignmentQuery } from "../repositories/assigntTickerQuery.ts";
+import { CookieQuery } from "../repositories/cookieQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
-
+import { updateStatusQuery } from "../repositories/statusQuery.ts";
 export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
@@ -77,4 +79,62 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		console.error("DB insertion error", e);
 		return new Response("Error", { status: 400, headers: corsHeaders });
 	}
+};
+
+export const assignTicket = async (
+	req: Bun.BunRequest<"/api/tickets/:id/assign">,
+) => {
+	const cookieHeader = req.headers.get("cookie");
+	const sessionToken = cookieHeader?.match(/session=([^;]*)/)?.[1];
+
+	if (!sessionToken) {
+		return Response.json(
+			{ error: "Not authenticated" },
+			{ status: 401, headers: corsHeaders },
+		);
+	}
+
+	const session = await CookieQuery.getByToken(sessionToken);
+
+	if (!session) {
+		return Response.json(
+			{ error: "Invalid session" },
+			{ status: 401, headers: corsHeaders },
+		);
+	}
+
+	if (session.role !== "admin") {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
+
+	const idTicket = Number(req.params.id);
+	const idSupport: number | null = session.idUser;
+	if (!idSupport) {
+		return Response.json(
+			{ error: "Could not resolve support user" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
+	await ticketAssignmentQuery.create(idTicket, idSupport);
+	await ticketAssignmentQuery.setTicketSupport(idTicket, idSupport);
+
+	return Response.json(
+		{ message: "Ticket assigned" },
+		{ status: 200, headers: corsHeaders },
+	);
+};
+
+export const updateStatus = async (
+	req: Bun.BunRequest<"/api/tickets/:id/status">,
+) => {
+	const idTicket = Number(req.params.id)
+	const { statusId } = await req.json();
+
+	await updateStatusQuery.update(statusId, idTicket)
+
+	return Response.json({ message: "Status updated" }, { status: 200, headers: corsHeaders });
 };

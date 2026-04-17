@@ -9,6 +9,7 @@ export const Route = createFileRoute("/_authenticated/ticket/$id")({
 		const response = await axios.get(`${TICKET_URL}/${params.id}`);
 		return response.data;
 	},
+	
 
 	component: TicketViewPage,
 });
@@ -27,6 +28,7 @@ function TicketViewPage() {
 			level={ticket.level}
 			username={ticket.username}
 			statusName={ticket.statusName}
+			supportUsername={ticket.supportUsername}
 		/>
 	);
 }

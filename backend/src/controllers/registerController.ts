@@ -39,6 +39,12 @@ export const postUser = async (req: Request) => {
 		}
 
 		const user = resp[0];
+		if (!user) {
+			return Response.json(
+				{ error: "User creation failed" },
+				{ status: 500, headers: corsHeaders },
+			);
+		}
 
 		return new Response(
 			JSON.stringify({

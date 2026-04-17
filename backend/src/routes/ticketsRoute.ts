@@ -1,8 +1,10 @@
 import { corsHeaders } from "backend/utils/headers";
 import {
+	assignTicket,
 	createTicket,
 	getAllTickets,
 	getTicketById,
+	updateStatus
 } from "../controllers/ticketController";
 
 export const ticketRoutes = {
@@ -17,4 +19,15 @@ export const ticketRoutes = {
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		GET: getTicketById,
 	},
+	"/api/tickets/:id/assign": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		POST: assignTicket,
+	},
+	"/api/tickets/:id/status": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		PATCH: updateStatus,
+
+	}
 };
