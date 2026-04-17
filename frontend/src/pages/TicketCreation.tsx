@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useActionState } from "react";
 import Button from "../components/Button";
+import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
 import InputFile from "../components/InputFile";
 import InputText from "../components/InputText";
@@ -8,6 +9,7 @@ import Select from "../components/Select";
 import TextArea from "../components/TextArea";
 import { useUserStore } from "../store/userStore";
 import { createTicketFromForm } from "../utils/ticketsApi";
+import type { ActionState } from "../utils/types";
 
 const urgenceOptions = [
 	{ value: "", label: "Indiquez le niveau d'urgence" },
@@ -20,26 +22,46 @@ const urgenceOptions = [
 export default function TicketCreation() {
 	const navigate = useNavigate();
 	const user = useUserStore((state) => state.idUser);
+
 	const [state, action, pending] = useActionState(
-		async (_: unknown, formData: FormData) => {
+		async (_: unknown, formData: FormData): Promise<ActionState> => {
+			const errors: Record<string, string> = {};
+
+			const title = formData.get("title") as string;
+			const urgence = formData.get("urgence") as string;
+			const desc = formData.get("description") as string;
+
+			if (!title.trim()) errors.title = "Le titre est obligatoire.";
+			if (title.length > 20) errors.title = "Maximum 20 caractères";
+			if (!desc.trim()) errors.desc = "La description est obligatoire";
+			if (desc.length > 3000) errors.desc = "Maximum 3000 caractères";
+			if (!urgence.trim()) errors.urgence = "Choisissez un niveau d'urgence.";
+
+			if (Object.keys(errors).length > 0) {
+				return { success: false, message: "", errors };
+			}
+
 			try {
 				const { createdTicket } = await createTicketFromForm(formData, user);
-
 				navigate({
 					to: "/ticket/$id",
 					params: { id: createdTicket.idTicket },
 				});
-				return "Ticket added !";
+				return { success: true, message: "Ticket créé !" };
 			} catch (e) {
 				console.error(e);
-				return "Une erreur est survenue lors de la création du ticket.";
+				return {
+					success: false,
+					message: "Une erreur est survenue lors de la création du ticket.",
+				};
 			}
 		},
 		null,
 	);
 
+
 	return (
-		<div className=" flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
+		<div className="flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
 			<div className="mx-auto w-full max-w-2xl px-4">
 				<div className="bg-white px-12 py-14 shadow-md rounded-xl">
 					<form action={action} className="space-y-6">
@@ -47,8 +69,13 @@ export default function TicketCreation() {
 							Nouveau Ticket
 						</h1>
 
+						{state && !state.success && !state.errors && (
+							<Alert variant="error" message={state.message} className="mb-6" />
+						)}
+
 						<FormField label="Titre" id="title">
 							<InputText id="title" placeholder="Résumé de votre problème" />
+							<Alert variant="error" message={state?.errors?.title} />
 						</FormField>
 
 						<FormField label="Description" id="description">
@@ -56,27 +83,24 @@ export default function TicketCreation() {
 								id="description"
 								placeholder="Fournissez plus de détails"
 							/>
+							<Alert variant="error" message={state?.errors?.desc} />
 						</FormField>
 
 						<FormField id="urgence" label="Niveau d'urgence">
 							<Select id="urgence" options={urgenceOptions} />
+							<Alert variant="error" message={state?.errors?.urgence} />
 						</FormField>
 
 						<FormField label="Pièce jointe" id="img">
 							<InputFile id="img" />
 						</FormField>
 
-						<Button type="submit" title="Créer un ticket" />
+						<Button
+							type="submit"
+							title={pending ? "Envoi..." : "Créer un ticket"}
+						/>
 					</form>
-					{(pending || state) && (
-						<div className="state-text">
-							{pending ? (
-								<span className="loading loading-spinner loading-xl"></span>
-							) : (
-								state
-							)}
-						</div>
-					)}
+
 				</div>
 			</div>
 		</div>

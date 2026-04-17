@@ -21,3 +21,9 @@ export interface LoginData {
 	email: string;
 	password: string;
 }
+
+export interface ActionState {
+	success: boolean;
+	message: string;
+	errors?: Record<string, string>;
+}
