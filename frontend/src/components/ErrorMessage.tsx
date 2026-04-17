@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import React from "react";
-import { ErrorIcon, SuccessIcon } from './svg/ErrorAndSuccessIcons';
+import { ErrorIcon, SuccessIcon } from "./svg/ErrorAndSuccessIcons";
 
 type AlertVariant = "success" | "error";
 

@@ -59,7 +59,6 @@ export default function TicketCreation() {
 		null,
 	);
 
-
 	return (
 		<div className="flex min-h-screen flex-col justify-center bg-gray-100 py-12 sm:px-6 lg:px-8">
 			<div className="mx-auto w-full max-w-2xl px-4">
@@ -100,7 +99,6 @@ export default function TicketCreation() {
 							title={pending ? "Envoi..." : "Créer un ticket"}
 						/>
 					</form>
-
 				</div>
 			</div>
 		</div>

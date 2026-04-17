@@ -1,9 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
+import axios from "axios";
 import { useState } from "react";
+import * as v from "valibot";
+import { UserRegisterSchema } from "../../../backend/src/validators/authValidator";
 import Button from "../components/Button";
+import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
-import type { RegisterData } from "../utils/userApi";
+import type { RegisterData } from "../utils/types";
 import { registerUserApi } from "../utils/userApi";
 
 export default function RegisterForm() {
@@ -13,8 +17,9 @@ export default function RegisterForm() {
 		username: "",
 		email: "",
 		password: "",
-		role: "user",
 	});
+	const [errorMessage, setErrorMessage] = useState("");
+	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -24,16 +29,38 @@ export default function RegisterForm() {
 		}));
 	};
 
-	const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		registerUserApi(formData)
-			.then((response) => {
-				console.log("User registered successfully:", response);
-				navigate({ to: "/login" });
-			})
-			.catch((error: Error) => {
-				console.error("Error registering user:", error);
+		setErrors({});
+		setErrorMessage("");
+
+		const result = v.safeParse(UserRegisterSchema, formData);
+
+		if (!result.success) {
+			// Transforme les erreurs Valibot en un objet utilisable pour setErrors
+			const fieldErrors: Record<string, string> = {};
+			result.issues.forEach((issue) => {
+				if (issue.path) {
+					fieldErrors[issue.path[0].key as string] = issue.message;
+				}
 			});
+			setErrors(fieldErrors);
+			return;
+		}
+
+		try {
+			await registerUserApi(formData);
+			navigate({ to: "/login" });
+		} catch (error) {
+			if (
+				axios.isAxiosError(error) &&
+				error.response?.data?.error === "Email already exists"
+			) {
+				setErrors({ email: "Cet email est déjà utilisé." });
+			} else {
+				setErrorMessage("Une erreur est survenue.");
+			}
+		}
 	};
 
 	return (
@@ -51,6 +78,7 @@ export default function RegisterForm() {
 								required
 								onChange={handleInputChange}
 							/>
+							<Alert variant="error" message={errors.username} />
 						</FormField>
 						<FormField id="email" label="Email">
 							<input
@@ -62,6 +90,7 @@ export default function RegisterForm() {
 								className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 								onChange={handleInputChange}
 							/>
+							<Alert variant="error" message={errors.email} />
 						</FormField>
 						<FormField id="password" label="Mot de passe">
 							<input
@@ -72,24 +101,11 @@ export default function RegisterForm() {
 								autoComplete="current-password"
 								required
 								placeholder="Entrez votre mot de passe"
-								className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+								className="block w-full rounded-lg border border-gray-300 px-4 py-3 mb-5 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 								onChange={handleInputChange}
 							/>
+							<Alert variant="error" message={errors.password} />
 						</FormField>
-						<div className="flex items-center pt-1">
-							<input
-								id="remember_me"
-								name="remember_me"
-								type="checkbox"
-								className="h-4 w-4 rounded border-gray-300 text-blue-400 focus:ring-blue-400"
-							/>
-							<label
-								htmlFor="remember_me"
-								className="ml-2.5 block text-sm text-gray-600"
-							>
-								Se souvenir de moi
-							</label>
-						</div>
 						<Button type="submit" title="S'inscrire" />
 						<p className="text-center">
 							Vous avez déjà un compte ?{" "}

@@ -1,11 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import Button from "../components/Button";
+import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
 import InputText from "../components/InputText";
 import { useUserStore } from "../store/userStore";
-import type { LoginData } from "../utils/userApi";
+import type { LoginData } from "../utils/types";
 import { loginUserApi } from "../utils/userApi";
+
 export default function LoginForm() {
 	const navigate = useNavigate();
 	const setUser = useUserStore((state) => state.setUser);
@@ -14,6 +16,7 @@ export default function LoginForm() {
 		email: "",
 		password: "",
 	});
+	const [errorMessage, setErrorMessage] = useState("");
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -25,7 +28,8 @@ export default function LoginForm() {
 
 	const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log(formData);
+		setErrorMessage("");
+
 		try {
 			const response = await loginUserApi(formData);
 			setUser({
@@ -39,7 +43,7 @@ export default function LoginForm() {
 				to: response.data.role === "admin" ? "/dashboard" : "/create-ticket",
 			});
 		} catch (error) {
-			console.error("Error logging in user:", error);
+			setErrorMessage("Email ou mot de passe incorrect.");
 		}
 	};
 
@@ -51,6 +55,8 @@ export default function LoginForm() {
 						Se connecter
 					</h1>
 					<form className="space-y-6 " onSubmit={handleSubmit}>
+						<Alert variant="error" message={errorMessage} />
+
 						<FormField id="email" label="Adresse e-mail">
 							<InputText
 								id="email"

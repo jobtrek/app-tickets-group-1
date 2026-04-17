@@ -19,7 +19,7 @@ export const SuccessIcon = () => (
 );
 
 export const ErrorIcon = () => (
-	        <svg
+	<svg
 		width="20"
 		height="20"
 		viewBox="0 0 20 20"
