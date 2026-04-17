@@ -1,6 +1,6 @@
-import { fileTypeFromBuffer } from "file-type";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticketQueries } from "../repositories/ticketQuery";
