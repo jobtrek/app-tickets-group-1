@@ -11,7 +11,7 @@ export const commentQuery = {
 				createdAt: comments.createdAt,
 				authorId: comments.idUser,
 				authorName: users.username,
-                authorRole: users.role
+				authorRole: users.role,
 			})
 			.from(comments)
 			.innerJoin(users, eq(comments.idUser, users.idUser))

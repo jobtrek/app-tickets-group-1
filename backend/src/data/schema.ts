@@ -12,7 +12,7 @@ export const users = pgTable("users", {
 	username: varchar("username", { length: 50 }).notNull(),
 	email: varchar("email", { length: 100 }).notNull().unique(),
 	password: varchar("password", { length: 255 }).notNull(),
-	role: varchar("role", { length: 20 }).notNull().default('user'),
+	role: varchar("role", { length: 20 }).notNull().default("user"),
 });
 
 export const status = pgTable("status", {
@@ -57,7 +57,9 @@ export const comments = pgTable("comments", {
 	userRole: varchar("user_role", { length: 30 }).notNull(),
 	commentText: text("comment_text").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	idUser: integer("id_user").references(() => users.idUser).notNull(),
+	idUser: integer("id_user")
+		.references(() => users.idUser)
+		.notNull(),
 	idTicket: integer("id_ticket")
 		.references(() => tickets.idTicket)
 		.notNull(),

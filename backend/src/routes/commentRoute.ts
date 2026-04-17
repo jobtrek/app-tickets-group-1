@@ -1,4 +1,8 @@
-import { getAllComment, postComment, websocketUpgrade } from "../controllers/commentController";
+import {
+	getAllComment,
+	postComment,
+	websocketUpgrade,
+} from "../controllers/commentController";
 import { loginCorsHeaders } from "../controllers/loginController";
 
 export const CommentRoutes = {

@@ -71,7 +71,9 @@ export const getAllComment = async (
 	}
 };
 
-export const websocketUpgrade = (req: Bun.BunRequest<"/api/tickets/:id/ws">) => {
+export const websocketUpgrade = (
+	req: Bun.BunRequest<"/api/tickets/:id/ws">,
+) => {
 	const success = getServer()?.upgrade(req, {
 		data: { ticketId: req.params.id },
 	});
