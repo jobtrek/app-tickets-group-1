@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface InputFileProps {
 	id: string;
@@ -7,20 +7,32 @@ interface InputFileProps {
 interface SelectedFile {
 	id: string;
 	data: File;
+	preview: string;
 }
 
 export default function InputFile({ id }: InputFileProps) {
 	const [files, setFiles] = useState<SelectedFile[]>([]);
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	const addFiles = (newFiles: File[]) =>
-		setFiles((prev) => [
-			...prev,
-			...newFiles.map((data) => ({ id: crypto.randomUUID(), data })),
-		]);
+	useEffect(() => {
+		if (inputRef.current) {
+			const dataTransfer = new DataTransfer();
+			files.forEach((file) => dataTransfer.items.add(file.data));
+			inputRef.current.files = dataTransfer.files;
+		}
+	}, [files]);
+
+	const addFiles = (newFiles: File[]) => {
+		const mappedFiles = newFiles.map((data) => ({
+			id: crypto.randomUUID(),
+			data,
+			preview: URL.createObjectURL(data),
+		}));
+		setFiles((prev) => [...prev, ...mappedFiles]);
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		addFiles(Array.from(e.target.files ?? []));
-		e.target.value = "";
 	};
 
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -29,7 +41,11 @@ export default function InputFile({ id }: InputFileProps) {
 	};
 
 	const removeFile = (fileId: string) => {
-		setFiles((prev) => prev.filter((f) => f.id !== fileId));
+		setFiles((prev) => {
+			const fileToRemove = prev.find((f) => f.id === fileId);
+			if (fileToRemove) URL.revokeObjectURL(fileToRemove.preview);
+			return prev.filter((f) => f.id !== fileId);
+		});
 	};
 
 	return (
@@ -60,35 +76,46 @@ export default function InputFile({ id }: InputFileProps) {
 						>
 							<span>Ajouter un fichier</span>
 							<input
+								ref={inputRef}
 								id={id}
-								name="file-upload"
+								name="image"
 								type="file"
 								multiple
 								className="sr-only"
 								onChange={handleChange}
+								accept="image/png, image/jpeg, image/jpg"
 							/>
 						</label>
 						<p className="pl-1">ou glisser et déposer</p>
 					</div>
 					<p className="text-xs/5 text-gray-600 dark:text-gray-400">
-						PNG, JPG, GIF jusqu'à 10MB
+						PNG, JPG, JPEG jusqu'à 10MB
 					</p>
 				</div>
 			</section>
-			<ul className="mt-3 space-y-2">
+			<ul className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
 				{files.map((file) => (
 					<li
 						key={file.id}
-						className="text-sm p-2 flex place-content-between border border-gray-300 shadow-sm rounded-lg"
+						className="relative group aspect-square border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden shadow-sm"
 					>
-						<span>{file.data.name}</span>
-						<button
-							type="button"
-							onClick={() => removeFile(file.id)}
-							className="text-slate-400 hover:text-red-500"
-						>
-							✕
-						</button>
+						<img
+							src={file.preview}
+							alt={file.data.name}
+							className="h-full w-full object-cover"
+						/>
+						<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
+							<button
+								type="button"
+								onClick={() => removeFile(file.id)}
+								className="self-end bg-white/20 hover:bg-red-500 text-white rounded-full p-1 leading-none"
+							>
+								✕
+							</button>
+							<span className="text-[10px] text-white truncate bg-black/50 px-1 rounded">
+								{file.data.name}
+							</span>
+						</div>
 					</li>
 				))}
 			</ul>

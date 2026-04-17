@@ -41,3 +41,5 @@ backend/src/data/mydb.sqlite
 .env.example
 
 drizzle
+
+uploads

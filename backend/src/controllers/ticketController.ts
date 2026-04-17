@@ -1,3 +1,5 @@
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticketQueries } from "../repositories/ticketQuery";
@@ -40,29 +42,61 @@ export const getTicketById = async (req: Request): Promise<Response> => {
 
 export const createTicket = async (req: Request): Promise<Response> => {
 	try {
-		const body = await req.json();
+		const formData = await req.formData();
+		const rawData = {
+			title: formData.get("title"),
+			description: formData.get("description"),
+			level: formData.get("level") || undefined,
+			idUser: Number(formData.get("idUser")),
+		};
 
-		const validBody = v.safeParse(TicketPostSchema, body);
-
+		const validBody = v.safeParse(TicketPostSchema, rawData);
 		if (!validBody.success) {
 			return Response.json(
 				{ errors: validBody.issues.map((i) => i.message) },
+
 				{ status: 400, headers: corsHeaders },
 			);
 		}
 
-		const { title, description, image, level, idUser } = validBody.output;
+		let finalFileName: string | null = null;
+		const file = formData.get("image") as File | null;
+		if (file && file.size > 0) {
+			const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
+			if (!allowedTypes.includes(file.type)) {
+				return new Response("Invalid file type (PNG/JPG only)", {
+					status: 400,
 
+					headers: corsHeaders,
+				});
+			}
+
+			if (file.size > 10 * 1024 * 1024) {
+				return new Response("File too large (Max 10MB)", {
+					status: 400,
+
+					headers: corsHeaders,
+				});
+			}
+
+			const ext = path.extname(file.name);
+			finalFileName = `${crypto.randomUUID()}${ext}`;
+			const uploadDir = path.join(import.meta.dir, "..", "..", "uploads");
+			await mkdir(uploadDir, { recursive: true });
+			await Bun.write(path.join(uploadDir, finalFileName), file);
+		}
+
+		const { title, description, level, idUser } = validBody.output;
 		const defaultStatus = 1;
-
 		const result = await ticketQueries.insert(
 			title,
 			description,
-			image ?? null,
+			finalFileName,
 			level ?? null,
 			defaultStatus,
 			idUser,
 		);
+
 		return Response.json(
 			{ createdTicket: result[0] },
 			{
@@ -72,6 +106,6 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		);
 	} catch (e) {
 		console.error("DB insertion error", e);
-		return new Response("Error", { status: 400, headers: corsHeaders });
+		return new Response("Server Error", { status: 500, headers: corsHeaders });
 	}
 };
