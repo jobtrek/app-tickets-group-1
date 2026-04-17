@@ -1,4 +1,3 @@
-
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import User from "../components/User";
@@ -93,9 +92,8 @@ export default function TicketView({
 	useEffect(() => {
 		getComments(ticketIdNumber).then(setComments);
 
-		const ws = new WebSocket(
-			`ws://localhost:3001/api/tickets/${ticketIdNumber}/ws`,
-		);
+		const wsBaseUrl = import.meta.env.VITE_API_URL.replace(/^http/, "ws");
+		const ws = new WebSocket(`${wsBaseUrl}/${ticketIdNumber}/ws`);
 		ws.onmessage = (event) => {
 			const comment = JSON.parse(event.data);
 			setComments((prev) => [...prev, comment]);
@@ -188,14 +186,10 @@ export default function TicketView({
 							const isAdmin = comment.authorRole === "admin";
 							const dateLabel = getDateLabel(comment.createdAt);
 
-							if (!comments[index - 1]) {
-								console.error(
-									"Previous comment is undefined for comment ID:",
-									comment.idComment,
-								);
-							}
-							const prevDateLabel =
-								index > 0 ? getDateLabel(comments[index - 1].createdAt) : null;
+							const prevComment = comments[index - 1];
+							const prevDateLabel = prevComment
+								? getDateLabel(prevComment.createdAt)
+								: null;
 							const showDateSeparator = dateLabel !== prevDateLabel;
 
 							return (
@@ -252,17 +246,12 @@ export default function TicketView({
 											)}
 										</div>
 										<p
-											className={`text-gray-700 wrap-break-word overflow-hidden ${isAdmin ? "text-right" : ""}`}
+											className={
+												"text-gray-700 wrap-break-words overflow-hidden " +
+												(isAdmin ? "text-right" : "")
+											}
 										>
-											{comment.commentText.length > 200 ? (
-												<>
-													{comment.commentText.slice(0, 200)}
-													<br />
-													{comment.commentText.slice(200)}
-												</>
-											) : (
-												comment.commentText
-											)}
+											{comment.commentText}
 										</p>
 									</div>
 								</div>
@@ -278,6 +267,12 @@ export default function TicketView({
 						placeholder="Ajouter un commentaire..."
 						value={commentInput}
 						onChange={(e) => setCommentInput(e.target.value)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" && !e.shiftKey) {
+								e.preventDefault();
+								handleSubmit();
+							}
+						}}
 					/>
 					<div className="flex justify-end">
 						<button

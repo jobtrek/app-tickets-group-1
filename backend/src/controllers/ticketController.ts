@@ -14,11 +14,13 @@ export const getAllTickets = async () => {
 	}
 };
 
-export const getTicketById = async (req: Request): Promise<Response> => {
+export const getTicketById = async (
+	req: Bun.BunRequest<"/api/ticket/:id">,
+): Promise<Response> => {
 	try {
-		const id = new URL(req.url).pathname.split("/").at(-1);
+		const id = req.params.id;
 
-		if (!id || Number.isNaN(Number(id))) {
+		if (Number.isNaN(Number(id))) {
 			return new Response("Invalid or missing ID", {
 				status: 400,
 				headers: corsHeaders,

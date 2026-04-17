@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_adminOnly/dashboard")({
 	loader: async (): Promise<Ticket[]> => {
 		const response = await axios.get<Ticket[]>(API_URL);
 		return response.data;
-	},;
+	},
 	component: DashboardPage,
 });
 

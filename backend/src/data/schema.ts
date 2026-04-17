@@ -57,7 +57,7 @@ export const comments = pgTable("comments", {
 	userRole: varchar("user_role", { length: 30 }).notNull(),
 	commentText: text("comment_text").notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-	idUser: integer("id_user").references(() => users.idUser),
+	idUser: integer("id_user").references(() => users.idUser).notNull(),
 	idTicket: integer("id_ticket")
 		.references(() => tickets.idTicket)
 		.notNull(),

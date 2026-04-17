@@ -19,7 +19,9 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		close(ws){
 			ws.unsubscribe(`ticket-${ws.data.ticketId}`)
 		},
-		message(){}
+		message(){
+			// Clients send comments via HTTP POST, so this is intentionally empty.
+		}
 
 	},
 });
