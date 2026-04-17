@@ -63,7 +63,6 @@ bun dev:backend    # Bun with hot reload on :3001
 - `bun build` — generate route tree, typecheck, and build the frontend
 - `bun lint` / `bun lint:fix` — Biome lint
 - `bun format` / `bun format:check` — Biome format
-- `bun typecheck` — TypeScript check
 - `bun db:seed` — seed the database
 
 ## Project Structure
