@@ -15,6 +15,6 @@ export const ticketRoutes = {
 	"/api/ticket/:id": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		GET: (req: Request) => getTicketById(req),
+		GET: getTicketById,
 	},
 };

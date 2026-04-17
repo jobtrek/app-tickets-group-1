@@ -10,16 +10,19 @@ export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
-	} catch (_e) {
+	} catch (e) {
+		console.error("getAllTickets error:", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
 
-export const getTicketById = async (req: Request): Promise<Response> => {
+export const getTicketById = async (
+	req: Bun.BunRequest<"/api/ticket/:id">,
+): Promise<Response> => {
 	try {
-		const id = new URL(req.url).pathname.split("/").at(-1);
+		const id = req.params.id;
 
-		if (!id || isNaN(Number(id))) {
+		if (Number.isNaN(Number(id))) {
 			return new Response("Invalid or missing ID", {
 				status: 400,
 				headers: corsHeaders,
