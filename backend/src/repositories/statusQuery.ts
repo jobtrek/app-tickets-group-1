@@ -4,5 +4,8 @@ import { db } from "../db/database";
 
 export const updateStatusQuery = {
 	update: (statusId: number, idTicket: number) =>
-		db.update(tickets).set({ idStatus: statusId }).where(eq(tickets.idTicket, idTicket)),
+		db
+			.update(tickets)
+			.set({ idStatus: statusId })
+			.where(eq(tickets.idTicket, idTicket)),
 };

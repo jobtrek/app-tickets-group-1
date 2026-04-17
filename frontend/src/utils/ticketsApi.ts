@@ -44,22 +44,25 @@ export const getComments = async (idTicket: number) => {
 	return data;
 };
 
-
-export const assignTicket = async(idTicket: number, idSupport: number) => {
+export const assignTicket = async (idTicket: number, idSupport: number) => {
 	const { data } = await axios.post(
 		`${API_URL}/${idTicket}/assign`,
 		{ idTicket, idSupport },
 		{ withCredentials: true },
-	)
-	return data
-}
-export const updateTicketStatus = async (ticketId: number, statusId: number) => {
-  const response = await axios.patch(`${API_URL}/${ticketId}/status`, { statusId });
-  return response.data;
+	);
+	return data;
+};
+export const updateTicketStatus = async (
+	ticketId: number,
+	statusId: number,
+) => {
+	const response = await axios.patch(`${API_URL}/${ticketId}/status`, {
+		statusId,
+	});
+	return response.data;
 };
 
-
-export const getTicketById = async(idTicket: number) => {
-	const id = await axios.post(`${API_URL}/${idTicket}`)
-	return id
-}
+export const getTicketById = async (idTicket: number) => {
+	const id = await axios.post(`${API_URL}/${idTicket}`);
+	return id;
+};

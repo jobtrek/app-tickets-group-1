@@ -2,9 +2,9 @@ import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticketAssignmentQuery } from "../repositories/assigntTickerQuery.ts";
 import { CookieQuery } from "../repositories/cookieQuery.ts";
+import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
-import { updateStatusQuery } from "../repositories/statusQuery.ts";
 export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
@@ -131,10 +131,13 @@ export const assignTicket = async (
 export const updateStatus = async (
 	req: Bun.BunRequest<"/api/tickets/:id/status">,
 ) => {
-	const idTicket = Number(req.params.id)
+	const idTicket = Number(req.params.id);
 	const { statusId } = await req.json();
 
-	await updateStatusQuery.update(statusId, idTicket)
+	await updateStatusQuery.update(statusId, idTicket);
 
-	return Response.json({ message: "Status updated" }, { status: 200, headers: corsHeaders });
+	return Response.json(
+		{ message: "Status updated" },
+		{ status: 200, headers: corsHeaders },
+	);
 };

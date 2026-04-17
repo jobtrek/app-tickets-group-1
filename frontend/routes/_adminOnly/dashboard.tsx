@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Dashboard from "../../src/pages/Dashboard";
 import { useTicketStore } from "../../src/store/ticketStore";
 import type { Ticket } from "../../src/utils/types";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export const Route = createFileRoute("/_adminOnly/dashboard")({

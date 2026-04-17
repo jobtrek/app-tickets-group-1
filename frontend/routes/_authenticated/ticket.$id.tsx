@@ -9,7 +9,6 @@ export const Route = createFileRoute("/_authenticated/ticket/$id")({
 		const response = await axios.get(`${TICKET_URL}/${params.id}`);
 		return response.data;
 	},
-	
 
 	component: TicketViewPage,
 });

@@ -12,5 +12,4 @@ export const CookieQuery = {
 			.where(eq(cookies.sessionToken, sessionToken))
 			.limit(1)
 			.then((r) => r[0] ?? null),
-
 };

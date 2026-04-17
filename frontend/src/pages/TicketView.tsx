@@ -2,8 +2,12 @@ import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useUserStore } from "../store/userStore";
 import { statusStyles } from "../utils/statusStyles";
-import { assignTicket, createComment, getComments } from "../utils/ticketsApi";
-import { updateTicketStatus } from "../utils/ticketsApi";
+import {
+	assignTicket,
+	createComment,
+	getComments,
+	updateTicketStatus,
+} from "../utils/ticketsApi";
 import type { Ticket } from "../utils/types";
 
 interface TicketViewProps {
@@ -150,7 +154,7 @@ export default function TicketView({
 		} catch (e) {
 			console.error("Failed to resolve ticket", e);
 		}
-	}
+	};
 
 	return (
 		<div className="min-h-screen w-full bg-gray-50 flex flex-col items-center py-12 px-6 gap-8">
