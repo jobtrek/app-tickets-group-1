@@ -188,7 +188,6 @@ export default function TicketView({
 						<img
 							src={`${import.meta.env.VITE_UPLOADS_URL}/${image}`}
 							alt="Pièce jointe (cliquer pour agrandir)"
-							tabIndex={0}
 							className="w-100 h-64 object-cover rounded-lg border border-gray-300 shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-indigo-500"
 							onClick={() => setIsModalOpen(true)}
 							onKeyDown={(e) => handleKeyDown(e, () => setIsModalOpen(true))}
@@ -201,7 +200,6 @@ export default function TicketView({
 								aria-modal="true"
 								onClick={() => setIsModalOpen(false)}
 								onKeyDown={(e) => handleKeyDown(e, () => setIsModalOpen(false))}
-								tabIndex={-1}
 							>
 								<div className="relative max-w-7xl max-h-[90vh]">
 									<img

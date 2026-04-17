@@ -16,7 +16,9 @@ export const getAllTickets = async () => {
 	}
 };
 
-export const getTicketById = async (req: any): Promise<Response> => {
+export const getTicketById = async (
+	req: Bun.BunRequest<"/api/ticket/:id">,
+): Promise<Response> => {
 	try {
 		const id = req.params?.id;
 

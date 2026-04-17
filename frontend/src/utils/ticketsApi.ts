@@ -8,9 +8,7 @@ export const createTicketFromForm = async (
 	idUser: number,
 ) => {
 	ticket.append("idUser", idUser.toString());
-	const postResponse = await axios.post(API_URL, ticket, {
-		headers: { "Content-Type": "multipart/form-data" },
-	});
+	const postResponse = await axios.post(API_URL, ticket);
 	const getResponse = await axios.get(API_URL);
 	const createdTicket = postResponse.data.createdTicket;
 	const allTickets = getResponse.data;

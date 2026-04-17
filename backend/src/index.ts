@@ -1,5 +1,5 @@
 import { basename, join } from "node:path";
-import { corsHeaders } from "backend/utils/headers";
+import { corsHeaders } from "../utils/headers";
 import { CommentRoutes } from "./routes/commentRoute";
 import { LoginRoutes } from "./routes/loginRoute";
 import { registerRoutes } from "./routes/registerRoute";

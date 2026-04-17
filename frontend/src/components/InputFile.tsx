@@ -17,18 +17,24 @@ export default function InputFile({ id }: InputFileProps) {
 	useEffect(() => {
 		if (inputRef.current) {
 			const dataTransfer = new DataTransfer();
-			files.forEach((file) => dataTransfer.items.add(file.data));
+			for (const file of files) {
+				dataTransfer.items.add(file.data);
+			}
 			inputRef.current.files = dataTransfer.files;
 		}
 	}, [files]);
 
 	const addFiles = (newFiles: File[]) => {
-		const mappedFiles = newFiles.map((data) => ({
-			id: crypto.randomUUID(),
-			data,
-			preview: URL.createObjectURL(data),
-		}));
-		setFiles((prev) => [...prev, ...mappedFiles]);
+		setFiles((prev) => {
+			for (const f of prev) {
+				URL.revokeObjectURL(f.preview);
+			}
+			return newFiles.slice(0, 1).map((data) => ({
+				id: crypto.randomUUID(),
+				data,
+				preview: URL.createObjectURL(data),
+			}));
+		});
 	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
