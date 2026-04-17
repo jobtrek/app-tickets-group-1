@@ -1,5 +1,7 @@
 import { useState } from "react";
 import User from "../components/User";
+import { statusStyles } from "../utils/statusStyles";
+import type { Ticket } from "../utils/types";
 
 interface TicketViewProps {
 	id: number;
@@ -8,15 +10,19 @@ interface TicketViewProps {
 	description: string;
 	level: string;
 	image?: string | null;
+	username: string;
+	statusName: Ticket["statusName"];
 }
 
 export default function TicketView({
-	id: _id,
+	id,
 	title,
 	description,
 	date,
 	level,
 	image,
+	username,
+	statusName,
 }: TicketViewProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,16 +49,18 @@ export default function TicketView({
 			<div className="w-full max-w-6xl border-2 rounded-xl p-10 border-gray-400">
 				<div className="flex justify-between">
 					<h1 className="text-3xl">{title}</h1>
-					<span className="p-4 border-indigo-300 bg-indigo-100 text-indigo-600 border-2 rounded-4xl w-52 text-center text-xl">
-						Ouvert
+					<span
+						className={`p-4 ${statusStyles[statusName]} border-2 rounded-4xl w-52 text-center text-xl`}
+					>
+						{statusName}
 					</span>
 				</div>
 
 				<p className="text-gray-400 text-lg pb-10">Crée le {date}</p>
-				<hr className="border-t-2 border-gray-200 pb-10" />
+				<hr className="border-t-2 border-gray-200 pb-5" />
 
-				<div className="pb-20">
-					<User />
+				<div className="pb-10">
+					<User username={username} />
 				</div>
 
 				<h2 className="text-gray-400 text-xl pb-5">Description</h2>

@@ -26,6 +26,8 @@ function TicketViewPage() {
 			date={ticket.createdAt}
 			level={ticket.level}
 			image={ticket.image}
+			username={ticket.username}
+			statusName={ticket.statusName}
 		/>
 	);
 }
