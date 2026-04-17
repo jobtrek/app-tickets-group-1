@@ -82,7 +82,7 @@ export default function TicketView({
 							>
 								<div className="relative max-w-7xl max-h-[90vh]">
 									<img
-										src={`http://localhost:3001/uploads/${image}`}
+										src={`${import.meta.env.VITE_UPLOADS_URL}/${image}`}
 										alt="Plein écran"
 										className="rounded-lg object-contain max-h-[90vh] w-full cursor-default shadow-2xl"
 										onClick={(e) => e.stopPropagation()}

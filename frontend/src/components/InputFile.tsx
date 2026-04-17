@@ -80,7 +80,6 @@ export default function InputFile({ id }: InputFileProps) {
 								id={id}
 								name="image"
 								type="file"
-								multiple
 								className="sr-only"
 								onChange={handleChange}
 								accept="image/png, image/jpeg, image/jpg"

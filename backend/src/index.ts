@@ -1,3 +1,4 @@
+import { corsHeaders } from "backend/utils/headers";
 import { basename, join } from "node:path";
 import { LoginRoutes } from "./routes/loginRoute";
 import { registerRoutes } from "./routes/registerRoute";
@@ -19,6 +20,10 @@ const _server = Bun.serve({
 		const path = url.pathname;
 		const method = req.method;
 
+		if (method === "OPTIONS") {
+			return new Response(null, { headers: corsHeaders });
+		}
+
 		// --- PROTECTION DES UPLOADS ---
 		if (path.startsWith("/uploads/")) {
 			const fileName = basename(path);
@@ -27,9 +32,12 @@ const _server = Bun.serve({
 			const file = Bun.file(filePath);
 
 			if (await file.exists()) {
-				return new Response(file);
+				return new Response(file, { headers: corsHeaders });
 			}
-			return new Response("Image not found", { status: 404 });
+			return new Response("Image not found", {
+				status: 404,
+				headers: corsHeaders,
+			});
 		}
 
 		if (allRoutes[path]?.[method]) {
@@ -40,11 +48,11 @@ const _server = Bun.serve({
 			const ticketRoute = ticketRoutes["/api/ticket/:id"];
 			return (
 				ticketRoute?.[method as keyof typeof ticketRoute]?.(req) ??
-				new Response("Not Found", { status: 404 })
+				new Response("Not Found", { status: 404, headers: corsHeaders })
 			);
 		}
 
-		return new Response("Not Found", { status: 404 });
+		return new Response("Not Found", { status: 404, headers: corsHeaders });
 	},
 });
 

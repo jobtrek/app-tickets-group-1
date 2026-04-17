@@ -1,3 +1,4 @@
+import { fileTypeFromBuffer } from "file-type";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import * as v from "valibot";
@@ -51,43 +52,58 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		};
 
 		const validBody = v.safeParse(TicketPostSchema, rawData);
+
 		if (!validBody.success) {
 			return Response.json(
 				{ errors: validBody.issues.map((i) => i.message) },
-
 				{ status: 400, headers: corsHeaders },
 			);
 		}
 
 		let finalFileName: string | null = null;
 		const file = formData.get("image") as File | null;
-		if (file && file.size > 0) {
-			const allowedTypes = ["image/png", "image/jpeg", "image/jpg"];
-			if (!allowedTypes.includes(file.type)) {
-				return new Response("Invalid file type (PNG/JPG only)", {
-					status: 400,
 
-					headers: corsHeaders,
-				});
+		if (file && file.size > 0) {
+			const arrayBuffer = await file.arrayBuffer();
+			const buffer = new Uint8Array(arrayBuffer);
+			const detectedType = await fileTypeFromBuffer(buffer);
+
+			const allowedMimeTypes = [
+				"image/png",
+				"image/jpeg",
+				"image/jpg",
+				"image/webp",
+			];
+
+			if (!detectedType || !allowedMimeTypes.includes(detectedType.mime)) {
+				return new Response(
+					"Security Error: Invalid file content. Real images only.",
+					{
+						status: 400,
+						headers: corsHeaders,
+					},
+				);
 			}
 
 			if (file.size > 10 * 1024 * 1024) {
 				return new Response("File too large (Max 10MB)", {
 					status: 400,
-
 					headers: corsHeaders,
 				});
 			}
 
-			const ext = path.extname(file.name);
-			finalFileName = `${crypto.randomUUID()}${ext}`;
+			const safeExt = `.${detectedType.ext}`;
+			finalFileName = `${crypto.randomUUID()}${safeExt}`;
+
 			const uploadDir = path.join(import.meta.dir, "..", "..", "uploads");
+
 			await mkdir(uploadDir, { recursive: true });
-			await Bun.write(path.join(uploadDir, finalFileName), file);
+			await Bun.write(path.join(uploadDir, finalFileName), buffer);
 		}
 
 		const { title, description, level, idUser } = validBody.output;
 		const defaultStatus = 1;
+
 		const result = await ticketQueries.insert(
 			title,
 			description,
@@ -105,7 +121,10 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			},
 		);
 	} catch (e) {
-		console.error("DB insertion error", e);
-		return new Response("Server Error", { status: 500, headers: corsHeaders });
+		console.error("Critical Server Error:", e);
+		return new Response("Internal Server Error", {
+			status: 500,
+			headers: corsHeaders,
+		});
 	}
 };
