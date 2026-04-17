@@ -69,7 +69,7 @@ The GET request on the `/ws` route triggers the upgrade handler.
 
 ```ts
 export const websocketUpgrade = (req: Request) => {
-  const id = new URL(req.url).pathname.split("/").at(-2);
+  const id =req.params.id;
   const success = getServer()?.upgrade(req, { data: { ticketId: id } });
   if (!success) return new Response("WS upgrade failed", { status: 400 });
 };

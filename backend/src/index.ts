@@ -13,16 +13,17 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		...CommentRoutes,
 	},
 	websocket: {
-		open(ws){
-			ws.subscribe(`ticket-${ws.data.ticketId}`)
+		open(ws) {
+			if (ws.data.ticketId) {
+				ws.subscribe(`ticket-${ws.data.ticketId}`);
+			}
 		},
-		close(ws){
-			ws.unsubscribe(`ticket-${ws.data.ticketId}`)
+		close(ws) {
+			ws.unsubscribe(`ticket-${ws.data.ticketId}`);
 		},
-		message(){
+		message() {
 			// Clients send comments via HTTP POST, so this is intentionally empty.
-		}
-
+		},
 	},
 });
 

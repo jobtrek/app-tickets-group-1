@@ -6,7 +6,6 @@ import { TicketPostSchema } from "../validators/ticketValidator.ts";
 export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
-		console.log("gettickets called.");
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
 	} catch (e) {
 		console.error("getAllTickets error:", e);

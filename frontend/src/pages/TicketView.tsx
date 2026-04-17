@@ -108,8 +108,13 @@ export default function TicketView({
 
 	const handleSubmit = async () => {
 		if (!commentInput.trim()) return;
-		setCommentInput("");
-		await createComment(commentInput, userId, ticketIdNumber);
+
+		try {
+			await createComment(commentInput, userId, ticketIdNumber);
+			setCommentInput("");
+		} catch (e) {
+			console.error("Failed to post comment", e);
+		}
 	};
 
 	return (
