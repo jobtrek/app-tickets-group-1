@@ -11,13 +11,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 	loader: async (): Promise<Ticket[]> => {
 		const response = await axios.get<Ticket[]>(API_URL);
 		return response.data;
-	},
+	},;
 	component: DashboardPage,
 });
 
 function DashboardPage() {
 	const loaderTickets = Route.useLoaderData();
 	const setTickets = useTicketStore((state) => state.setTickets);
+	const tickets = useTicketStore((state) => state.tickets);
 
 	useEffect(() => {
 		setTickets(loaderTickets);

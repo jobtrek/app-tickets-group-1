@@ -19,9 +19,7 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		close(ws){
 			ws.unsubscribe(`ticket-${ws.data.ticketId}`)
 		},
-		message(ws, msg){
-			
-		}
+		message(){}
 
 	},
 });

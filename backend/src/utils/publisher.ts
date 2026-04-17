@@ -1,8 +1,8 @@
 import type { Server } from "bun";
 
-let _server: Server | null = null;
+let _server: Server<{ ticketId: string | undefined }> | null = null;
 
-export const setServer = (s: Server) => {
+export const setServer = (s: Server<{ ticketId: string | undefined }>) => {
 	_server = s;
 };
 

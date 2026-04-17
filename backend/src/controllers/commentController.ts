@@ -20,7 +20,9 @@ export const postComment = async (req: Request) => {
 				commentText: validated.commentText,
 			})
 			.returning();
-
+		if(!inserted){
+			return console.error('There was an error inserting your comment.');
+		}
 		const [fullComment] = await db
 			.select({
 				idComment: comments.idComment,

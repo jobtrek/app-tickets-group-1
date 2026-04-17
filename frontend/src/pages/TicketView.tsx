@@ -175,6 +175,10 @@ export default function TicketView({
 						comments.map((comment, index) => {
 							const isAdmin = comment.authorRole === "admin";
 							const dateLabel = getDateLabel(comment.createdAt);
+							
+							if(!comments[index - 1]){
+								console.error('Previous comment is undefined for comment ID:', comment.idComment);
+							}
 							const prevDateLabel = index > 0 ? getDateLabel(comments[index - 1].createdAt) : null;
 							const showDateSeparator = dateLabel !== prevDateLabel;
 
