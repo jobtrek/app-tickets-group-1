@@ -18,7 +18,6 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 function DashboardPage() {
 	const loaderTickets = Route.useLoaderData();
 	const setTickets = useTicketStore((state) => state.setTickets);
-	const tickets = useTicketStore((state) => state.tickets);
 
 	useEffect(() => {
 		setTickets(loaderTickets);

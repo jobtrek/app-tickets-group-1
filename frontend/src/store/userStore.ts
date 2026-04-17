@@ -5,7 +5,13 @@ interface UserStore {
 	idUser: number;
 	username: string;
 	email: string;
-	setUser: (user: { idUser: number; username: string; email: string }) => void;
+	role: string;
+	setUser: (user: {
+		idUser: number;
+		username: string;
+		email: string;
+		role: string;
+	}) => void;
 	clearUser: () => void;
 }
 
@@ -15,8 +21,9 @@ export const useUserStore = create<UserStore>()(
 			idUser: 0,
 			username: "",
 			email: "",
+			role: "",
 			setUser: (user) => set(user),
-			clearUser: () => set({ idUser: 0, username: "", email: "" }),
+			clearUser: () => set({ idUser: 0, username: "", email: "", role: "" }),
 		}),
 		{ name: "user-storage" },
 	),

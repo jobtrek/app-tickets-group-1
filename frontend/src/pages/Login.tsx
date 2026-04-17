@@ -17,7 +17,7 @@ export default function LoginForm() {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setFormData((prevData) => ({
+		setFormData((prevData: LoginData) => ({
 			...prevData,
 			[name]: value,
 		}));
@@ -32,6 +32,7 @@ export default function LoginForm() {
 				username: response.data.username,
 				email: response.data.email,
 				idUser: response.data.id,
+				role: response.data.role,
 			});
 			console.log("User successfully logged in:", response);
 			navigate({ to: "/create-ticket" });
