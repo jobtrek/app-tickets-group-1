@@ -65,6 +65,7 @@ export const loginUser = async (req: Request) => {
 				username: user.username,
 				email: user.email,
 				id: user.idUser,
+				role: user.role,
 			},
 			{ status: 200, headers },
 		);

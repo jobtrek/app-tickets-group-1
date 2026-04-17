@@ -5,23 +5,29 @@ import { DashboardIcon } from "../components/svg/DashboardIcon";
 import { StatisticsIcon } from "../components/svg/StatisticsIcon";
 import { useUserStore } from "../store/userStore";
 import { logoutUser } from "../utils/userApi";
+
 export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
+	const role = useUserStore((state) => state.role);
+
+	const isAdmin = role === "admin";
 
 	return (
 		<div className="flex flex-col gap-2 m-3 h-full w-56 px-4 py-4 ml-1.5">
-			<NavbarButton
-				icon={<DashboardIcon />}
-				text="Dashboard"
-				onClick={() => navigate({ to: "/dashboard" })}
-			/>
+			{isAdmin && (
+				<NavbarButton
+					icon={<DashboardIcon />}
+					text="Dashboard"
+					onClick={() => navigate({ to: "/dashboard" })}
+				/>
+			)}
 			<NavbarButton
 				icon={<CreateTicketIcon />}
 				text="Create"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
-			<NavbarButton icon={<StatisticsIcon />} text="Statistics" />
+			{isAdmin && <NavbarButton icon={<StatisticsIcon />} text="Statistics" />}
 			<div className="my-1 border-t border-zinc-700" />
 			{username ? (
 				<NavbarButton
@@ -30,7 +36,7 @@ export function Navbar() {
 					onClick={async () => {
 						logoutUser();
 						useUserStore.getState().clearUser();
-						navigate({ to: "/dashboard" });
+						navigate({ to: "/login" });
 					}}
 				/>
 			) : (
@@ -42,7 +48,7 @@ export function Navbar() {
 			)}
 			{username && (
 				<div className="mt-auto w-52">
-					<div className="flex items-center gap-2 px-2 py-2.5 bg-white rounded-lg border border-white ">
+					<div className="flex items-center gap-2 px-2 py-2.5 bg-white rounded-lg border border-white">
 						<div className="relative shrink-0">
 							<div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-white text-sm font-bold uppercase">
 								{username.charAt(0)}

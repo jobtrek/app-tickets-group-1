@@ -7,7 +7,7 @@ import type { Ticket } from "../../src/utils/types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_adminOnly/dashboard")({
 	loader: async (): Promise<Ticket[]> => {
 		const response = await axios.get<Ticket[]>(API_URL);
 		return response.data;

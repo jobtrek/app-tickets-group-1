@@ -3,7 +3,8 @@ import { useUserStore } from "../src/store/userStore";
 
 export const Route = createFileRoute("/")({
 	beforeLoad: () => {
-		const username = useUserStore.getState().username;
-		throw redirect({ to: username ? "/dashboard" : "/login" });
+		const { username, role } = useUserStore.getState();
+		if (!username) throw redirect({ to: "/login" });
+		throw redirect({ to: role === "admin" ? "/dashboard" : "/create-ticket" });
 	},
 });

@@ -4,7 +4,9 @@ export const getFilteredTickets = (state: TicketStore) => {
 	let filtered = [...state.tickets];
 
 	if (state.statusFilter.length > 0) {
-		filtered = filtered.filter((t) => state.statusFilter.includes(t.idStatus));
+		filtered = filtered.filter((t) =>
+			state.statusFilter.includes(t.statusName),
+		);
 	}
 
 	if (state.urgencyFilter.length > 0) {

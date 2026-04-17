@@ -1,10 +1,11 @@
-"use client";
 
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import User from "../components/User";
 import { useUserStore } from "../store/userStore";
+import { statusStyles } from "../utils/statusStyles";
 import { createComment, getComments } from "../utils/ticketsApi";
+import type { Ticket } from "../utils/types";
 
 interface TicketViewProps {
 	id: number;
@@ -12,6 +13,8 @@ interface TicketViewProps {
 	date: string;
 	description: string;
 	level: string;
+	username: string;
+	statusName: Ticket["statusName"];
 }
 
 interface Comment {
@@ -29,12 +32,12 @@ function timeAgo(dateStr: string): string {
 	const seconds = Math.floor((now.getTime() - past.getTime()) / 1000);
 
 	const intervals: { label: string; seconds: number }[] = [
-		{ label: "an",     seconds: 31536000 },
-		{ label: "mois",   seconds: 2592000  },
-		{ label: "semaine",seconds: 604800   },
-		{ label: "jour",   seconds: 86400    },
-		{ label: "heure",  seconds: 3600     },
-		{ label: "minute", seconds: 60       },
+		{ label: "an", seconds: 31536000 },
+		{ label: "mois", seconds: 2592000 },
+		{ label: "semaine", seconds: 604800 },
+		{ label: "jour", seconds: 86400 },
+		{ label: "heure", seconds: 3600 },
+		{ label: "minute", seconds: 60 },
 	];
 
 	for (const interval of intervals) {
@@ -54,7 +57,11 @@ const getDateLabel = (dateStr: string): string => {
 	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 	const yesterday = new Date(today);
 	yesterday.setDate(yesterday.getDate() - 1);
-	const commentDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+	const commentDay = new Date(
+		date.getFullYear(),
+		date.getMonth(),
+		date.getDate(),
+	);
 
 	if (commentDay.getTime() === today.getTime()) return "Aujourd'hui";
 	if (commentDay.getTime() === yesterday.getTime()) return "Hier";
@@ -66,11 +73,12 @@ const getDateLabel = (dateStr: string): string => {
 };
 
 export default function TicketView({
-	id: _id,
 	title,
 	description,
 	date,
 	level,
+	username,
+	statusName,
 }: TicketViewProps) {
 	const { id } = useParams({ from: "/_authenticated/ticket/$id" });
 	const navigate = useNavigate();
@@ -79,7 +87,7 @@ export default function TicketView({
 
 	const [commentInput, setCommentInput] = useState("");
 	const [comments, setComments] = useState<Comment[]>([]);
-	const [, setTick] = useState(0); 
+	const [, setTick] = useState(0);
 	const userId = useUserStore((state) => state.idUser);
 
 	useEffect(() => {
@@ -134,16 +142,18 @@ export default function TicketView({
 			<div className="w-full max-w-6xl border-2 rounded-xl p-10 border-gray-400">
 				<div className="flex justify-between">
 					<h1 className="text-3xl">{title}</h1>
-					<span className="p-4 border-indigo-300 bg-indigo-100 text-indigo-600 border-2 rounded-4xl w-52 text-center text-xl">
-						Ouvert
+					<span
+						className={`p-4 ${statusStyles[statusName]} border-2 rounded-4xl w-52 text-center text-xl`}
+					>
+						{statusName}
 					</span>
 				</div>
 
 				<p className="text-gray-400 text-lg pb-10">Crée le {date}</p>
-				<hr className="border-t-2 border-gray-200 pb-10" />
+				<hr className="border-t-2 border-gray-200 pb-5" />
 
-				<div className="pb-20">
-					<User />
+				<div className="pb-10">
+					<User username={username} />
 				</div>
 
 				<h2 className="text-gray-400 text-xl pb-5">Description</h2>
@@ -153,7 +163,9 @@ export default function TicketView({
 
 				<div className="w-full bg-gray-200 p-5 pb-20 rounded-xl flex gap-120">
 					<div className="flex flex-col gap-2 pl-4">
-						<p className="text-xs font-semibold text-gray-500">NIVEAU D'URGENCE</p>
+						<p className="text-xs font-semibold text-gray-500">
+							NIVEAU D'URGENCE
+						</p>
 						<p className="font-bold text-xl">{level}</p>
 					</div>
 					<div className="flex flex-col gap-2">
@@ -175,11 +187,15 @@ export default function TicketView({
 						comments.map((comment, index) => {
 							const isAdmin = comment.authorRole === "admin";
 							const dateLabel = getDateLabel(comment.createdAt);
-							
-							if(!comments[index - 1]){
-								console.error('Previous comment is undefined for comment ID:', comment.idComment);
+
+							if (!comments[index - 1]) {
+								console.error(
+									"Previous comment is undefined for comment ID:",
+									comment.idComment,
+								);
 							}
-							const prevDateLabel = index > 0 ? getDateLabel(comments[index - 1].createdAt) : null;
+							const prevDateLabel =
+								index > 0 ? getDateLabel(comments[index - 1].createdAt) : null;
 							const showDateSeparator = dateLabel !== prevDateLabel;
 
 							return (
@@ -197,11 +213,18 @@ export default function TicketView({
 										<div className="flex justify-between items-center mb-2">
 											{isAdmin ? (
 												<>
-													<span className="text-xs text-gray-400" title={new Date(comment.createdAt).toLocaleString("fr-FR")}>
+													<span
+														className="text-xs text-gray-400"
+														title={new Date(comment.createdAt).toLocaleString(
+															"fr-FR",
+														)}
+													>
 														{timeAgo(comment.createdAt)}
 													</span>
 													<div className="flex items-center gap-2">
-														<span className="font-semibold text-gray-700">{comment.authorName}</span>
+														<span className="font-semibold text-gray-700">
+															{comment.authorName}
+														</span>
 														<span className="px-2 py-0.5 bg-red-100 text-red-600 border border-red-300 rounded-full text-xs font-semibold">
 															{comment.authorRole}
 														</span>
@@ -210,18 +233,27 @@ export default function TicketView({
 											) : (
 												<>
 													<div className="flex items-center gap-2">
-														<span className="font-semibold text-gray-700">{comment.authorName}</span>
+														<span className="font-semibold text-gray-700">
+															{comment.authorName}
+														</span>
 														<span className="px-2 py-0.5 bg-blue-100 text-blue-600 border border-blue-300 rounded-full text-xs font-semibold">
 															user
 														</span>
 													</div>
-													<span className="text-xs text-gray-400" title={new Date(comment.createdAt).toLocaleString("fr-FR")}>
+													<span
+														className="text-xs text-gray-400"
+														title={new Date(comment.createdAt).toLocaleString(
+															"fr-FR",
+														)}
+													>
 														{timeAgo(comment.createdAt)}
 													</span>
 												</>
 											)}
 										</div>
-										<p className={`text-gray-700 wrap-break-word overflow-hidden ${isAdmin ? "text-right" : ""}`}>
+										<p
+											className={`text-gray-700 wrap-break-word overflow-hidden ${isAdmin ? "text-right" : ""}`}
+										>
 											{comment.commentText.length > 200 ? (
 												<>
 													{comment.commentText.slice(0, 200)}

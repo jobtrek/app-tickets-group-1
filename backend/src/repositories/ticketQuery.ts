@@ -1,27 +1,30 @@
-import { eq } from "drizzle-orm";
-import { tickets, users } from "../data/schema";
+import { eq, getTableColumns } from "drizzle-orm";
+import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
 
 export const ticketQueries = {
 	getAll: () =>
 		db
 			.select({
-				idTicket: tickets.idTicket,
-				title: tickets.title,
-				description: tickets.description,
-				image: tickets.image,
-				level: tickets.level,
-				createdAt: tickets.createdAt,
-				updatedAt: tickets.updatedAt,
-				idStatus: tickets.idStatus,
-				idUser: tickets.idUser,
+				...getTableColumns(tickets),
 				username: users.username,
+				statusName: status.statusName,
 			})
 			.from(tickets)
-			.innerJoin(users, eq(tickets.idUser, users.idUser)),
+			.innerJoin(users, eq(tickets.idUser, users.idUser))
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus)),
 
 	getById: (idTicket: number) =>
-		db.select().from(tickets).where(eq(tickets.idTicket, idTicket)),
+		db
+			.select({
+				...getTableColumns(tickets),
+				username: users.username,
+				statusName: status.statusName,
+			})
+			.from(tickets)
+			.innerJoin(users, eq(tickets.idUser, users.idUser))
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.where(eq(tickets.idTicket, idTicket)),
 
 	insert: (
 		title: string,

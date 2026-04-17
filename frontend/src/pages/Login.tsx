@@ -35,7 +35,9 @@ export default function LoginForm() {
 				role: response.data.role,
 			});
 			console.log("User successfully logged in:", response);
-			navigate({ to: "/create-ticket" });
+			navigate({
+				to: response.data.role === "admin" ? "/dashboard" : "/create-ticket",
+			});
 		} catch (error) {
 			console.error("Error logging in user:", error);
 		}

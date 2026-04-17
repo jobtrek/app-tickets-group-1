@@ -3,14 +3,8 @@ import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
 import { useTicketStore } from "../store/ticketStore";
 import { getFilteredTickets } from "../utils/sorting";
+import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
-
-const statutStyles: Record<Ticket["idStatus"], string> = {
-	Ouvert: "bg-indigo-100 text-indigo-600 border border-indigo-300",
-	"En cours": "bg-yellow-100 text-yellow-600 border border-yellow-300",
-	Fermé: "bg-red-100 text-red-600 border border-red-300",
-	Résolu: "bg-emerald-100 text-emerald-600 border border-emerald-300",
-};
 
 const urgenceStyles: Record<Ticket["level"], string> = {
 	urgent: "text-red-500 font-semibold",
@@ -34,7 +28,7 @@ const sortOptions = [
 	{ value: "az", label: "Trier par: Ordre alphabétique" },
 ];
 
-const statusOptions: Ticket["idStatus"][] = [
+const statusOptions: Ticket["statusName"][] = [
 	"Ouvert",
 	"En cours",
 	"Fermé",
@@ -84,7 +78,7 @@ export default function Dashboard() {
 									onChange={() => toggleStatusFilter(status)}
 								/>
 								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statutStyles[status]}`}
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
 								>
 									{status}
 								</span>
@@ -151,9 +145,9 @@ export default function Dashboard() {
 
 							<td className="text-left pr-6">
 								<span
-									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statutStyles[row.idStatus]}`}
+									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[row.statusName]}`}
 								>
-									{row.idStatus}
+									{row.statusName}
 								</span>
 							</td>
 							<td className="text-left text-sm pr-6">

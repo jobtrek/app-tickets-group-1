@@ -8,11 +8,19 @@ export const postUser = async (req: Request) => {
 	try {
 		const body = await req.json();
 
-		const validated = v.parse(UserRegisterSchema, body);
+		const result = v.safeParse(UserRegisterSchema, body);
 
+		if (!result.success) {
+			return Response.json(
+				{ errors: result.issues.map((i) => i.message) },
+				{ status: 400, headers: corsHeaders },
+			);
+		}
+
+		const validated = result.output;
 		const securedPassword = await hashPassword(validated.password);
 
-		const result = await db
+		const resp = await db
 			.insert(users)
 			.values({
 				username: validated.username,
@@ -23,14 +31,14 @@ export const postUser = async (req: Request) => {
 			.returning()
 			.onConflictDoNothing();
 
-		if (!result || result.length === 0) {
+		if (!resp || resp.length === 0) {
 			return new Response(JSON.stringify({ error: "Email already exists" }), {
 				status: 400,
 				headers: corsHeaders,
 			});
 		}
 
-		const user = result[0];
+		const user = resp[0];
 
 		return new Response(
 			JSON.stringify({
