@@ -18,7 +18,7 @@ export default function RegisterForm() {
 		email: "",
 		password: "",
 	});
-	const [errorMessage, setErrorMessage] = useState("");
+	const [_errorMessage, setErrorMessage] = useState("");
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,6 +27,13 @@ export default function RegisterForm() {
 			...prevData,
 			[name]: value,
 		}));
+				if (errors[name]) {
+			setErrors((prev) => {
+				const newErrors = { ...prev };
+				delete newErrors[name];
+				return newErrors;
+			});
+		}
 	};
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
