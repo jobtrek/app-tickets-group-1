@@ -29,7 +29,9 @@ export default function TicketView({
 
 	const [commentInput, setCommentInput] = useState("");
 	const [statusName, setStatusName] = useState(initialStatusName);
-	const [supportUsername, setSupportUsername] = useState(initialSupportUsername);
+	const [supportUsername, setSupportUsername] = useState(
+		initialSupportUsername,
+	);
 
 	const userId = useUserStore((state) => state.idUser);
 	const storeUsername = useUserStore((state) => state.username);
