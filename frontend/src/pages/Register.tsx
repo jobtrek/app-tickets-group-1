@@ -18,7 +18,7 @@ export default function RegisterForm() {
 		email: "",
 		password: "",
 	});
-	const [_errorMessage, setErrorMessage] = useState("");
+	const [errorMessage, setErrorMessage] = useState("");
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,6 +78,8 @@ export default function RegisterForm() {
 						S'inscrire
 					</h1>
 					<form className="space-y-6" onSubmit={handleSubmit}>
+						<Alert variant="error" message={errorMessage} />
+
 						<FormField id="username" label="Nom d'utilisateur">
 							<InputText
 								id="username"

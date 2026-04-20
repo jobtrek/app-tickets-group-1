@@ -39,8 +39,6 @@ export function Alert({ variant, message, className = "" }: AlertProps) {
 	);
 }
 
-// ─── Error Boundary ───────────────────────────────────────────────────────────
-
 export class AlertErrorBoundary extends React.Component<
 	AlertErrorBoundaryProps,
 	AlertErrorBoundaryState
@@ -73,14 +71,3 @@ export class AlertErrorBoundary extends React.Component<
 		return this.props.children;
 	}
 }
-
-// ─── Usage ────────────────────────────────────────────────────────────────────
-//
-// Standalone:
-//   <Alert variant="success" message="Your account has been saved." />
-//   <Alert variant="error" message="Your email address is invalid." />
-//
-// Error Boundary:
-//   <AlertErrorBoundary fallbackMessage="Something went wrong.">
-//     <MyComponent />
-//   </AlertErrorBoundary>
