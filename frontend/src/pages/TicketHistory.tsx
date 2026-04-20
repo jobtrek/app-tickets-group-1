@@ -6,20 +6,11 @@ import { getFilteredTickets } from "../utils/sorting";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
-const urgenceStyles: Record<Ticket["level"], string> = {
-	urgent: "text-red-500 font-semibold",
-	haut: "text-orange-500 font-semibold",
-	moyen: "text-gray-700",
-	bas: "text-gray-400",
-};
-
 const colonnes = [
 	"Nom du client",
 	"Titre (Problème)",
 	"Statut",
-	"Support IT",
 	"Date de création",
-	"Niveau d'urgence",
 ];
 
 const sortOptions = [
@@ -34,25 +25,20 @@ const statusOptions: Ticket["statusName"][] = [
 	"Fermé",
 	"Résolu",
 ];
-const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
-export default function Dashboard() {
+export default function TicketHistory() {
 	const navigate = useNavigate();
 	const sort = useTicketStore((state) => state.sort);
 	const setSort = useTicketStore((state) => state.setSort);
 	const toggleStatusFilter = useTicketStore(
 		(state) => state.toggleStatusFilter,
 	);
-	const toggleUrgencyFilter = useTicketStore(
-		(state) => state.toggleUrgencyFilter,
-	);
 	const statusFilter = useTicketStore((state) => state.statusFilter);
-	const urgencyFilter = useTicketStore((state) => state.urgencyFilter);
 	const filteredTickets = useTicketStore(useShallow(getFilteredTickets));
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
-			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
+			<h1 className="text-2xl font-bold pb-4">Historique des tickets</h1>
 
 			<div className="flex gap-8 pb-8">
 				<div className="w-xs text-gray-500 ">
@@ -81,29 +67,6 @@ export default function Dashboard() {
 									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
 								>
 									{status}
-								</span>
-							</label>
-						))}
-					</div>
-				</div>
-
-				<div className="flex flex-col gap-1">
-					<span className="text-xs text-gray-400 font-medium pb-1">
-						Urgence
-					</span>
-					<div className="flex gap-3">
-						{urgencyOptions.map((urgency) => (
-							<label
-								key={urgency}
-								className="flex items-center gap-1.5 cursor-pointer"
-							>
-								<input
-									type="checkbox"
-									checked={urgencyFilter.includes(urgency)}
-									onChange={() => toggleUrgencyFilter(urgency)}
-								/>
-								<span className={`text-xs py-0.5 ${urgenceStyles[urgency]}`}>
-									{urgency}
 								</span>
 							</label>
 						))}
@@ -159,20 +122,8 @@ export default function Dashboard() {
 									{row.statusName}
 								</span>
 							</td>
-							<td className="text-left text-sm pr-6">
-								{row.supportUsername ? (
-									<span className="text-gray-700">{row.supportUsername}</span>
-								) : (
-									<span className="italic text-gray-400">Non assigné</span>
-								)}
-							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">
 								{row.createdAt}
-							</td>
-							<td
-								className={`text-left text-sm pr-6 ${urgenceStyles[row.level]}`}
-							>
-								{row.level}
 							</td>
 						</tr>
 					))}
