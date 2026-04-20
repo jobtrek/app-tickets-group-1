@@ -41,7 +41,7 @@ export default function TicketView({
 	const isOwner = storeUsername === username;
 
 	const isChatDisabled =
-		statusName === "Résolu"
+		statusName === "Résolu" || statusName === "Fermé"
 
 	const { comments } = useTicketComments(ticketIdNumber);
 
@@ -66,14 +66,20 @@ export default function TicketView({
 		}
 	};
 
-	const handleResolve = () => {
-		setPendingConfirmation(true);
+	const handleResolve = async () => {
+		try {
+			await updateTicketStatus(ticketIdNumber, 3);
+			setStatusName("Résolu");
+			setPendingConfirmation(true);
+		} catch (e) {
+			console.error("Failed to resolve ticket", e);
+		}
 	};
 
 	const handleConfirmClose = async () => {
 		try {
-			await updateTicketStatus(ticketIdNumber, 3);
-			setStatusName("Résolu");
+			await updateTicketStatus(ticketIdNumber, 4);
+			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
 			console.error("Failed to close ticket", e);
