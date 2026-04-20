@@ -23,15 +23,18 @@ export interface LoginData {
 	password: string;
 }
 
-export interface TicketViewProps {
+export interface TicketDetailsProps {
 	id: number;
 	title: string;
 	date: string;
 	description: string;
 	level: Ticket["level"];
+	image: string | null
 	username: string;
 	statusName: Ticket["statusName"];
 	supportUsername: string | null;
+	isAdmin: boolean;
+	onAssign: () => void;
 }
 
 export interface Comment {

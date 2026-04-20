@@ -10,7 +10,7 @@ import {
 	createComment,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
-import type { TicketViewProps } from "../utils/types";
+import type { TicketDetailsProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
 
 export default function TicketView({
@@ -18,10 +18,11 @@ export default function TicketView({
 	description,
 	date,
 	level,
+	image,
 	username,
 	statusName,
 	supportUsername,
-}: TicketViewProps) {
+}: TicketDetailsProps) {
 	const { id } = useParams({ from: "/_authenticated/ticket/$id" });
 	const navigate = useNavigate();
 	const router = useRouter();
@@ -77,6 +78,7 @@ export default function TicketView({
 				date={date}
 				description={description}
 				level={level}
+				image={image}
 				username={username}
 				statusName={statusName}
 				supportUsername={supportUsername}
