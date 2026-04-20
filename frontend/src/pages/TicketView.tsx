@@ -32,11 +32,16 @@ export default function TicketView({
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
 	);
+	const [pendingConfirmation, setPendingConfirmation] = useState(false);
 
 	const userId = useUserStore((state) => state.idUser);
 	const storeUsername = useUserStore((state) => state.username);
 	const role = useUserStore((state) => state.role);
 	const isAdmin = role === "admin";
+	const isOwner = storeUsername === username;
+
+	const isChatDisabled =
+		statusName === "Résolu"
 
 	const { comments } = useTicketComments(ticketIdNumber);
 
@@ -61,12 +66,36 @@ export default function TicketView({
 		}
 	};
 
-	const handleResolve = async () => {
+	const handleResolve = () => {
+		setPendingConfirmation(true);
+	};
+
+	const handleConfirmClose = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 3);
 			setStatusName("Résolu");
+			setPendingConfirmation(false);
 		} catch (e) {
-			console.error("Failed to resolve ticket", e);
+			console.error("Failed to close ticket", e);
+		}
+	};
+
+	const handleRejectClose = async () => {
+		try {
+			await updateTicketStatus(ticketIdNumber, 2);
+			setStatusName("En cours");
+			setPendingConfirmation(false);
+		} catch (e) {
+			console.error("Failed to reopen ticket", e);
+		}
+	};
+
+	const handleOwnerClose = async () => {
+		try {
+			await updateTicketStatus(ticketIdNumber, 4);
+			setStatusName("Résolu");
+		} catch (e) {
+			console.error("Failed to close ticket", e);
 		}
 	};
 
@@ -75,8 +104,11 @@ export default function TicketView({
 			<TicketHeader
 				statusName={statusName}
 				isAdmin={isAdmin}
+				pendingConfirmation={pendingConfirmation}
 				onBack={() => navigate({ to: "/" })}
 				onResolve={handleResolve}
+				onConfirmResolve={handleConfirmClose}
+				onRejectResolve={handleRejectClose}
 			/>
 			<TicketDetails
 				id={ticketIdNumber}
@@ -89,15 +121,76 @@ export default function TicketView({
 				statusName={statusName}
 				supportUsername={supportUsername}
 				isAdmin={isAdmin}
+				isOwner={isOwner}
 				onAssign={handleAssign}
+				onOwnerClose={handleOwnerClose}
+				ownerUsername={username}
 			/>
 			<div className="w-full max-w-5xl">
 				<CommentList comments={comments} />
-				<CommentInput
-					value={commentInput}
-					onChange={setCommentInput}
-					onSubmit={handleSubmit}
-				/>
+
+				{isOwner && !isAdmin && pendingConfirmation && (
+					<div className="flex items-center gap-3 border border-yellow-200 bg-yellow-50 rounded-xl px-5 py-4 mb-4">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							className="text-yellow-500 shrink-0"
+						>
+							<title>Information</title>
+							<circle cx="12" cy="12" r="10" />
+							<line x1="12" y1="8" x2="12" y2="12" />
+							<line x1="12" y1="16" x2="12.01" y2="16" />
+						</svg>
+						<p className="text-sm text-yellow-800 flex-1">
+							Votre ticket a été marqué comme résolu. Est-ce bien le cas ?
+						</p>
+						<button
+							type="button"
+							onClick={handleConfirmClose}
+							className="text-xs font-medium px-3 py-1.5 rounded-lg bg-green-100 text-green-700 border border-green-200 hover:bg-green-200 transition-colors"
+						>
+							Oui, clôturer
+						</button>
+						<button
+							type="button"
+							onClick={handleRejectClose}
+							className="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-colors"
+						>
+							Non, continuer
+						</button>
+					</div>
+				)}
+
+				{isChatDisabled ? (
+					<div className="flex items-center gap-2 border border-dashed border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-400">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+						>
+							<title>Chat désactivé</title>
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+							<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+						</svg>
+						La messagerie est désactivée pour les tickets{" "}
+						{statusName === "Résolu" ? "" : "résolus"}.
+					</div>
+				) : (
+					<CommentInput
+						value={commentInput}
+						onChange={setCommentInput}
+						onSubmit={handleSubmit}
+					/>
+				)}
 			</div>
 		</div>
 	);

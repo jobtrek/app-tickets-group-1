@@ -29,7 +29,7 @@ export default function TicketCreation() {
 			const errors: Record<string, string> = {};
 
 			const title = formData.get("title") as string;
-			const urgence = formData.get("urgence") as string;
+			const urgence = formData.get("level") as string;
 			const desc = formData.get("description") as string;
 
 			if (!title.trim()) errors.title = "Le titre est obligatoire.";
@@ -86,8 +86,8 @@ export default function TicketCreation() {
 							<Alert variant="error" message={state?.errors?.desc} />
 						</FormField>
 
-						<FormField id="urgence" label="Niveau d'urgence">
-							<Select id="urgence" options={urgenceOptions} />
+						<FormField id="level" label="Niveau d'urgence">
+							<Select id="level" options={urgenceOptions} />
 							<Alert variant="error" message={state?.errors?.urgence} />
 						</FormField>
 
