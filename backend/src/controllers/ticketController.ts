@@ -1,9 +1,11 @@
+import { eq } from "drizzle-orm";
+import { fileTypeFromBuffer } from "file-type";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
-import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
-import { ticketAssignmentQuery } from "../repositories/assigntTickerQuery.ts";
+import { ticket_assignment, tickets } from "../data/schema";
+import { db } from "../db/database";
 import { CookieQuery } from "../repositories/cookieQuery.ts";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
@@ -166,8 +168,15 @@ export const assignTicket = async (
 		);
 	}
 
-	await ticketAssignmentQuery.create(idTicket, idSupport);
-	await ticketAssignmentQuery.setTicketSupport(idTicket, idSupport);
+	await db.transaction(async (tx) => {
+		await tx
+			.insert(ticket_assignment)
+			.values({ idTicket, idSupport, isActive: true });
+		await tx
+			.update(tickets)
+			.set({ idSupport })
+			.where(eq(tickets.idTicket, idTicket));
+	});
 
 	return Response.json(
 		{ message: "Ticket assigned" },
@@ -179,6 +188,10 @@ export const updateStatus = async (
 	req: Bun.BunRequest<"/api/tickets/:id/status">,
 ) => {
 	const idTicket = Number(req.params.id);
+
+	if (!idTicket) {
+		console.error("Error fetching the id");
+	}
 	const { statusId } = await req.json();
 
 	await updateStatusQuery.update(statusId, idTicket);
