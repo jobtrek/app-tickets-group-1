@@ -12,6 +12,7 @@ interface TicketViewProps {
 	date: string;
 	description: string;
 	level: string;
+	image?: string | null;
 	username: string;
 	statusName: Ticket["statusName"];
 }
@@ -76,6 +77,7 @@ export default function TicketView({
 	description,
 	date,
 	level,
+	image,
 	username,
 	statusName,
 }: TicketViewProps) {
@@ -87,7 +89,25 @@ export default function TicketView({
 	const [commentInput, setCommentInput] = useState("");
 	const [comments, setComments] = useState<Comment[]>([]);
 	const [, setTick] = useState(0);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 	const userId = useUserStore((state) => state.idUser);
+
+	const levelColors: Record<string, string> = {
+		moyen: "text-gray-700",
+		bas: "text-gray-400",
+		haut: "text-orange-600",
+		urgent: "text-red-600",
+	};
+	const currentColor = levelColors[level] || "text-gray-400";
+
+	const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+		if (e.key === "Enter" || e.key === " ") {
+			e.preventDefault();
+			action();
+		} else if (e.key === "Escape") {
+			setIsModalOpen(false);
+		}
+	};
 
 	useEffect(() => {
 		getComments(ticketIdNumber).then(setComments);
@@ -162,14 +182,53 @@ export default function TicketView({
 				<h2 className="text-gray-400 text-xl pb-5">Description</h2>
 				<p className="pb-10">{description}</p>
 
-				<h2 className="text-gray-400 text-xl pb-20">Pièces jointes</h2>
+				<h2 className="text-gray-400 text-xl pb-10">Pièces jointes</h2>
+				{image ? (
+					<div className="pb-10">
+						<img
+							src={`${import.meta.env.VITE_UPLOADS_URL}/${image}`}
+							alt="Pièce jointe (cliquer pour agrandir)"
+							className="w-100 h-64 object-cover rounded-lg border border-gray-300 shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-indigo-500"
+							onClick={() => setIsModalOpen(true)}
+							onKeyDown={(e) => handleKeyDown(e, () => setIsModalOpen(true))}
+						/>
 
+						{isModalOpen && (
+							<div
+								className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 cursor-zoom-out"
+								role="dialog"
+								aria-modal="true"
+								onClick={() => setIsModalOpen(false)}
+								onKeyDown={(e) => handleKeyDown(e, () => setIsModalOpen(false))}
+							>
+								<div className="relative max-w-7xl max-h-[90vh]">
+									<img
+										src={`${import.meta.env.VITE_UPLOADS_URL}/${image}`}
+										alt="Plein écran"
+										className="rounded-lg object-contain max-h-[90vh] w-full cursor-default shadow-2xl"
+										onClick={(e) => e.stopPropagation()}
+										onKeyDown={(e) => {
+											e.stopPropagation();
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+											}
+										}}
+									/>
+								</div>
+							</div>
+						)}
+					</div>
+				) : (
+					<p className=" pb-10 text-gray-400 italic">Aucune pièce jointe.</p>
+				)}
 				<div className="w-full bg-gray-200 p-5 pb-20 rounded-xl flex gap-120">
 					<div className="flex flex-col gap-2 pl-4">
 						<p className="text-xs font-semibold text-gray-500">
 							NIVEAU D'URGENCE
 						</p>
-						<p className="font-bold text-xl">{level}</p>
+						<p className={`font-bold text-xl uppercase ${currentColor}`}>
+							{level}
+						</p>
 					</div>
 					<div className="flex flex-col gap-2">
 						<p className="text-xs font-semibold text-gray-500">ASSIGNÉ À</p>
