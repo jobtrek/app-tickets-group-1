@@ -13,7 +13,8 @@ export const getAllTickets = async () => {
 		const tickets = await ticketQueries.getAll();
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
 	} catch (e) {
-		console.error("getAllTickets error:", e);
+		console.error("DB fetch error", e);
+
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
@@ -41,7 +42,8 @@ export const getTicketById = async (
 		}
 
 		return Response.json(ticket[0], { status: 200, headers: corsHeaders });
-	} catch (_e) {
+	} catch (e) {
+		console.error("DB fetch error", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
@@ -120,11 +122,8 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			{ status: 201, headers: corsHeaders },
 		);
 	} catch (e) {
-		console.error("Critical Server Error:", e);
-		return new Response("Internal Server Error", {
-			status: 500,
-			headers: corsHeaders,
-		});
+		console.error("DB insertion error", e);
+		return new Response("Error", { status: 500, headers: corsHeaders });
 	}
 };
 

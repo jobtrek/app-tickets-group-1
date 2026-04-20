@@ -57,6 +57,6 @@ export const postUser = async (req: Request) => {
 		);
 	} catch (e) {
 		console.error("DB insertion error", e);
-		return new Response("Error", { status: 400, headers: corsHeaders });
+		return new Response("Error", { status: 500, headers: corsHeaders });
 	}
 };

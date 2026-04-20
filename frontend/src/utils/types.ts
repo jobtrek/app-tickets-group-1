@@ -63,3 +63,8 @@ export const urgencyColor: Record<Ticket["level"], string> = {
 	moyen: "text-gray-700",
 	bas: "text-gray-400",
 };
+export interface ActionState {
+	success: boolean;
+	message: string;
+	errors?: Record<string, string>;
+}
