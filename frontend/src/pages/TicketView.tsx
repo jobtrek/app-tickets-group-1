@@ -40,8 +40,7 @@ export default function TicketView({
 	const isAdmin = role === "admin";
 	const isOwner = storeUsername === username;
 
-	const isChatDisabled =
-		statusName === "Résolu" || statusName === "Fermé"
+	const isChatDisabled = statusName === "Résolu" || statusName === "Fermé";
 
 	const { comments } = useTicketComments(ticketIdNumber);
 

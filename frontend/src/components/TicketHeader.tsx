@@ -63,7 +63,9 @@ export default function TicketHeader({
 						>
 							<polyline points="20 6 9 17 4 12" />
 						</svg>
-						{statusName === "Résolu" || statusName === "Fermé" ? statusName : "Marquer comme résolu"}
+						{statusName === "Résolu" || statusName === "Fermé"
+							? statusName
+							: "Marquer comme résolu"}
 					</button>
 
 					{pendingConfirmation && (
