@@ -151,7 +151,11 @@ export default function Dashboard() {
 								</span>
 							</td>
 							<td className="text-left text-sm pr-6">
-								<span className="italic text-gray-400">En attente</span>
+								{row.supportUsername ? (
+									<span className="text-gray-700">{row.supportUsername}</span>
+								) : (
+									<span className="italic text-gray-400">Non assigné</span>
+								)}
 							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">
 								{row.createdAt}

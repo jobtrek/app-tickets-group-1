@@ -20,7 +20,6 @@ function TicketViewPage() {
 
 	return (
 		<TicketView
-			id={ticket.idTicket}
 			title={ticket.title}
 			description={ticket.description}
 			date={ticket.createdAt}
@@ -28,6 +27,7 @@ function TicketViewPage() {
 			image={ticket.image}
 			username={ticket.username}
 			statusName={ticket.statusName}
+			supportUsername={ticket.supportUsername}
 		/>
 	);
 }

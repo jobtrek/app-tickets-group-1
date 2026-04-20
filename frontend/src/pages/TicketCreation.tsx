@@ -46,7 +46,7 @@ export default function TicketCreation() {
 				const { createdTicket } = await createTicketFromForm(formData, user);
 				navigate({
 					to: "/ticket/$id",
-					params: { id: createdTicket.idTicket },
+					params: { id: String(createdTicket.idTicket) },
 				});
 				return { success: true, message: "Ticket créé !" };
 			} catch (e) {

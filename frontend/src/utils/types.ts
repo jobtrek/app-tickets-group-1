@@ -9,6 +9,7 @@ export interface Ticket {
 	statusName: "Ouvert" | "En cours" | "Fermé" | "Résolu";
 	idUser: number;
 	username: string;
+	supportUsername: string;
 }
 
 export interface RegisterData {
@@ -22,6 +23,46 @@ export interface LoginData {
 	password: string;
 }
 
+export interface TicketDetailsProps {
+	id: number;
+	title: string;
+	date: string;
+	description: string;
+	level: Ticket["level"];
+	image: string | null;
+	username: string;
+	statusName: Ticket["statusName"];
+	supportUsername: string | null;
+	isAdmin: boolean;
+	onAssign: () => void;
+}
+
+export interface TicketViewProps {
+	title: string;
+	date: string;
+	description: string;
+	level: Ticket["level"];
+	image: string | null;
+	username: string;
+	statusName: Ticket["statusName"];
+	supportUsername: string | null;
+}
+
+export interface Comment {
+	idComment: number;
+	authorId: number;
+	authorName: string;
+	commentText: string;
+	createdAt: string;
+	authorRole: string;
+}
+
+export const urgencyColor: Record<Ticket["level"], string> = {
+	urgent: "text-red-500 font-semibold",
+	haut: "text-orange-500 font-semibold",
+	moyen: "text-gray-700",
+	bas: "text-gray-400",
+};
 export interface ActionState {
 	success: boolean;
 	message: string;
