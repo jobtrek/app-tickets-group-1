@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
 import CommentInput from "../components/CommentInput";
 import CommentList from "../components/CommentList";
@@ -10,7 +10,7 @@ import {
 	createComment,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
-import type { TicketDetailsProps } from "../utils/types";
+import type { TicketViewProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
 
 export default function TicketView({
@@ -20,16 +20,19 @@ export default function TicketView({
 	level,
 	image,
 	username,
-	statusName,
-	supportUsername,
-}: TicketDetailsProps) {
+	statusName: initialStatusName,
+	supportUsername: initialSupportUsername,
+}: TicketViewProps) {
 	const { id } = useParams({ from: "/_authenticated/ticket/$id" });
 	const navigate = useNavigate();
-	const router = useRouter();
 	const ticketIdNumber = Number(id);
 
 	const [commentInput, setCommentInput] = useState("");
+	const [statusName, setStatusName] = useState(initialStatusName);
+	const [supportUsername, setSupportUsername] = useState(initialSupportUsername);
+
 	const userId = useUserStore((state) => state.idUser);
+	const storeUsername = useUserStore((state) => state.username);
 	const role = useUserStore((state) => state.role);
 	const isAdmin = role === "admin";
 
@@ -49,7 +52,8 @@ export default function TicketView({
 		try {
 			await assignTicket(ticketIdNumber, userId);
 			await updateTicketStatus(ticketIdNumber, 2);
-			router.invalidate();
+			setSupportUsername(storeUsername);
+			setStatusName("En cours");
 		} catch (e) {
 			console.error("Failed to assign ticket", e);
 		}
@@ -58,7 +62,7 @@ export default function TicketView({
 	const handleResolve = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 3);
-			router.invalidate();
+			setStatusName("Résolu");
 		} catch (e) {
 			console.error("Failed to resolve ticket", e);
 		}

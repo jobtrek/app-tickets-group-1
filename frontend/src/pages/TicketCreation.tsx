@@ -27,7 +27,7 @@ export default function TicketCreation() {
 
 				navigate({
 					to: "/ticket/$id",
-					params: { id: createdTicket.idTicket },
+					params: { id: String(createdTicket.idTicket) },
 				});
 				return "Ticket added !";
 			} catch (e) {

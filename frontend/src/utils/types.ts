@@ -29,12 +29,23 @@ export interface TicketDetailsProps {
 	date: string;
 	description: string;
 	level: Ticket["level"];
-	image: string | null
+	image: string | null;
 	username: string;
 	statusName: Ticket["statusName"];
 	supportUsername: string | null;
 	isAdmin: boolean;
 	onAssign: () => void;
+}
+
+export interface TicketViewProps {
+	title: string;
+	date: string;
+	description: string;
+	level: Ticket["level"];
+	image: string | null;
+	username: string;
+	statusName: Ticket["statusName"];
+	supportUsername: string | null;
 }
 
 export interface Comment {

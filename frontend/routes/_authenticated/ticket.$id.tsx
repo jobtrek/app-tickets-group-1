@@ -20,7 +20,6 @@ function TicketViewPage() {
 
 	return (
 		<TicketView
-			id={ticket.idTicket}
 			title={ticket.title}
 			description={ticket.description}
 			date={ticket.createdAt}
