@@ -61,7 +61,7 @@ export default function TicketDetails({
 				</span>
 			</div>
 			<p className="text-sm text-gray-400 mb-6">
-				Créé le {date} · #{id}
+				Créé le {new Date(date).toLocaleDateString("fr-CH", { day: "numeric", month: "long", year: "numeric" })} · #{id}
 			</p>
 
 			<hr className="border-gray-100 mb-5" />
