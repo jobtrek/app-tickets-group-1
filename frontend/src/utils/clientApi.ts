@@ -30,11 +30,11 @@ apiClient.interceptors.response.use(
 		}
 
 		if (!error.response) {
-			return Promise.reject({ message: "Vérifiez votre connexion internet." });
+			return Promise.reject(new Error("Vérifiez votre connexion internet."));
 		}
 
 		if (status >= 500) {
-			return Promise.reject({ message: "Le serveur est en panne." });
+			return Promise.reject(new Error("Le serveur est en panne."));
 		}
 
 		return Promise.reject(error);
