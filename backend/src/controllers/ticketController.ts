@@ -1,7 +1,7 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets } from "../data/schema";
@@ -187,14 +187,20 @@ export const updateStatus = async (
 	req: Bun.BunRequest<"/api/tickets/:id/status">,
 ) => {
 	const idTicket = Number(req.params.id);
-
-	if (!idTicket) {
-		console.error("Error fetching the id");
+	if (!idTicket || Number.isNaN(idTicket)) {
+		return Response.json(
+			{ error: "Invalid ticket ID" },
+			{ status: 400, headers: corsHeaders },
+		);
 	}
 	const { statusId } = await req.json();
-
+	if (!Number.isInteger(statusId) || statusId < 1) {
+		return Response.json(
+			{ error: "Invalid statusId" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
 	await updateStatusQuery.update(statusId, idTicket);
-
 	return Response.json(
 		{ message: "Status updated" },
 		{ status: 200, headers: corsHeaders },
