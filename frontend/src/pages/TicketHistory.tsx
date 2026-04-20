@@ -105,7 +105,6 @@ export default function TicketHistory() {
 								}
 							}}
 							tabIndex={0}
-							role="button"
 							key={row.idTicket}
 							className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
 						>
