@@ -32,7 +32,9 @@ export default function TicketView({
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
 	);
-	const [pendingConfirmation, setPendingConfirmation] = useState(false);
+	const [pendingConfirmation, setPendingConfirmation] = useState(
+		initialStatusName === "Résolu",
+	);
 
 	const userId = useUserStore((state) => state.idUser);
 	const storeUsername = useUserStore((state) => state.username);
