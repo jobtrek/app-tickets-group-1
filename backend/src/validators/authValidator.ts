@@ -3,18 +3,18 @@ import * as v from "valibot";
 export const UserRegisterSchema = v.object({
 	username: v.pipe(
 		v.string(),
-		v.minLength(1, "Username is required"),
-		v.maxLength(50, "Username must be 50 characters or less"),
+		v.minLength(1, "Le nom d'utilisateur est requis"),
+		v.maxLength(50, "Maximum 50 caractères"),
 	),
 	email: v.pipe(
 		v.string(),
-		v.email("Invalid email address"),
-		v.maxLength(100, "Email must be 100 characters or less"),
+		v.email("L'adresse email n'est pas valide"),
+		v.maxLength(100, "Maximum 100 caractères"),
 	),
 	password: v.pipe(
 		v.string(),
-		v.minLength(8, "Password must be at least 8 characters"),
-		v.maxLength(255, "Password must be 255 characters or less"),
+		v.minLength(8, "Le mot de passe doit contenir au moins 8 caractères"),
+		v.maxLength(255, "Le mot de passe est trop long"),
 	),
 });
 

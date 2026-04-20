@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient } from "./clientApi";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
@@ -8,14 +8,14 @@ export const createTicketFromForm = async (
 	idUser: number,
 ) => {
 	ticket.append("idUser", idUser.toString());
-	const postResponse = await axios.post(API_URL, ticket);
-	const getResponse = await axios.get(API_URL);
+	const postResponse = await apiClient.post(API_URL, ticket);
+	const getResponse = await apiClient.get(API_URL);
 	const createdTicket = postResponse.data.createdTicket;
 	const allTickets = getResponse.data;
 	return { createdTicket, allTickets };
 };
 export const userLogout = async () => {
-	await axios.post(LOGOUT_URL);
+	await apiClient.post(LOGOUT_URL);
 };
 
 export const createComment = async (
@@ -23,7 +23,7 @@ export const createComment = async (
 	idUser: number,
 	idTicket: number,
 ) => {
-	const { data } = await axios.post(`${API_URL}/${idTicket}/comment`, {
+	const { data } = await apiClient.post(`${API_URL}/${idTicket}/comment`, {
 		commentText,
 		idUser,
 		idTicket,
@@ -31,6 +31,6 @@ export const createComment = async (
 	return data;
 };
 export const getComments = async (idTicket: number) => {
-	const { data } = await axios.get(`${API_URL}/${idTicket}/comment`);
+	const { data } = await apiClient.get(`${API_URL}/${idTicket}/comment`);
 	return data;
 };
