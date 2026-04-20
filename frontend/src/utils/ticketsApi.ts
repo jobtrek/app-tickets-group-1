@@ -1,4 +1,4 @@
-import axios from "axios";
+import { apiClient } from "./clientApi";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
@@ -14,8 +14,8 @@ export const createTicketFromForm = async (
 		level: ticket.get("urgence"),
 		idUser: idUser,
 	};
-	const postResponse = await axios.post(API_URL, payload);
-	const getResponse = await axios.get(API_URL);
+	const postResponse = await apiClient.post(API_URL, payload);
+	const getResponse = await apiClient.get(API_URL);
 
 	const createdTicket = postResponse.data.createdTicket;
 	const allTickets = getResponse.data;
@@ -23,5 +23,5 @@ export const createTicketFromForm = async (
 	return { createdTicket, allTickets };
 };
 export const userLogout = async () => {
-	await axios.post(LOGOUT_URL);
+	await apiClient.post(LOGOUT_URL);
 };

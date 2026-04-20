@@ -7,7 +7,9 @@ export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
-	} catch (_e) {
+	} catch (e) {
+				console.error("DB insertion error", e);
+
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
@@ -33,7 +35,8 @@ export const getTicketById = async (req: Request): Promise<Response> => {
 		}
 
 		return Response.json(ticket[0], { status: 200, headers: corsHeaders });
-	} catch (_e) {
+	} catch (e) {
+				console.error("DB insertion error", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
@@ -72,6 +75,6 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		);
 	} catch (e) {
 		console.error("DB insertion error", e);
-		return new Response("Error", { status: 400, headers: corsHeaders });
+		return new Response("Error", { status: 500, headers: corsHeaders });
 	}
 };

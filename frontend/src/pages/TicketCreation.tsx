@@ -5,6 +5,7 @@ import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
 import InputFile from "../components/InputFile";
 import InputText from "../components/InputText";
+import { Spinner } from "../components/Loading";
 import Select from "../components/Select";
 import TextArea from "../components/TextArea";
 import { useUserStore } from "../store/userStore";
@@ -25,6 +26,8 @@ export default function TicketCreation() {
 
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData): Promise<ActionState> => {
+			  await new Promise(resolve => setTimeout(resolve, 0));
+
 			const errors: Record<string, string> = {};
 
 			const title = formData.get("title") as string;
@@ -96,7 +99,8 @@ export default function TicketCreation() {
 
 						<Button
 							type="submit"
-							title={pending ? "Envoi..." : "Créer un ticket"}
+							title={pending ? <Spinner /> : "Créer le ticket"}
+							disabled={pending}
 						/>
 					</form>
 				</div>

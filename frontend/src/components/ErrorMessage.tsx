@@ -6,7 +6,7 @@ type AlertVariant = "success" | "error";
 
 interface AlertProps {
 	variant: AlertVariant;
-	message?: string;
+	message: string | null | undefined;
 	className?: string;
 }
 
