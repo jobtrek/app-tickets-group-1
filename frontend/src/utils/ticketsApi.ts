@@ -7,19 +7,11 @@ export const createTicketFromForm = async (
 	ticket: FormData,
 	idUser: number,
 ) => {
-	const payload = {
-		title: ticket.get("title"),
-		description: ticket.get("description"),
-		image: ticket.get("img") || null,
-		level: ticket.get("urgence") || undefined,
-		idUser: idUser,
-	};
-	const postResponse = await axios.post(API_URL, payload);
+	ticket.append("idUser", idUser.toString());
+	const postResponse = await axios.post(API_URL, ticket);
 	const getResponse = await axios.get(API_URL);
-
 	const createdTicket = postResponse.data.createdTicket;
 	const allTickets = getResponse.data;
-
 	return { createdTicket, allTickets };
 };
 export const userLogout = async () => {
@@ -36,7 +28,6 @@ export const createComment = async (
 		idUser,
 		idTicket,
 	});
-
 	return data;
 };
 export const getComments = async (idTicket: number) => {
