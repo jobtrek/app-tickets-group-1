@@ -91,8 +91,8 @@ export default function TicketCreation() {
 							<Alert variant="error" message={state?.errors?.urgence} />
 						</FormField>
 
-						<FormField label="Pièce jointe" id="img">
-							<InputFile id="img" />
+						<FormField label="Pièce jointe" id="image">
+							<InputFile id="image" />
 						</FormField>
 
 						<Button

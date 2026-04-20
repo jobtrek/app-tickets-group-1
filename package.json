@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "concurrently \"bun run dev:frontend\" \"bun run dev:backend\"",
 		"dev:frontend": "vite --config frontend/vite.config.ts",
-		"dev:backend": "bun --hot backend/src/index.ts",
+		"dev:backend": "bun --watch backend/src/index.ts",
+		"db:seed": "bun run backend/src/db/seed.ts",
 		"build": "tsr generate && tsc && vite build",
 		"preview": "vite preview",
 		"lint": "biome check .",
@@ -20,6 +21,7 @@
 		"axios": "^1.13.6",
 		"dotenv": "^17.4.2",
 		"drizzle-orm": "^0.45.2",
+		"file-type": "^22.0.1",
 		"postgres": "^3.4.9",
 		"react": "^19",
 		"react-dom": "^19",

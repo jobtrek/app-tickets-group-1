@@ -1,3 +1,6 @@
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
+import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticketQueries } from "../repositories/ticketQuery";
@@ -14,11 +17,13 @@ export const getAllTickets = async () => {
 	}
 };
 
-export const getTicketById = async (req: Request): Promise<Response> => {
+export const getTicketById = async (
+	req: Bun.BunRequest<"/api/ticket/:id">,
+): Promise<Response> => {
 	try {
-		const id = new URL(req.url).pathname.split("/").at(-1);
+		const id = req.params?.id;
 
-		if (!id || isNaN(Number(id))) {
+		if (!id || Number.isNaN(Number(id))) {
 			return new Response("Invalid or missing ID", {
 				status: 400,
 				headers: corsHeaders,
@@ -43,9 +48,16 @@ export const getTicketById = async (req: Request): Promise<Response> => {
 
 export const createTicket = async (req: Request): Promise<Response> => {
 	try {
-		const body = await req.json();
+		const formData = await req.formData();
 
-		const validBody = v.safeParse(TicketPostSchema, body);
+		const rawData = {
+			title: formData.get("title"),
+			description: formData.get("description"),
+			level: formData.get("level") || undefined,
+			idUser: Number(formData.get("idUser")),
+		};
+
+		const validBody = v.safeParse(TicketPostSchema, rawData);
 
 		if (!validBody.success) {
 			return Response.json(
@@ -54,24 +66,58 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			);
 		}
 
-		const { title, description, image, level, idUser } = validBody.output;
+		let finalFileName: string | null = null;
+		const file = formData.get("image") as File | null;
 
+		if (file && file.size > 0) {
+			const arrayBuffer = await file.arrayBuffer();
+			const buffer = new Uint8Array(arrayBuffer);
+			const detectedType = await fileTypeFromBuffer(buffer);
+
+			const allowedMimeTypes = [
+				"image/png",
+				"image/jpeg",
+				"image/jpg",
+				"image/webp",
+			];
+
+			if (!detectedType || !allowedMimeTypes.includes(detectedType.mime)) {
+				return new Response("Security Error: Invalid file content.", {
+					status: 400,
+					headers: corsHeaders,
+				});
+			}
+
+			if (file.size > 10 * 1024 * 1024) {
+				return new Response("File too large (Max 10MB)", {
+					status: 400,
+					headers: corsHeaders,
+				});
+			}
+
+			const safeExt = `.${detectedType.ext}`;
+			finalFileName = `${crypto.randomUUID()}${safeExt}`;
+			const uploadDir = path.join(import.meta.dir, "..", "..", "uploads");
+
+			await mkdir(uploadDir, { recursive: true });
+			await Bun.write(path.join(uploadDir, finalFileName), buffer);
+		}
+
+		const { title, description, level, idUser } = validBody.output;
 		const defaultStatus = 1;
 
 		const result = await ticketQueries.insert(
 			title,
 			description,
-			image ?? null,
+			finalFileName,
 			level ?? null,
 			defaultStatus,
 			idUser,
 		);
+
 		return Response.json(
 			{ createdTicket: result[0] },
-			{
-				status: 201,
-				headers: corsHeaders,
-			},
+			{ status: 201, headers: corsHeaders },
 		);
 	} catch (e) {
 		console.error("DB insertion error", e);

@@ -24,7 +24,7 @@ export default function LoginForm() {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
-		setFormData((prevData) => ({
+		setFormData((prevData: LoginData) => ({
 			...prevData,
 			[name]: value,
 		}));
