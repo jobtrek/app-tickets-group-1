@@ -52,7 +52,7 @@ export default function CommentCard({ comment }: CommentCardProps) {
 				</div>
 			</div>
 
-			<p className="text-base text-gray-600 leading-relaxed wrap-break-words">
+			<p className="text-base text-gray-600 leading-relaxed whitespace-pre-wrap wrap-break-word overflow-hidden min-w-0">
 				{comment.commentText}
 			</p>
 		</div>

@@ -15,7 +15,10 @@ interface TicketDetailsProps {
 	statusName: Ticket["statusName"];
 	supportUsername: string | null;
 	isAdmin: boolean;
+	isOwner: boolean;
 	onAssign: () => void;
+	onOwnerClose: () => void;
+	ownerUsername: string;
 }
 
 export default function TicketDetails({
@@ -29,7 +32,9 @@ export default function TicketDetails({
 	statusName,
 	supportUsername,
 	isAdmin,
+	isOwner,
 	onAssign,
+	onOwnerClose,
 }: TicketDetailsProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -42,6 +47,8 @@ export default function TicketDetails({
 		}
 	};
 
+	const isClosed = statusName === "Résolu" || statusName === "Fermé";
+
 	return (
 		<div className="w-full max-w-5xl bg-white border border-gray-200 rounded-xl p-10">
 			<div className="flex items-start justify-between gap-4 mb-1">
@@ -53,7 +60,13 @@ export default function TicketDetails({
 				</span>
 			</div>
 			<p className="text-sm text-gray-400 mb-6">
-				Créé le {date} · #{id}
+				Créé le{" "}
+				{new Date(date).toLocaleDateString("fr-CH", {
+					day: "numeric",
+					month: "long",
+					year: "numeric",
+				})}{" "}
+				· #{id}
 			</p>
 
 			<hr className="border-gray-100 mb-5" />
@@ -155,6 +168,7 @@ export default function TicketDetails({
 					) : (
 						<p className="text-sm text-gray-400 italic mb-2">Non assigné</p>
 					)}
+
 					{isAdmin && !supportUsername && (
 						<button
 							type="button"
@@ -179,6 +193,31 @@ export default function TicketDetails({
 								<line x1="22" y1="11" x2="16" y2="11" />
 							</svg>
 							Prendre en charge
+						</button>
+					)}
+
+					{isOwner && !supportUsername && !isClosed && (
+						<button
+							type="button"
+							onClick={onOwnerClose}
+							className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors mt-2"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="12"
+								height="12"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<title>Fermer le ticket</title>
+								<line x1="18" y1="6" x2="6" y2="18" />
+								<line x1="6" y1="6" x2="18" y2="18" />
+							</svg>
+							Fermer le ticket
 						</button>
 					)}
 				</div>
