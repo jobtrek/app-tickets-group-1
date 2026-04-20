@@ -18,6 +18,7 @@ export default function TicketView({
 	description,
 	date,
 	level,
+	image,
 	username,
 	statusName,
 	supportUsername,
@@ -77,6 +78,7 @@ export default function TicketView({
 				date={date}
 				description={description}
 				level={level}
+				image={image}
 				username={username}
 				statusName={statusName}
 				supportUsername={supportUsername}

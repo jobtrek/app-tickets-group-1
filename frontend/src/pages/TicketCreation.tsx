@@ -58,12 +58,12 @@ export default function TicketCreation() {
 							/>
 						</FormField>
 
-						<FormField id="urgence" label="Niveau d'urgence">
-							<Select id="urgence" options={urgenceOptions} />
+						<FormField id="level" label="Niveau d'urgence">
+							<Select id="level" options={urgenceOptions} />
 						</FormField>
 
-						<FormField label="Pièce jointe" id="img">
-							<InputFile id="img" />
+						<FormField label="Pièce jointe" id="image">
+							<InputFile id="image" />
 						</FormField>
 
 						<Button type="submit" title="Créer un ticket" />
