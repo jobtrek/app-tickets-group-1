@@ -10,9 +10,7 @@ const colonnes = [
 	"Nom du client",
 	"Titre (Problème)",
 	"Statut",
-	"Support IT",
 	"Date de création",
-	"Niveau d'urgence",
 ];
 
 const sortOptions = [
@@ -40,7 +38,7 @@ export default function TicketHistory() {
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
-			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
+			<h1 className="text-2xl font-bold pb-4">Historique des tickets</h1>
 
 			<div className="flex gap-8 pb-8">
 				<div className="w-xs text-gray-500 ">
@@ -99,7 +97,7 @@ export default function TicketHistory() {
 								})
 							}
 							key={row.idTicket}
-							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+							className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
 						>
 							<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
 								{row.username}

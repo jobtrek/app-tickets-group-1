@@ -134,7 +134,7 @@ export default function Dashboard() {
 								})
 							}
 							key={row.idTicket}
-							className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+							className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
 						>
 							<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
 								{row.username}
