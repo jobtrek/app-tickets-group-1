@@ -27,7 +27,7 @@ export default function RegisterForm() {
 			...prevData,
 			[name]: value,
 		}));
-				if (errors[name]) {
+		if (errors[name]) {
 			setErrors((prev) => {
 				const newErrors = { ...prev };
 				delete newErrors[name];

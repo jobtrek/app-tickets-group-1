@@ -26,8 +26,6 @@ export default function TicketCreation() {
 
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData): Promise<ActionState> => {
-			  await new Promise(resolve => setTimeout(resolve, 0));
-
 			const errors: Record<string, string> = {};
 
 			const title = formData.get("title") as string;

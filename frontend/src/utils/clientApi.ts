@@ -15,8 +15,8 @@ apiClient.interceptors.response.use(
 		const status = error.response?.status;
 
 		if (status === 401 || status === 403) {
-			useUserStore.getState().clearUser(); 
-			router.navigate({ to: "/login" }); 
+			useUserStore.getState().clearUser();
+			router.navigate({ to: "/login" });
 			return Promise.reject(error);
 		}
 
@@ -24,9 +24,9 @@ apiClient.interceptors.response.use(
 			!originalRequest._retry &&
 			(originalRequest._retryCount || 0) < MAX_RETRIES
 		) {
-			originalRequest._retry = true; 
+			originalRequest._retry = true;
 			originalRequest._retryCount = (originalRequest._retryCount || 0) + 1;
-			return apiClient(originalRequest); 
+			return apiClient(originalRequest);
 		}
 
 		if (!error.response) {
