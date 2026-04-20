@@ -49,7 +49,6 @@ export default function CommentCard({ comment }: CommentCardProps) {
 					>
 						{timeAgo(comment.createdAt)}
 					</span>
-					
 				</div>
 			</div>
 
