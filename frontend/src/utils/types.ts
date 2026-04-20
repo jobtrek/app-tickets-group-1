@@ -22,3 +22,30 @@ export interface LoginData {
 	email: string;
 	password: string;
 }
+
+export interface TicketViewProps {
+	id: number;
+	title: string;
+	date: string;
+	description: string;
+	level: Ticket["level"];
+	username: string;
+	statusName: Ticket["statusName"];
+	supportUsername: string | null;
+}
+
+export interface Comment {
+	idComment: number;
+	authorId: number;
+	authorName: string;
+	commentText: string;
+	createdAt: string;
+	authorRole: string;
+}
+
+export const urgencyColor: Record<Ticket["level"], string> = {
+	urgent: "text-red-500 font-semibold",
+	haut: "text-orange-500 font-semibold",
+	moyen: "text-gray-700",
+	bas: "text-gray-400",
+};

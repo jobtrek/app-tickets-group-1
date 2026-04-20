@@ -63,6 +63,6 @@ export const updateTicketStatus = async (
 };
 
 export const getTicketById = async (idTicket: number) => {
-	const id = await axios.post(`${API_URL}/${idTicket}`);
+	const id = await axios.get(`${API_URL}/${idTicket}`);
 	return id;
 };

@@ -15,6 +15,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - app_network
 
   frontend:
     build:
@@ -31,6 +33,8 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    networks:
+      - app_network
 
   backend:
     build:
@@ -49,6 +53,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - app_network
 
 volumes:
   db_data:
+
+networks:
+  app_network:
+    driver: bridge
