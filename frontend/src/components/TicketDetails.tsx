@@ -48,7 +48,7 @@ export default function TicketDetails({
 	};
 
 	const isClosed = statusName === "Résolu" || statusName === "Fermé";
-	
+
 	return (
 		<div className="w-full max-w-5xl bg-white border border-gray-200 rounded-xl p-10">
 			<div className="flex items-start justify-between gap-4 mb-1">
