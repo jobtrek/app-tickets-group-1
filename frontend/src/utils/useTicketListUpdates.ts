@@ -16,17 +16,21 @@ export function useTicketListUpdates() {
 		const ws = new WebSocket(`${origin}/ws`);
 
 		ws.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			if (data.type === "ticket_created") {
-				addTicket(data.ticket as Ticket);
-			} else if (data.type === "ticket_status_update") {
-				updateTicketInList(data.idTicket, {
-					statusName: data.statusName as Ticket["statusName"],
-				});
-			} else if (data.type === "ticket_assignment_update") {
-				updateTicketInList(data.idTicket, {
-					supportUsername: data.supportUsername,
-				});
+			try {
+				const data = JSON.parse(event.data);
+				if (data.type === "ticket_created") {
+					addTicket(data.ticket as Ticket);
+				} else if (data.type === "ticket_status_update") {
+					updateTicketInList(data.idTicket, {
+						statusName: data.statusName as Ticket["statusName"],
+					});
+				} else if (data.type === "ticket_assignment_update") {
+					updateTicketInList(data.idTicket, {
+						supportUsername: data.supportUsername,
+					});
+				}
+			} catch (error) {
+				console.error("Failed to parse WebSocket message:", error);
 			}
 		};
 
