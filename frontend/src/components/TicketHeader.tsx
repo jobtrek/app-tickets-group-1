@@ -15,7 +15,6 @@ export default function TicketHeader({
 	pendingConfirmation,
 	onBack,
 	onResolve,
-	
 }: TicketHeaderProps) {
 	return (
 		<div className="w-full max-w-5xl flex items-center justify-between">
@@ -46,7 +45,12 @@ export default function TicketHeader({
 					<button
 						type="button"
 						onClick={onResolve}
-						disabled={statusName === "Résolu" || statusName === "Fermé" || statusName !== "En cours" || (isAdmin && pendingConfirmation)}
+						disabled={
+							statusName === "Résolu" ||
+							statusName === "Fermé" ||
+							statusName !== "En cours" ||
+							(isAdmin && pendingConfirmation)
+						}
 						className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-green-300 bg-green-50 text-green-700 text-sm font-medium hover:bg-green-100 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-green-50 disabled:active:scale-100"
 					>
 						<svg

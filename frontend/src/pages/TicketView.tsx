@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
-import { useTicketStatusStore } from "../store/ticketStatusStore";
 import CommentInput from "../components/CommentInput";
 import CommentList from "../components/CommentList";
 import TicketDetails from "../components/TicketDetails";
 import TicketHeader from "../components/TicketHeader";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
@@ -33,7 +33,9 @@ export default function TicketView({
 	const storedStatus = useTicketStatusStore(
 		(state) => state.statusByTicketId[ticketIdNumber],
 	) as Ticket["statusName"] | undefined;
-	const setTicketStatus = useTicketStatusStore((state) => state.setTicketStatus);
+	const setTicketStatus = useTicketStatusStore(
+		(state) => state.setTicketStatus,
+	);
 	const statusName = storedStatus ?? initialStatusName;
 	const setStatusName = (status: Ticket["statusName"]) =>
 		setTicketStatus(ticketIdNumber, status);

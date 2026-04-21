@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
-import { fileTypeFromBuffer } from "file-type";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { eq } from "drizzle-orm";
+import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets } from "../data/schema";
@@ -17,6 +17,7 @@ const statusNames: Record<number, string> = {
 	3: "Résolu",
 	4: "Fermé",
 };
+
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
 
 export const getAllTickets = async () => {
@@ -215,7 +216,10 @@ export const updateStatus = async (
 
 	const statusName = statusNames[statusId];
 	if (statusName) {
-		publish(`ticket-${idTicket}`, JSON.stringify({ type: "status_update", statusName }));
+		publish(
+			`ticket-${idTicket}`,
+			JSON.stringify({ type: "status_update", statusName }),
+		);
 	}
 
 	return Response.json(
@@ -237,7 +241,10 @@ export const UpdateConfirmation = async (
 
 	const hasAdminConfirmed = await ticketQueries.confirmed(idTicket);
 
-	publish(`ticket-${idTicket}`, JSON.stringify({ type: "confirmation_update", hasAdminConfirmed }));
+	publish(
+		`ticket-${idTicket}`,
+		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed }),
+	);
 
 	return Response.json(
 		{ message: "Ticket confirmation toggled", hasAdminConfirmed },
