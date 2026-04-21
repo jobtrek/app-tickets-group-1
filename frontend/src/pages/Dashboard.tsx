@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useTicketStore } from "../store/ticketStore";
 import { getFilteredTickets } from "../utils/sorting";
 import { statusStyles } from "../utils/statusStyles";
@@ -49,6 +50,9 @@ export default function Dashboard() {
 	const statusFilter = useTicketStore((state) => state.statusFilter);
 	const urgencyFilter = useTicketStore((state) => state.urgencyFilter);
 	const filteredTickets = useTicketStore(useShallow(getFilteredTickets));
+	const statusByTicketId = useTicketStatusStore(
+		(state) => state.statusByTicketId,
+	);
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
@@ -153,11 +157,16 @@ export default function Dashboard() {
 							</td>
 
 							<td className="text-left pr-6">
-								<span
-									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[row.statusName]}`}
-								>
-									{row.statusName}
-								</span>
+								{(() => {
+									const liveStatus = (statusByTicketId[row.idTicket] ?? row.statusName) as Ticket["statusName"];
+									return (
+										<span
+											className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[liveStatus]}`}
+										>
+											{liveStatus}
+										</span>
+									);
+								})()}
 							</td>
 							<td className="text-left text-sm pr-6">
 								{row.supportUsername ? (
