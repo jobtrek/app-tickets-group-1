@@ -37,7 +37,7 @@ export function Alert({ variant, message, className = "" }: AlertProps) {
 				<CircleCheckBig className="shrink-0 text-green-500" size={20} />
 			) : (
 				<CircleAlert className="shrink-0 text-red-500" size={20} />
-			)}{" "}
+			)}
 			<span>{message}</span>
 		</div>
 	);
