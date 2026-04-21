@@ -48,6 +48,11 @@ export const useTicketStore = create<TicketStore>()(
 		}),
 		{
 			name: "ticket-store",
+			partialize: (state) => ({
+				sort: state.sort,
+				statusFilter: state.statusFilter,
+				urgencyFilter: state.urgencyFilter,
+			}),
 		},
 	),
 );
