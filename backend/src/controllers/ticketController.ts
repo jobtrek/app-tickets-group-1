@@ -1,7 +1,7 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets } from "../data/schema";
@@ -9,14 +9,22 @@ import { db } from "../db/database";
 import { CookieQuery } from "../repositories/cookieQuery.ts";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
+import { publish } from "../utils/publisher";
+
+const statusNames: Record<number, string> = {
+	1: "Ouvert",
+	2: "En cours",
+	3: "Résolu",
+	4: "Fermé",
+};
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
+
 export const getAllTickets = async () => {
 	try {
 		const tickets = await ticketQueries.getAll();
 		return Response.json(tickets, { status: 200, headers: corsHeaders });
 	} catch (e) {
 		console.error("DB fetch error", e);
-
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
@@ -160,6 +168,7 @@ export const assignTicket = async (
 
 	const idTicket = Number(req.params.id);
 	const idSupport: number | null = session.idUser;
+
 	if (!idSupport) {
 		return Response.json(
 			{ error: "Could not resolve support user" },
@@ -193,6 +202,7 @@ export const updateStatus = async (
 			{ status: 400, headers: corsHeaders },
 		);
 	}
+
 	const { statusId } = await req.json();
 	if (!Number.isInteger(statusId) || statusId < 1) {
 		return Response.json(
@@ -200,9 +210,37 @@ export const updateStatus = async (
 			{ status: 400, headers: corsHeaders },
 		);
 	}
+
 	await updateStatusQuery.update(statusId, idTicket);
+
+	const statusName = statusNames[statusId];
+	if (statusName) {
+		publish(`ticket-${idTicket}`, JSON.stringify({ type: "status_update", statusName }));
+	}
+
 	return Response.json(
 		{ message: "Status updated" },
+		{ status: 200, headers: corsHeaders },
+	);
+};
+
+export const UpdateConfirmation = async (
+	req: Bun.BunRequest<"/api/tickets/:id/confirm">,
+) => {
+	const idTicket = Number(req.params.id);
+	if (!idTicket || Number.isNaN(idTicket)) {
+		return Response.json(
+			{ error: "Invalid ticket ID" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
+	const hasAdminConfirmed = await ticketQueries.confirmed(idTicket);
+
+	publish(`ticket-${idTicket}`, JSON.stringify({ type: "confirmation_update", hasAdminConfirmed }));
+
+	return Response.json(
+		{ message: "Ticket confirmation toggled", hasAdminConfirmed },
 		{ status: 200, headers: corsHeaders },
 	);
 };

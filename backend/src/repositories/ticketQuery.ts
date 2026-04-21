@@ -33,16 +33,37 @@ export const ticketQueries = {
 			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idTicket, idTicket)),
 
-	insert: (
+	insert: async (
 		title: string,
 		description: string,
 		image: string | null,
 		level: string | null,
 		idStatus: number,
 		idUser: number,
-	) =>
-		db
+	) => {
+		return await db
 			.insert(tickets)
 			.values({ title, description, image, level, idStatus, idUser })
-			.returning(),
+			.returning();
+	},
+
+	confirmed: async (idTicket: number) => {
+		const ticket = await db
+			.select({ hasAdminConfirmed: tickets.hasAdminConfirmed })
+			.from(tickets)
+			.where(eq(tickets.idTicket, idTicket))
+			.limit(1);
+
+		const [row] = ticket;
+		if (!row) throw new Error("Ticket not found");
+
+		const newValue = !(row.hasAdminConfirmed ?? false);
+
+		await db
+			.update(tickets)
+			.set({ hasAdminConfirmed: newValue })
+			.where(eq(tickets.idTicket, idTicket));
+
+		return newValue;
+	},
 };

@@ -28,6 +28,7 @@ function TicketViewPage() {
 			username={ticket.username}
 			statusName={ticket.statusName}
 			supportUsername={ticket.supportUsername}
+			hasAdminConfirmed={ticket.hasAdminConfirmed ?? false}
 		/>
 	);
 }

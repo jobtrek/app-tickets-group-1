@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import CommentInput from "../components/CommentInput";
 import CommentList from "../components/CommentList";
 import TicketDetails from "../components/TicketDetails";
@@ -8,9 +9,10 @@ import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
 	createComment,
+	updateTicketConfirmation,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
-import type { TicketViewProps } from "../utils/types";
+import type { Ticket, TicketViewProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
 
 export default function TicketView({
@@ -22,18 +24,26 @@ export default function TicketView({
 	username,
 	statusName: initialStatusName,
 	supportUsername: initialSupportUsername,
+	hasAdminConfirmed,
 }: TicketViewProps) {
 	const { id } = useParams({ from: "/_authenticated/ticket/$id" });
 	const navigate = useNavigate();
 	const ticketIdNumber = Number(id);
 
+	const storedStatus = useTicketStatusStore(
+		(state) => state.statusByTicketId[ticketIdNumber],
+	) as Ticket["statusName"] | undefined;
+	const setTicketStatus = useTicketStatusStore((state) => state.setTicketStatus);
+	const statusName = storedStatus ?? initialStatusName;
+	const setStatusName = (status: Ticket["statusName"]) =>
+		setTicketStatus(ticketIdNumber, status);
+
 	const [commentInput, setCommentInput] = useState("");
-	const [statusName, setStatusName] = useState(initialStatusName);
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
 	);
 	const [pendingConfirmation, setPendingConfirmation] = useState(
-		initialStatusName === "Résolu",
+		hasAdminConfirmed && initialStatusName === "Résolu",
 	);
 
 	const userId = useUserStore((state) => state.idUser);
@@ -44,7 +54,16 @@ export default function TicketView({
 
 	const isChatDisabled = statusName === "Résolu" || statusName === "Fermé";
 
-	const { comments } = useTicketComments(ticketIdNumber);
+	const { comments } = useTicketComments(
+		ticketIdNumber,
+		(newStatusName) => {
+			setStatusName(newStatusName as typeof initialStatusName);
+			if (isAdmin) setPendingConfirmation(false);
+		},
+		(hasAdminConfirmed) => {
+			if (!isAdmin) setPendingConfirmation(hasAdminConfirmed);
+		},
+	);
 
 	const handleSubmit = async () => {
 		if (!commentInput.trim()) return;
@@ -70,6 +89,7 @@ export default function TicketView({
 	const handleResolve = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 3);
+			await updateTicketConfirmation(ticketIdNumber);
 			setStatusName("Résolu");
 			setPendingConfirmation(true);
 		} catch (e) {
@@ -80,6 +100,7 @@ export default function TicketView({
 	const handleConfirmClose = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 4);
+			await updateTicketConfirmation(ticketIdNumber);
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -90,6 +111,7 @@ export default function TicketView({
 	const handleRejectClose = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 2);
+			await updateTicketConfirmation(ticketIdNumber);
 			setStatusName("En cours");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -100,7 +122,8 @@ export default function TicketView({
 	const handleOwnerClose = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 4);
-			setStatusName("Résolu");
+			setStatusName("Fermé");
+			setPendingConfirmation(false);
 		} catch (e) {
 			console.error("Failed to close ticket", e);
 		}
@@ -134,9 +157,7 @@ export default function TicketView({
 				ownerUsername={username}
 			/>
 			<div className="w-full max-w-5xl">
-				<CommentList comments={comments} />
-
-				{isOwner && !isAdmin && pendingConfirmation && (
+				{!isAdmin && pendingConfirmation && (
 					<div className="flex items-center gap-3 border border-yellow-200 bg-yellow-50 rounded-xl px-5 py-4 mb-4">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -172,6 +193,7 @@ export default function TicketView({
 						</button>
 					</div>
 				)}
+				<CommentList comments={comments} />
 
 				{isChatDisabled ? (
 					<div className="flex items-center gap-2 border border-dashed border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-400">
