@@ -33,6 +33,20 @@ export const ticketQueries = {
 			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idTicket, idTicket)),
 
+	getAllByUser: (idUser: number) =>
+		db
+			.select({
+				...getTableColumns(tickets),
+				username: users.username,
+				statusName: status.statusName,
+				supportUsername: supportUsers.username,
+			})
+			.from(tickets)
+			.innerJoin(users, eq(tickets.idUser, users.idUser))
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
+			.where(eq(tickets.idUser, idUser)),
+
 	insert: async (
 		title: string,
 		description: string,

@@ -55,6 +55,8 @@ services:
         condition: service_healthy
     networks:
       - app_network
+    links:
+      - db
 
 volumes:
   db_data:
