@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import Dashboard from "../../src/pages/Dashboard";
 import { useTicketStore } from "../../src/store/ticketStore";
-import { apiClient } from '../../src/utils/clientApi';
+import { apiClient } from "../../src/utils/clientApi";
 import type { Ticket } from "../../src/utils/types";
 
 const API_URL = import.meta.env.VITE_API_URL;

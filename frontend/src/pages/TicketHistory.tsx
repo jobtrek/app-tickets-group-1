@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
 import { useTicketStore } from "../store/ticketStore";
-import { getFilteredUserTickets } from '../utils/getFilteredUserTickets';
+import { getFilteredUserTickets } from "../utils/getFilteredUserTickets";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 

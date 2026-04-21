@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import TicketView from "../../src/pages/TicketView";
-import { apiClient } from '../../src/utils/clientApi';
+import { apiClient } from "../../src/utils/clientApi";
 
 const TICKET_URL = import.meta.env.VITE_TICKET_URL;
 

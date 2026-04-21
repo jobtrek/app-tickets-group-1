@@ -27,12 +27,14 @@ export function Navbar() {
 				text="Créer"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
-				<NavbarButton
-					icon={<DashboardIcon />}
-					text="Historique des tickets"
-					onClick={() => navigate({ to: "/ticket-history" })}
-				/>
-			{isAdmin && <NavbarButton icon={<StatisticsIcon />} text="Statistiques" />}
+			<NavbarButton
+				icon={<DashboardIcon />}
+				text="Historique des tickets"
+				onClick={() => navigate({ to: "/ticket-history" })}
+			/>
+			{isAdmin && (
+				<NavbarButton icon={<StatisticsIcon />} text="Statistiques" />
+			)}
 			<div className="my-1 border-t border-zinc-700" />
 			{username ? (
 				<NavbarButton
