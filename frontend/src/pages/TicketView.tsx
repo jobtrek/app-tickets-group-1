@@ -157,7 +157,7 @@ export default function TicketView({
 				onAssign={handleAssign}
 				onOwnerClose={handleOwnerClose}
 				ownerUsername={username}
-			/>
+				{isOwner && !isAdmin && pendingConfirmation && (
 			<div className="w-full max-w-5xl">
 				{!isAdmin && pendingConfirmation && (
 					<div className="flex items-center gap-3 border border-yellow-200 bg-yellow-50 rounded-xl px-5 py-4 mb-4">
