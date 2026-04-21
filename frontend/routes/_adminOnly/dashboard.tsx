@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import Dashboard from "../../src/pages/Dashboard";
 import { useTicketStore } from "../../src/store/ticketStore";
 import { apiClient } from "../../src/utils/clientApi";
-import { useTicketListUpdates } from "../../src/utils/useTicketListUpdates";
 import type { Ticket } from "../../src/utils/types";
+import { useTicketListUpdates } from "../../src/utils/useTicketListUpdates";
 
 const API_URL = import.meta.env.VITE_API_URL;
 

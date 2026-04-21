@@ -4,7 +4,9 @@ import type { Ticket } from "./types";
 
 export function useTicketListUpdates() {
 	const addTicket = useTicketStore((state) => state.addTicket);
-	const updateTicketInList = useTicketStore((state) => state.updateTicketInList);
+	const updateTicketInList = useTicketStore(
+		(state) => state.updateTicketInList,
+	);
 
 	useEffect(() => {
 		const origin = new URL(import.meta.env.VITE_API_URL).origin.replace(

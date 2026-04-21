@@ -132,7 +132,10 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		if (inserted) {
 			const [fullTicket] = await ticketQueries.getById(inserted.idTicket);
 			if (fullTicket) {
-				publish("tickets", JSON.stringify({ type: "ticket_created", ticket: fullTicket }));
+				publish(
+					"tickets",
+					JSON.stringify({ type: "ticket_created", ticket: fullTicket }),
+				);
 			}
 		}
 
@@ -201,8 +204,18 @@ export const assignTicket = async (
 		.where(eq(users.idUser, idSupport));
 	const supportUsername = supportUser?.username ?? null;
 
-	publish(`ticket-${idTicket}`, JSON.stringify({ type: "assignment_update", supportUsername }));
-	publish("tickets", JSON.stringify({ type: "ticket_assignment_update", idTicket, supportUsername }));
+	publish(
+		`ticket-${idTicket}`,
+		JSON.stringify({ type: "assignment_update", supportUsername }),
+	);
+	publish(
+		"tickets",
+		JSON.stringify({
+			type: "ticket_assignment_update",
+			idTicket,
+			supportUsername,
+		}),
+	);
 
 	return Response.json(
 		{ message: "Ticket assigned", supportUsername },
@@ -233,8 +246,14 @@ export const updateStatus = async (
 
 	const statusName = statusNames[statusId];
 	if (statusName) {
-		publish(`ticket-${idTicket}`, JSON.stringify({ type: "status_update", statusName }));
-		publish("tickets", JSON.stringify({ type: "ticket_status_update", idTicket, statusName }));
+		publish(
+			`ticket-${idTicket}`,
+			JSON.stringify({ type: "status_update", statusName }),
+		);
+		publish(
+			"tickets",
+			JSON.stringify({ type: "ticket_status_update", idTicket, statusName }),
+		);
 	}
 
 	return Response.json(

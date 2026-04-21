@@ -40,7 +40,9 @@ export default function TicketHistory() {
 	const filteredTickets = useTicketStore(
 		useShallow(getFilteredUserTickets(userId)),
 	);
-	const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
+	const statusByTicketId = useTicketStatusStore(
+		(state) => state.statusByTicketId,
+	);
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
