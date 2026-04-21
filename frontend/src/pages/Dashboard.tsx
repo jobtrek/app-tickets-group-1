@@ -167,7 +167,14 @@ export default function Dashboard() {
 								)}
 							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">
-								{row.createdAt}
+								{new Date(row.createdAt).toLocaleDateString("fr-CH", {
+									day: "numeric",
+									month: "short",
+									year: "numeric",
+									hour: "numeric",
+									minute: "numeric",
+									second: "numeric",
+								})}
 							</td>
 							<td
 								className={`text-left text-sm pr-6 ${urgenceStyles[row.level]}`}
