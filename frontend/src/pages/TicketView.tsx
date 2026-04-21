@@ -157,7 +157,8 @@ export default function TicketView({
 				onAssign={handleAssign}
 				onOwnerClose={handleOwnerClose}
 				ownerUsername={username}
-				{isOwner && !isAdmin && pendingConfirmation && (
+			/>
+
 			<div className="w-full max-w-5xl">
 				{!isAdmin && pendingConfirmation && (
 					<div className="flex items-center gap-3 border border-yellow-200 bg-yellow-50 rounded-xl px-5 py-4 mb-4">
@@ -213,7 +214,7 @@ export default function TicketView({
 							<path d="M7 11V7a5 5 0 0 1 10 0v4" />
 						</svg>
 						La messagerie est désactivée pour les tickets{" "}
-						{statusName === "Résolu" ? "" : "résolus"}.
+						{statusName === "Résolu" ? "résolus" : "fermés"}.
 					</div>
 				) : (
 					<CommentInput
