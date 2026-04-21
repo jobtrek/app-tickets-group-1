@@ -1,4 +1,4 @@
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq, getTableColumns, not } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
@@ -48,22 +48,14 @@ export const ticketQueries = {
 	},
 
 	confirmed: async (idTicket: number) => {
-		const ticket = await db
-			.select({ hasAdminConfirmed: tickets.hasAdminConfirmed })
-			.from(tickets)
+		const [row] = await db
+			.update(tickets)
+			.set({ hasAdminConfirmed: not(tickets.hasAdminConfirmed) })
 			.where(eq(tickets.idTicket, idTicket))
-			.limit(1);
+			.returning({ hasAdminConfirmed: tickets.hasAdminConfirmed });
 
-		const [row] = ticket;
 		if (!row) throw new Error("Ticket not found");
 
-		const newValue = !(row.hasAdminConfirmed ?? false);
-
-		await db
-			.update(tickets)
-			.set({ hasAdminConfirmed: newValue })
-			.where(eq(tickets.idTicket, idTicket));
-
-		return newValue;
+		return row.hasAdminConfirmed;
 	},
 };
