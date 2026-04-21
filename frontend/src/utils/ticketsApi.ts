@@ -2,6 +2,8 @@ import { apiClient } from "./clientApi";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
+const TICKET_URL = import.meta.env.VITE_TICKET_URL;
+type TicketStatus = "Ouvert" | "En cours" | "Fermé" | "Résolu";
 
 export const createTicketFromForm = async (
 	ticket: FormData,
@@ -56,4 +58,23 @@ export const updateTicketStatus = async (
 export const getTicketById = async (idTicket: number) => {
 	const id = await apiClient.get(`${API_URL}/${idTicket}`);
 	return id;
+};
+
+export const fetchTicketStatus = async (idTicket: number): Promise<string> => {
+	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
+	return data.statusName as TicketStatus;
+};
+
+export const updateTicketConfirmation = async (
+	idTicket: number,
+): Promise<boolean> => {
+	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/confirm`);
+	return data.hasAdminConfirmed;
+};
+
+export const fetchTicketConfirmation = async (
+	idTicket: number,
+): Promise<boolean> => {
+	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
+	return data.hasAdminConfirmed ?? false;
 };

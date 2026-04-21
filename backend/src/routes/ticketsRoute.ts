@@ -4,6 +4,7 @@ import {
 	createTicket,
 	getAllTickets,
 	getTicketById,
+	UpdateConfirmation,
 	updateStatus,
 } from "../controllers/ticketController";
 
@@ -28,5 +29,10 @@ export const ticketRoutes = {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		PATCH: updateStatus,
+	},
+	"/api/tickets/:id/confirm": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		PATCH: UpdateConfirmation,
 	},
 };

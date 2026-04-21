@@ -1,4 +1,4 @@
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq, getTableColumns, not } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
@@ -33,16 +33,29 @@ export const ticketQueries = {
 			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idTicket, idTicket)),
 
-	insert: (
+	insert: async (
 		title: string,
 		description: string,
 		image: string | null,
 		level: string | null,
 		idStatus: number,
 		idUser: number,
-	) =>
-		db
+	) => {
+		return await db
 			.insert(tickets)
 			.values({ title, description, image, level, idStatus, idUser })
-			.returning(),
+			.returning();
+	},
+
+	confirmed: async (idTicket: number) => {
+		const [row] = await db
+			.update(tickets)
+			.set({ hasAdminConfirmed: not(tickets.hasAdminConfirmed) })
+			.where(eq(tickets.idTicket, idTicket))
+			.returning({ hasAdminConfirmed: tickets.hasAdminConfirmed });
+
+		if (!row) throw new Error("Ticket not found");
+
+		return row.hasAdminConfirmed;
+	},
 };

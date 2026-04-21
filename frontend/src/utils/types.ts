@@ -46,6 +46,7 @@ export interface TicketViewProps {
 	username: string;
 	statusName: Ticket["statusName"];
 	supportUsername: string | null;
+	hasAdminConfirmed: boolean;
 }
 
 export interface Comment {

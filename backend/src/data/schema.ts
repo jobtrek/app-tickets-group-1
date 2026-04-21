@@ -29,6 +29,7 @@ export const tickets = pgTable("ticket", {
 	level: varchar("level", { length: 30 }),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at").defaultNow(),
+	hasAdminConfirmed: boolean("has_admin_confirmed").default(false),
 	idStatus: integer("id_status").references(() => status.idStatus),
 	idUser: integer("id_user").references(() => users.idUser),
 	idSupport: integer("id_support").references(() => users.idUser),
