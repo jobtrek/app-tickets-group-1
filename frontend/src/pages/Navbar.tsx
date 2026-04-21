@@ -59,7 +59,7 @@ export function Navbar() {
 							type="button"
 							title="Se déconnecter"
 							onClick={async () => {
-								logoutUser();
+								await logoutUser();
 								useUserStore.getState().clearUser();
 								navigate({ to: "/login" });
 							}}

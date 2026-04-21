@@ -127,7 +127,7 @@ export default function TicketHistory() {
 								</span>
 							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">
-								{new Date(row.createdAt).toLocaleDateString("fr-CH", {
+								{new Date(row.createdAt).toLocaleString("fr-CH", {
 									day: "numeric",
 									month: "short",
 									year: "numeric",
