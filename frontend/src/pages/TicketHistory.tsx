@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useShallow } from "zustand/shallow";
 import Select from "../components/Select";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useTicketStore } from "../store/ticketStore";
 import { useUserStore } from "../store/userStore";
 import { getFilteredUserTickets } from "../utils/getFilteredUserTickets";
@@ -39,6 +40,7 @@ export default function TicketHistory() {
 	const filteredTickets = useTicketStore(
 		useShallow(getFilteredUserTickets(userId)),
 	);
+	const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
@@ -121,9 +123,9 @@ export default function TicketHistory() {
 
 							<td className="text-left pr-6">
 								<span
-									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[row.statusName]}`}
+									className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[(statusByTicketId[row.idTicket] ?? row.statusName) as Ticket["statusName"]]}`}
 								>
-									{row.statusName}
+									{statusByTicketId[row.idTicket] ?? row.statusName}
 								</span>
 							</td>
 							<td className="text-left text-sm text-gray-600 pr-6">

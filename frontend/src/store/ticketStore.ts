@@ -4,6 +4,8 @@ import type { Ticket } from "../utils/types";
 export interface TicketStore {
 	tickets: Ticket[];
 	setTickets: (tickets: Ticket[]) => void;
+	addTicket: (ticket: Ticket) => void;
+	updateTicketInList: (idTicket: number, updates: Partial<Ticket>) => void;
 	setSort: (sort: string) => void;
 	sort: string;
 	statusFilter: string[];
@@ -18,6 +20,14 @@ export const useTicketStore = create<TicketStore>((set) => ({
 	statusFilter: [],
 	urgencyFilter: [],
 	setTickets: (tickets) => set({ tickets }),
+	addTicket: (ticket) =>
+		set((state) => ({ tickets: [ticket, ...state.tickets] })),
+	updateTicketInList: (idTicket, updates) =>
+		set((state) => ({
+			tickets: state.tickets.map((t) =>
+				t.idTicket === idTicket ? { ...t, ...updates } : t,
+			),
+		})),
 	setSort: (sort) => set({ sort }),
 	toggleStatusFilter: (status) =>
 		set((state) => ({

@@ -6,14 +6,17 @@ export function useTicketComments(
 	ticketId: number,
 	onStatusUpdate?: (statusName: string) => void,
 	onConfirmationUpdate?: (hasAdminConfirmed: boolean) => void,
+	onAssignmentUpdate?: (supportUsername: string) => void,
 ) {
 	const [comments, setComments] = useState<Comment[]>([]);
-	const onStatusUpdateRef = useRef(onStatusUpdate); // to keep the web socket re running every time the parent re renders
+	const onStatusUpdateRef = useRef(onStatusUpdate);
 	const onConfirmationUpdateRef = useRef(onConfirmationUpdate);
+	const onAssignmentUpdateRef = useRef(onAssignmentUpdate);
 
 	useEffect(() => {
-		onStatusUpdateRef.current = onStatusUpdate; // keeps the refs in sync
+		onStatusUpdateRef.current = onStatusUpdate;
 		onConfirmationUpdateRef.current = onConfirmationUpdate;
+		onAssignmentUpdateRef.current = onAssignmentUpdate;
 	});
 
 	useEffect(() => {
@@ -31,6 +34,8 @@ export function useTicketComments(
 				onStatusUpdateRef.current?.(data.statusName);
 			} else if (data.type === "confirmation_update") {
 				onConfirmationUpdateRef.current?.(data.hasAdminConfirmed);
+			} else if (data.type === "assignment_update") {
+				onAssignmentUpdateRef.current?.(data.supportUsername);
 			} else {
 				setComments((prev) => [...prev, data]);
 			}
