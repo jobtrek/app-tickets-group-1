@@ -32,7 +32,7 @@ export default function TicketView({
 	const router = useRouter();
 
 	const [statusName, setStatusName] = useState(initialStatusName);
-	
+
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
