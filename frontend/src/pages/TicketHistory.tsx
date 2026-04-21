@@ -125,7 +125,8 @@ export default function TicketHistory() {
 
 							<td className="text-left pr-6">
 								{(() => {
-									const liveStatus = (statusByTicketId[row.idTicket] ?? row.statusName) as Ticket["statusName"];
+									const liveStatus = (statusByTicketId[row.idTicket] ??
+										row.statusName) as Ticket["statusName"];
 									return (
 										<span
 											className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[liveStatus]}`}
