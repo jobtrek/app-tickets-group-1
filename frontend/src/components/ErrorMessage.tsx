@@ -1,4 +1,4 @@
-import { CircleAlertIcon, CircleCheckBig } from "lucide-react";
+import { CircleAlert, CircleCheckBig } from "lucide-react";
 import type { ReactNode } from "react";
 import React from "react";
 
@@ -34,9 +34,9 @@ export function Alert({ variant, message, className = "" }: AlertProps) {
 			className={`flex items-center gap-2.5 rounded-lg px-4 py-3 text-sm font-medium ${variantClasses[variant]} ${className}`}
 		>
 			{variant === "success" ? (
-				<CircleCheckBig color="#22c55e" />
+				<CircleCheckBig className="shrink-0 text-green-500" size={20} />
 			) : (
-				<CircleAlertIcon color="#ef4444" />
+				<CircleAlert className="shrink-0 text-red-500" size={20} />
 			)}{" "}
 			<span>{message}</span>
 		</div>
