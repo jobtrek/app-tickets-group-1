@@ -18,21 +18,26 @@ export function Navbar() {
 			{isAdmin && (
 				<NavbarButton
 					icon={<DashboardIcon />}
-					text="Dashboard"
+					text="Tableau de bord"
 					onClick={() => navigate({ to: "/dashboard" })}
 				/>
 			)}
 			<NavbarButton
 				icon={<CreateTicketIcon />}
-				text="Create"
+				text="Créer"
 				onClick={() => navigate({ to: "/create-ticket" })}
 			/>
-			{isAdmin && <NavbarButton icon={<StatisticsIcon />} text="Statistics" />}
+				<NavbarButton
+					icon={<DashboardIcon />}
+					text="Historique des tickets"
+					onClick={() => navigate({ to: "/ticket-history" })}
+				/>
+			{isAdmin && <NavbarButton icon={<StatisticsIcon />} text="Statistiques" />}
 			<div className="my-1 border-t border-zinc-700" />
 			{username ? (
 				<NavbarButton
 					icon={<DashboardIcon />}
-					text="Logout"
+					text="Se déconnecter"
 					onClick={async () => {
 						logoutUser();
 						useUserStore.getState().clearUser();
@@ -42,7 +47,7 @@ export function Navbar() {
 			) : (
 				<NavbarButton
 					icon={<DashboardIcon />}
-					text="Login"
+					text="Se connecter"
 					onClick={() => navigate({ to: "/login" })}
 				/>
 			)}

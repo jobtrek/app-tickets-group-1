@@ -1,0 +1,30 @@
+import type { TicketStore } from "../store/ticketStore";
+import { useUserStore } from '../store/userStore';
+import type { Ticket } from './types';
+
+export const getFilteredUserTickets = (state: TicketStore) => {
+    const tickets = [...state.tickets];
+    const user = useUserStore.getState().idUser
+
+    let filtered = tickets.filter((t: Ticket) => t.idUser === user)
+
+    if (state.statusFilter.length > 0) {
+        filtered = filtered.filter((t) =>
+            state.statusFilter.includes(t.statusName),
+        );
+    }
+
+    if (state.urgencyFilter.length > 0) {
+        filtered = filtered.filter((t) => state.urgencyFilter.includes(t.level));
+    }
+
+    if (state.sort === "asc") {
+        filtered.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    } else if (state.sort === "desc") {
+        filtered.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    } else if (state.sort === "az") {
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+    }
+
+    return filtered;
+};
