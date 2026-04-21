@@ -4,6 +4,7 @@ import Dashboard from "../../src/pages/Dashboard";
 import { useTicketStore } from "../../src/store/ticketStore";
 import { apiClient } from "../../src/utils/clientApi";
 import type { Ticket } from "../../src/utils/types";
+import { useTicketListUpdates } from "../../src/utils/useTicketListUpdates";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,6 +19,7 @@ export const Route = createFileRoute("/_adminOnly/dashboard")({
 function DashboardPage() {
 	const loaderTickets = Route.useLoaderData();
 	const setTickets = useTicketStore((state) => state.setTickets);
+	useTicketListUpdates();
 
 	useEffect(() => {
 		setTickets(loaderTickets);

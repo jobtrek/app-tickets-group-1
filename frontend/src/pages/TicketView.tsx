@@ -66,6 +66,9 @@ export default function TicketView({
 		(hasAdminConfirmed) => {
 			if (!isAdmin) setPendingConfirmation(hasAdminConfirmed);
 		},
+		(newSupportUsername) => {
+			setSupportUsername(newSupportUsername);
+		},
 	);
 
 	const handleSubmit = async () => {
