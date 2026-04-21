@@ -1,6 +1,6 @@
+import { CircleAlertIcon, CircleCheckBig } from "lucide-react";
 import type { ReactNode } from "react";
 import React from "react";
-import { ErrorIcon, SuccessIcon } from "./svg/ErrorAndSuccessIcons";
 
 type AlertVariant = "success" | "error";
 
@@ -33,7 +33,11 @@ export function Alert({ variant, message, className = "" }: AlertProps) {
 			aria-live={variant === "error" ? "assertive" : "polite"}
 			className={`flex items-center gap-2.5 rounded-lg px-4 py-3 text-sm font-medium ${variantClasses[variant]} ${className}`}
 		>
-			{variant === "success" ? <SuccessIcon /> : <ErrorIcon />}
+			{variant === "success" ? (
+				<CircleCheckBig color="#22c55e" />
+			) : (
+				<CircleAlertIcon color="#ef4444" />
+			)}{" "}
 			<span>{message}</span>
 		</div>
 	);
