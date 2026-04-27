@@ -31,15 +31,11 @@ export default function CommentCard({ comment }: CommentCardProps) {
 					<span className="text-sm font-medium text-gray-700">
 						{comment.authorName}
 					</span>
-					<span
-						className={`text-xs px-2 py-0.5 rounded-full font-medium border ${
-							isAuthorAdmin
-								? "bg-orange-50 text-orange-700 border-orange-200"
-								: "bg-blue-50 text-blue-600 border-blue-200"
-						}`}
-					>
-						{isAuthorAdmin ? "admin" : "user"}
-					</span>
+					{isAuthorAdmin && (
+						<span className="text-xs px-2 py-0.5 rounded-full font-medium border bg-orange-50 text-orange-700 border-orange-200">
+							Support
+						</span>
+					)}
 				</div>
 
 				<div className="flex items-center gap-2">
