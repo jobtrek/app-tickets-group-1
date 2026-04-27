@@ -1,4 +1,4 @@
-import { corsHeaders } from "backend/utils/headers";
+import { corsHeaders } from "../../utils/headers";
 import { updateUserById } from "../controllers/userController";
 export const UserRoutes = {
 	"/api/user/:id": {
