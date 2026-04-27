@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Statistics } from "../../src/pages/Statistics";
+import Statistics from "../../src/pages/Statistics";
 import { apiClient } from "../../src/utils/clientApi";
 
 const STATS_URL = import.meta.env.VITE_STATS_URL;
