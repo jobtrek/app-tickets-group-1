@@ -24,7 +24,7 @@ export interface LoginData {
 }
 
 export interface UpdateUserData {
-	userid: string
+	userid: string;
 	username: string;
 	email: string;
 	password: string;

@@ -52,7 +52,7 @@ export default function TicketView({
 		ticketIdNumber,
 		(newStatusName) => {
 			setStatusName(newStatusName as typeof initialStatusName);
-			
+
 			if (isAdmin && newStatusName !== "Résolu") {
 				setPendingConfirmation(false);
 			}
