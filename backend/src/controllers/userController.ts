@@ -6,6 +6,10 @@ export const updateUserById = async (
 ): Promise<Response> => {
 	try {
 		const userId = Number(req.params.id);
+		if (Number.isNaN(userId) || !Number.isInteger(userId) || userId <= 0) {
+			throw new Error(`Invalid ID: "${userId}" must be a positive integer.`);
+		}
+
 		const { username, email, password } = await req.json();
 		const hashedPassword = await Bun.password.hash(password);
 
