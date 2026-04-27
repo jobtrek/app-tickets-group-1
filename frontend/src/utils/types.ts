@@ -76,3 +76,9 @@ export interface ActionState {
 	message: string;
 	errors?: Record<string, string>;
 }
+
+export interface StatsProps {
+	avgTimeToFirstAssignment: number;
+	avgTimeToCloseTicket: number;
+	// Add new ones here as you create them!
+}
