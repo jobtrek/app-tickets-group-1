@@ -8,6 +8,7 @@ import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
 	createComment,
+	ownerConfirmTicket,
 	updateTicketConfirmation,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
@@ -31,7 +32,6 @@ export default function TicketView({
 	const router = useRouter();
 
 	const [statusName, setStatusName] = useState(initialStatusName);
-
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
@@ -52,10 +52,13 @@ export default function TicketView({
 		ticketIdNumber,
 		(newStatusName) => {
 			setStatusName(newStatusName as typeof initialStatusName);
-			if (isAdmin) setPendingConfirmation(false);
+
+			if (isAdmin && newStatusName !== "Résolu") {
+				setPendingConfirmation(false);
+			}
 		},
-		(hasAdminConfirmed) => {
-			if (!isAdmin) setPendingConfirmation(hasAdminConfirmed);
+		(adminConfirmed) => {
+			if (!isAdmin) setPendingConfirmation(adminConfirmed);
 		},
 		(newSupportUsername) => {
 			setSupportUsername(newSupportUsername);
@@ -67,7 +70,6 @@ export default function TicketView({
 		try {
 			await createComment(commentInput, userId, ticketIdNumber);
 			await router.invalidate();
-
 			setCommentInput("");
 		} catch (e) {
 			console.error("Failed to post comment", e);
@@ -79,7 +81,6 @@ export default function TicketView({
 			await assignTicket(ticketIdNumber, userId);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await router.invalidate();
-
 			setSupportUsername(storeUsername);
 			setStatusName("En cours");
 		} catch (e) {
@@ -92,7 +93,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 3);
 			await updateTicketConfirmation(ticketIdNumber, true);
 			await router.invalidate();
-
 			setStatusName("Résolu");
 			setPendingConfirmation(true);
 		} catch (e) {
@@ -102,10 +102,8 @@ export default function TicketView({
 
 	const handleConfirmClose = async () => {
 		try {
-			await updateTicketStatus(ticketIdNumber, 4);
-			await updateTicketConfirmation(ticketIdNumber, false);
+			await ownerConfirmTicket(ticketIdNumber, true);
 			await router.invalidate();
-
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -115,10 +113,8 @@ export default function TicketView({
 
 	const handleRejectClose = async () => {
 		try {
-			await updateTicketStatus(ticketIdNumber, 2);
-			await updateTicketConfirmation(ticketIdNumber, false);
+			await ownerConfirmTicket(ticketIdNumber, false);
 			await router.invalidate();
-
 			setStatusName("En cours");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -128,9 +124,9 @@ export default function TicketView({
 
 	const handleOwnerClose = async () => {
 		try {
+			await ownerConfirmTicket(ticketIdNumber, true);
 			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
-			await router.load();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {

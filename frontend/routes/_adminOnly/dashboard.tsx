@@ -13,7 +13,6 @@ export const Route = createFileRoute("/_adminOnly/dashboard")({
 		const response = await apiClient.get<Ticket[]>(API_URL);
 		return response.data;
 	},
-	staleTime: 0,
 	component: DashboardPage,
 });
 

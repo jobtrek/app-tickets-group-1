@@ -6,10 +6,11 @@ import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets, users } from "../data/schema";
 import { db } from "../db/database";
-import { CookieQuery } from "../repositories/cookieQuery.ts";
+import type { AuthedRequest } from "../middleware/auth.middleware";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { publish } from "../utils/publisher";
+import { TicketPostSchema } from "../validators/ticketValidator.ts";
 
 const statusNames: Record<number, string> = {
 	1: "Ouvert",
@@ -18,12 +19,14 @@ const statusNames: Record<number, string> = {
 	4: "Fermé",
 };
 
-import { TicketPostSchema } from "../validators/ticketValidator.ts";
-
-export const getAllTickets = async () => {
+export const getAllTickets = async (req: AuthedRequest) => {
 	try {
-		const tickets = await ticketQueries.getAll();
-		return Response.json(tickets, { status: 200, headers: corsHeaders });
+		const allTickets =
+			req.user.role === "admin"
+				? await ticketQueries.getAll()
+				: await ticketQueries.getAllByUser(req.user.idUser);
+
+		return Response.json(allTickets, { status: 200, headers: corsHeaders });
 	} catch (e) {
 		console.error("DB fetch error", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
@@ -31,7 +34,7 @@ export const getAllTickets = async () => {
 };
 
 export const getTicketById = async (
-	req: Bun.BunRequest<"/api/ticket/:id">,
+	req: AuthedRequest<"/api/ticket/:id">,
 ): Promise<Response> => {
 	try {
 		const id = req.params?.id;
@@ -52,14 +55,27 @@ export const getTicketById = async (
 			});
 		}
 
-		return Response.json(ticket[0], { status: 200, headers: corsHeaders });
+		const ticketItem = ticket[0];
+
+		if (!ticketItem) {
+			return new Response("Ticket not found", {
+				status: 404,
+				headers: corsHeaders,
+			});
+		}
+
+		if (req.user.role !== "admin" && ticketItem.idUser !== req.user.idUser) {
+			return new Response("Forbidden", { status: 403, headers: corsHeaders });
+		}
+
+		return Response.json(ticketItem, { status: 200, headers: corsHeaders });
 	} catch (e) {
 		console.error("DB fetch error", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });
 	}
 };
 
-export const createTicket = async (req: Request): Promise<Response> => {
+export const createTicket = async (req: AuthedRequest): Promise<Response> => {
 	try {
 		const formData = await req.formData();
 
@@ -67,7 +83,7 @@ export const createTicket = async (req: Request): Promise<Response> => {
 			title: formData.get("title"),
 			description: formData.get("description"),
 			level: formData.get("level") || undefined,
-			idUser: Number(formData.get("idUser")),
+			idUser: req.user.idUser,
 		};
 
 		const validBody = v.safeParse(TicketPostSchema, rawData);
@@ -83,6 +99,13 @@ export const createTicket = async (req: Request): Promise<Response> => {
 		const file = formData.get("image") as File | null;
 
 		if (file && file.size > 0) {
+			if (file.size > 10 * 1024 * 1024) {
+				return new Response("File too large (Max 10MB)", {
+					status: 400,
+					headers: corsHeaders,
+				});
+			}
+
 			const arrayBuffer = await file.arrayBuffer();
 			const buffer = new Uint8Array(arrayBuffer);
 			const detectedType = await fileTypeFromBuffer(buffer);
@@ -96,13 +119,6 @@ export const createTicket = async (req: Request): Promise<Response> => {
 
 			if (!detectedType || !allowedMimeTypes.includes(detectedType.mime)) {
 				return new Response("Security Error: Invalid file content.", {
-					status: 400,
-					headers: corsHeaders,
-				});
-			}
-
-			if (file.size > 10 * 1024 * 1024) {
-				return new Response("File too large (Max 10MB)", {
 					status: 400,
 					headers: corsHeaders,
 				});
@@ -150,28 +166,9 @@ export const createTicket = async (req: Request): Promise<Response> => {
 };
 
 export const assignTicket = async (
-	req: Bun.BunRequest<"/api/tickets/:id/assign">,
+	req: AuthedRequest<"/api/tickets/:id/assign">,
 ) => {
-	const cookieHeader = req.headers.get("cookie");
-	const sessionToken = cookieHeader?.match(/session=([^;]*)/)?.[1];
-
-	if (!sessionToken) {
-		return Response.json(
-			{ error: "Not authenticated" },
-			{ status: 401, headers: corsHeaders },
-		);
-	}
-
-	const session = await CookieQuery.getByToken(sessionToken);
-
-	if (!session) {
-		return Response.json(
-			{ error: "Invalid session" },
-			{ status: 401, headers: corsHeaders },
-		);
-	}
-
-	if (session.role !== "admin") {
+	if (req.user.role !== "admin") {
 		return Response.json(
 			{ error: "Forbidden" },
 			{ status: 403, headers: corsHeaders },
@@ -179,14 +176,14 @@ export const assignTicket = async (
 	}
 
 	const idTicket = Number(req.params.id);
-	const idSupport: number | null = session.idUser;
-
-	if (!idSupport) {
+	if (!idTicket || Number.isNaN(idTicket)) {
 		return Response.json(
-			{ error: "Could not resolve support user" },
+			{ error: "Invalid ticket ID" },
 			{ status: 400, headers: corsHeaders },
 		);
 	}
+
+	const idSupport = req.user.idUser;
 
 	await db.transaction(async (tx) => {
 		await tx
@@ -194,7 +191,7 @@ export const assignTicket = async (
 			.values({ idTicket, idSupport, isActive: true });
 		await tx
 			.update(tickets)
-			.set({ idSupport })
+			.set({ idSupport, idStatus: 2 })
 			.where(eq(tickets.idTicket, idTicket));
 	});
 
@@ -224,8 +221,15 @@ export const assignTicket = async (
 };
 
 export const updateStatus = async (
-	req: Bun.BunRequest<"/api/tickets/:id/status">,
+	req: AuthedRequest<"/api/tickets/:id/status">,
 ) => {
+	if (req.user.role !== "admin") {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
+
 	const idTicket = Number(req.params.id);
 	if (!idTicket || Number.isNaN(idTicket)) {
 		return Response.json(
@@ -263,8 +267,15 @@ export const updateStatus = async (
 };
 
 export const UpdateConfirmation = async (
-	req: Bun.BunRequest<"/api/tickets/:id/confirm">,
+	req: AuthedRequest<"/api/tickets/:id/confirm">,
 ) => {
+	if (req.user.role !== "admin") {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
+
 	const idTicket = Number(req.params.id);
 	if (!idTicket || Number.isNaN(idTicket)) {
 		return Response.json(
@@ -285,6 +296,9 @@ export const UpdateConfirmation = async (
 
 	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
 
+	const newStatusId = hasAdminConfirmed ? 3 : 2;
+	await updateStatusQuery.update(newStatusId, idTicket);
+
 	publish(
 		`ticket-${idTicket}`,
 		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed: result }),
@@ -292,6 +306,50 @@ export const UpdateConfirmation = async (
 
 	return Response.json(
 		{ message: "Ticket confirmation updated", hasAdminConfirmed: result },
+		{ status: 200, headers: corsHeaders },
+	);
+};
+
+export const ownerConfirmTicket = async (
+	req: AuthedRequest<"/api/tickets/:id/owner-confirm">,
+) => {
+	const idTicket = Number(req.params.id);
+	if (!idTicket || Number.isNaN(idTicket)) {
+		return Response.json(
+			{ error: "Invalid ticket ID" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
+	const body = await req.json();
+	const accepted: boolean = body.accepted;
+
+	const ticket = await ticketQueries.getById(idTicket);
+	if (!ticket.length || ticket[0]?.idUser !== req.user.idUser) {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
+
+	const newStatusId = accepted ? 4 : 2;
+	await updateStatusQuery.update(newStatusId, idTicket);
+
+	if (!accepted) {
+		await db
+			.update(tickets)
+			.set({ hasAdminConfirmed: false })
+			.where(eq(tickets.idTicket, idTicket));
+	}
+
+	const statusName = statusNames[newStatusId];
+	publish(
+		`ticket-${idTicket}`,
+		JSON.stringify({ type: "status_update", statusName }),
+	);
+
+	return Response.json(
+		{ message: accepted ? "Ticket closed" : "Ticket reopened" },
 		{ status: 200, headers: corsHeaders },
 	);
 };

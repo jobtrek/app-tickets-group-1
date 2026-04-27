@@ -28,13 +28,9 @@ export function useTicketComments(
 		// Fetch the initial list of comments for this ticket
 		getComments(ticketId).then(setComments);
 
-		// Build a WebSocket URL from the API base URL, swapping http(s) for ws(s)
-		const origin = new URL(import.meta.env.VITE_API_URL).origin.replace(
-			/^http/,
-			"ws",
+		const ws = new WebSocket(
+			`${import.meta.env.VITE_WS_URL}/ws?ticketId=${ticketId}`,
 		);
-		// Open a WebSocket connection scoped to this specific ticket
-		const ws = new WebSocket(`${origin}/ws?ticketId=${ticketId}`);
 
 		ws.onmessage = (event) => {
 			// Parse the raw WebSocket message payload
