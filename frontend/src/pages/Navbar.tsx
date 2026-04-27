@@ -43,7 +43,7 @@ export function Navbar() {
 			{isAdmin && (
 				<NavbarButton icon={<BarChart2 size={15} />} text="Statistiques" />
 			)}
-	
+
 			<div className="flex-1" />
 
 			{username && (
