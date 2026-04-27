@@ -6,4 +6,5 @@ interface ImportMetaEnv {
 	readonly VITE_LOGIN_URL: string;
 	readonly VITE_TICKET_URL: string;
 	readonly VITE_LOGOUT_URL: string;
+	readonly VITE_STATS_URL: string;
 }

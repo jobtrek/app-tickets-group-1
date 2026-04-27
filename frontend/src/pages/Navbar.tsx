@@ -41,7 +41,11 @@ export function Navbar() {
 				onClick={() => navigate({ to: "/ticket-history" })}
 			/>
 			{isAdmin && (
-				<NavbarButton icon={<BarChart2 size={15} />} text="Statistiques" />
+				<NavbarButton
+					icon={<BarChart2 size={15} />}
+					text="Statistiques"
+					onClick={() => navigate({ to: "/statistics" })}
+				/>
 			)}
 
 			<div className="flex-1" />
