@@ -16,5 +16,6 @@ export const updateUserQuery = {
 				email: email || undefined,
 				password: password || undefined,
 			})
-			.where(eq(users.idUser, userId)).returning(),
+			.where(eq(users.idUser, userId))
+			.returning(),
 };
