@@ -2,7 +2,7 @@ import { corsHeaders } from "../../utils/headers";
 import { isRateLimited } from "../utils/rateLimit";
 
 type AnyHandler = (
-	req: any,
+	req: Request,
 ) => Response | Promise<Response | undefined> | undefined;
 
 /**
