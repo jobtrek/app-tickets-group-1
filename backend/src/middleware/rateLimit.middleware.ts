@@ -1,20 +1,18 @@
 import { corsHeaders } from "../../utils/headers";
 import { isRateLimited } from "../utils/rateLimit";
 
-type AnyHandler = (
-	req: Request,
-) => Response | Promise<Response | undefined> | undefined;
-
 /**
  * @param handler
  * @param limit
  */
 
-export const withRateLimit = <T extends AnyHandler>(
-	handler: T,
+export const withRateLimit = <T extends string = string>(
+	handler: (
+		req: Bun.BunRequest<T>,
+	) => Response | Promise<Response | undefined> | undefined,
 	limit = process.env.NODE_ENV === "production" ? 60 : 500,
-): T => {
-	return (async (req: Request) => {
+) => {
+	return async (req: Bun.BunRequest<T>): Promise<Response> => {
 		const ip =
 			req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
 			req.headers.get("x-real-ip") ??
@@ -34,6 +32,9 @@ export const withRateLimit = <T extends AnyHandler>(
 			);
 		}
 
-		return handler(req);
-	}) as T;
+		return (
+			(await handler(req)) ??
+			Response.json({ error: "No response" }, { status: 500 })
+		);
+	};
 };
