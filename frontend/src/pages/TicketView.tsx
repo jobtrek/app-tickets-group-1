@@ -52,8 +52,7 @@ export default function TicketView({
 		ticketIdNumber,
 		(newStatusName) => {
 			setStatusName(newStatusName as typeof initialStatusName);
-			// Only reset pendingConfirmation if the new status is not "Résolu"
-			// to avoid overwriting the state set by handleResolve
+			
 			if (isAdmin && newStatusName !== "Résolu") {
 				setPendingConfirmation(false);
 			}
@@ -129,7 +128,7 @@ export default function TicketView({
 
 	const handleOwnerClose = async () => {
 		try {
-			await ownerConfirmTicket(ticketIdNumber, true); // removed duplicate call
+			await ownerConfirmTicket(ticketIdNumber, true);
 			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
 			setStatusName("Fermé");
