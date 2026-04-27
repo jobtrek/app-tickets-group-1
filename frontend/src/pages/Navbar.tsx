@@ -5,7 +5,6 @@ import {
 	FileText,
 	LayoutDashboard,
 	LogOut,
-	Settings,
 } from "lucide-react";
 import { NavbarButton } from "../components/NavbarButton";
 import { useUserStore } from "../store/userStore";
@@ -44,23 +43,25 @@ export function Navbar() {
 			{isAdmin && (
 				<NavbarButton icon={<BarChart2 size={15} />} text="Statistiques" />
 			)}
-			<NavbarButton
-				icon={<Settings size={15} />}
-				text="Paramètres"
-				onClick={() => navigate({ to: "/settings" })}
-			/>
-
+	
 			<div className="flex-1" />
 
 			{username && (
 				<div className="border-t border-zinc-200 pt-2.5">
 					<div className="flex items-center gap-2 px-2.5 py-2 rounded-[7px] bg-zinc-50">
-						<div className="w-7.5 h-7.5 rounded-full bg-blue-100 flex items-center justify-center text-[11px] font-medium text-blue-700 shrink-0">
-							{getInitials(username)}
-						</div>
-						<span className="text-[13px] text-gray-700 flex-1 truncate">
-							{username}
-						</span>
+						<button
+							type="button"
+							title="Modifier les identifiants"
+							onClick={() => navigate({ to: "/settings" })}
+							className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
+						>
+							<div className="w-7.5 h-7.5 rounded-full bg-blue-100 flex items-center justify-center text-[11px] font-medium text-blue-700 shrink-0">
+								{getInitials(username)}
+							</div>
+							<span className="text-[13px] text-gray-700 flex-1 truncate text-left">
+								{username}
+							</span>
+						</button>
 						<button
 							type="button"
 							title="Se déconnecter"
