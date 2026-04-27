@@ -32,7 +32,6 @@ export default function TicketView({
 	const router = useRouter();
 
 	const [statusName, setStatusName] = useState(initialStatusName);
-
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
@@ -53,10 +52,14 @@ export default function TicketView({
 		ticketIdNumber,
 		(newStatusName) => {
 			setStatusName(newStatusName as typeof initialStatusName);
-			if (isAdmin) setPendingConfirmation(false);
+			// Only reset pendingConfirmation if the new status is not "Résolu"
+			// to avoid overwriting the state set by handleResolve
+			if (isAdmin && newStatusName !== "Résolu") {
+				setPendingConfirmation(false);
+			}
 		},
-		(hasAdminConfirmed) => {
-			if (!isAdmin) setPendingConfirmation(hasAdminConfirmed);
+		(adminConfirmed) => {
+			if (!isAdmin) setPendingConfirmation(adminConfirmed);
 		},
 		(newSupportUsername) => {
 			setSupportUsername(newSupportUsername);
@@ -68,7 +71,6 @@ export default function TicketView({
 		try {
 			await createComment(commentInput, userId, ticketIdNumber);
 			await router.invalidate();
-
 			setCommentInput("");
 		} catch (e) {
 			console.error("Failed to post comment", e);
@@ -80,7 +82,6 @@ export default function TicketView({
 			await assignTicket(ticketIdNumber, userId);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await router.invalidate();
-
 			setSupportUsername(storeUsername);
 			setStatusName("En cours");
 		} catch (e) {
@@ -93,7 +94,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 3);
 			await updateTicketConfirmation(ticketIdNumber, true);
 			await router.invalidate();
-
 			setStatusName("Résolu");
 			setPendingConfirmation(true);
 		} catch (e) {
@@ -107,7 +107,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 4);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
-
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -121,7 +120,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 2);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
-
 			setStatusName("En cours");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -131,18 +129,16 @@ export default function TicketView({
 
 	const handleOwnerClose = async () => {
 		try {
-			await ownerConfirmTicket(ticketIdNumber, true);
-			await ownerConfirmTicket(ticketIdNumber, true);
-			135;
+			await ownerConfirmTicket(ticketIdNumber, true); // removed duplicate call
 			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
-			await router.load();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
 			console.error("Failed to close ticket", e);
 		}
 	};
+
 	return (
 		<div className="min-h-screen w-full bg-gray-50 flex flex-col items-center py-12 px-6 gap-8">
 			<TicketHeader
