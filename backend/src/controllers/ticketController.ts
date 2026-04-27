@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
-import { ticket_assignment, tickets } from "../data/schema";
+import { ticket_assignment, tickets, users } from "../data/schema";
 import { db } from "../db/database";
 import type { AuthedRequest } from "../middleware/auth.middleware";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
@@ -144,6 +144,17 @@ export const createTicket = async (req: AuthedRequest): Promise<Response> => {
 			idUser,
 		);
 
+		const inserted = result[0];
+		if (inserted) {
+			const [fullTicket] = await ticketQueries.getById(inserted.idTicket);
+			if (fullTicket) {
+				publish(
+					"tickets",
+					JSON.stringify({ type: "ticket_created", ticket: fullTicket }),
+				);
+			}
+		}
+
 		return Response.json(
 			{ createdTicket: result[0] },
 			{ status: 201, headers: corsHeaders },
@@ -184,8 +195,27 @@ export const assignTicket = async (
 			.where(eq(tickets.idTicket, idTicket));
 	});
 
+	const [supportUser] = await db
+		.select({ username: users.username })
+		.from(users)
+		.where(eq(users.idUser, idSupport));
+	const supportUsername = supportUser?.username ?? null;
+
+	publish(
+		`ticket-${idTicket}`,
+		JSON.stringify({ type: "assignment_update", supportUsername }),
+	);
+	publish(
+		"tickets",
+		JSON.stringify({
+			type: "ticket_assignment_update",
+			idTicket,
+			supportUsername,
+		}),
+	);
+
 	return Response.json(
-		{ message: "Ticket assigned" },
+		{ message: "Ticket assigned", supportUsername },
 		{ status: 200, headers: corsHeaders },
 	);
 };
@@ -224,6 +254,10 @@ export const updateStatus = async (
 			`ticket-${idTicket}`,
 			JSON.stringify({ type: "status_update", statusName }),
 		);
+		publish(
+			"tickets",
+			JSON.stringify({ type: "ticket_status_update", idTicket, statusName }),
+		);
 	}
 
 	return Response.json(
@@ -250,18 +284,28 @@ export const UpdateConfirmation = async (
 		);
 	}
 
-	const hasAdminConfirmed = await ticketQueries.confirmed(idTicket);
+	const body = await req.json().catch(() => ({}));
+	const { hasAdminConfirmed } = body;
+
+	if (typeof hasAdminConfirmed !== "boolean") {
+		return Response.json(
+			{ error: "hasAdminConfirmed must be a boolean" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
+	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
 
 	const newStatusId = hasAdminConfirmed ? 3 : 2;
 	await updateStatusQuery.update(newStatusId, idTicket);
 
 	publish(
 		`ticket-${idTicket}`,
-		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed }),
+		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed: result }),
 	);
 
 	return Response.json(
-		{ message: "Ticket confirmation toggled", hasAdminConfirmed },
+		{ message: "Ticket confirmation updated", hasAdminConfirmed: result },
 		{ status: 200, headers: corsHeaders },
 	);
 };

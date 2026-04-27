@@ -9,7 +9,7 @@ export const Route = createFileRoute("/_authenticated/ticket/$id")({
 		const response = await apiClient.get(`${TICKET_URL}/${params.id}`);
 		return response.data;
 	},
-
+	staleTime: 0,
 	component: TicketViewPage,
 });
 

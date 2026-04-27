@@ -67,10 +67,16 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		open(ws) {
 			if (ws.data.ticketId) {
 				ws.subscribe(`ticket-${ws.data.ticketId}`);
+			} else {
+				ws.subscribe("tickets");
 			}
 		},
 		close(ws) {
-			ws.unsubscribe(`ticket-${ws.data.ticketId}`);
+			if (ws.data.ticketId) {
+				ws.unsubscribe(`ticket-${ws.data.ticketId}`);
+			} else {
+				ws.unsubscribe("tickets");
+			}
 		},
 		message() {
 			// Clients send comments via HTTP POST, so this is intentionally empty.
