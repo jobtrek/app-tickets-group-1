@@ -44,8 +44,8 @@ export function createUpdateUserAction({
 			};
 			if (newPassword) payload.password = newPassword;
 
-			await updateUser(idUser, payload);
-			setUser({ idUser, username: newUsername, email: newEmail, role });
+			const updatedUser = await updateUser(idUser, payload);
+			setUser({ ...updatedUser, role });
 			return { success: true, message: "Profil mis à jour avec succès." };
 		} catch {
 			return {

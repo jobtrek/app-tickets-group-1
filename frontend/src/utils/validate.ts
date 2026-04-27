@@ -13,6 +13,11 @@ export function validateUserSettings({
 }: UserSettingsFields): Record<string, string> {
 	const errors: Record<string, string> = {};
 
+	const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+	if (!emailRegex.test(newEmail)) {
+		errors.email = "L'adresse email fournie est invalide.";
+	}
+
 	if (!newUsername.trim())
 		errors.username = "Le nom d'utilisateur est obligatoire.";
 	if (!newEmail.trim()) errors.email = "L'email est obligatoire.";
