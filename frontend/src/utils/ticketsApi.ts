@@ -67,8 +67,11 @@ export const fetchTicketStatus = async (idTicket: number): Promise<string> => {
 
 export const updateTicketConfirmation = async (
 	idTicket: number,
+	value: boolean,
 ): Promise<boolean> => {
-	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/confirm`);
+	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/confirm`, {
+		hasAdminConfirmed: value,
+	});
 	return data.hasAdminConfirmed;
 };
 

@@ -1,4 +1,4 @@
-import { eq, getTableColumns, not } from "drizzle-orm";
+import { eq, getTableColumns } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
@@ -47,15 +47,14 @@ export const ticketQueries = {
 			.returning();
 	},
 
-	confirmed: async (idTicket: number) => {
+	confirmed: async (idTicket: number, value: boolean) => {
 		const [row] = await db
 			.update(tickets)
-			.set({ hasAdminConfirmed: not(tickets.hasAdminConfirmed) })
+			.set({ hasAdminConfirmed: value }) // explicit, not a toggle
 			.where(eq(tickets.idTicket, idTicket))
 			.returning({ hasAdminConfirmed: tickets.hasAdminConfirmed });
 
 		if (!row) throw new Error("Ticket not found");
-
 		return row.hasAdminConfirmed;
 	},
 };
