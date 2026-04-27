@@ -284,18 +284,28 @@ export const UpdateConfirmation = async (
 		);
 	}
 
-	const hasAdminConfirmed = await ticketQueries.confirmed(idTicket);
+	const body = await req.json().catch(() => ({}));
+	const { hasAdminConfirmed } = body;
+
+	if (typeof hasAdminConfirmed !== "boolean") {
+		return Response.json(
+			{ error: "hasAdminConfirmed must be a boolean" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
+	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
 
 	const newStatusId = hasAdminConfirmed ? 3 : 2;
 	await updateStatusQuery.update(newStatusId, idTicket);
 
 	publish(
 		`ticket-${idTicket}`,
-		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed }),
+		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed: result }),
 	);
 
 	return Response.json(
-		{ message: "Ticket confirmation toggled", hasAdminConfirmed },
+		{ message: "Ticket confirmation updated", hasAdminConfirmed: result },
 		{ status: 200, headers: corsHeaders },
 	);
 };

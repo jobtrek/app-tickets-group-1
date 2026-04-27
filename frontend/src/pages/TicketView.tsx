@@ -1,10 +1,9 @@
-import { useNavigate, useParams } from "@tanstack/react-router";
+import { useNavigate, useParams, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import CommentInput from "../components/CommentInput";
 import CommentList from "../components/CommentList";
 import TicketDetails from "../components/TicketDetails";
 import TicketHeader from "../components/TicketHeader";
-import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
@@ -13,7 +12,7 @@ import {
 	updateTicketConfirmation,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
-import type { Ticket, TicketViewProps } from "../utils/types";
+import type { TicketViewProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
 
 export default function TicketView({
@@ -30,16 +29,9 @@ export default function TicketView({
 	const { id } = useParams({ from: "/_authenticated/ticket/$id" });
 	const navigate = useNavigate();
 	const ticketIdNumber = Number(id);
+	const router = useRouter();
 
-	const storedStatus = useTicketStatusStore(
-		(state) => state.statusByTicketId[ticketIdNumber],
-	) as Ticket["statusName"] | undefined;
-	const setTicketStatus = useTicketStatusStore(
-		(state) => state.setTicketStatus,
-	);
-	const statusName = storedStatus ?? initialStatusName;
-	const setStatusName = (status: Ticket["statusName"]) =>
-		setTicketStatus(ticketIdNumber, status);
+	const [statusName, setStatusName] = useState(initialStatusName);
 
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
@@ -75,6 +67,8 @@ export default function TicketView({
 		if (!commentInput.trim()) return;
 		try {
 			await createComment(commentInput, userId, ticketIdNumber);
+			await router.invalidate();
+
 			setCommentInput("");
 		} catch (e) {
 			console.error("Failed to post comment", e);
@@ -85,6 +79,8 @@ export default function TicketView({
 		try {
 			await assignTicket(ticketIdNumber, userId);
 			await updateTicketStatus(ticketIdNumber, 2);
+			await router.invalidate();
+
 			setSupportUsername(storeUsername);
 			setStatusName("En cours");
 		} catch (e) {
@@ -95,7 +91,9 @@ export default function TicketView({
 	const handleResolve = async () => {
 		try {
 			await updateTicketStatus(ticketIdNumber, 3);
-			await updateTicketConfirmation(ticketIdNumber);
+			await updateTicketConfirmation(ticketIdNumber, true);
+			await router.invalidate();
+
 			setStatusName("Résolu");
 			setPendingConfirmation(true);
 		} catch (e) {
@@ -106,6 +104,10 @@ export default function TicketView({
 	const handleConfirmClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
+			await updateTicketStatus(ticketIdNumber, 4);
+			await updateTicketConfirmation(ticketIdNumber, false);
+			await router.invalidate();
+
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -116,6 +118,10 @@ export default function TicketView({
 	const handleRejectClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, false);
+			await updateTicketStatus(ticketIdNumber, 2);
+			await updateTicketConfirmation(ticketIdNumber, false);
+			await router.invalidate();
+
 			setStatusName("En cours");
 			setPendingConfirmation(false);
 		} catch (e) {
@@ -126,6 +132,11 @@ export default function TicketView({
 	const handleOwnerClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
+      await ownerConfirmTicket(ticketIdNumber, true);
+135
+			await updateTicketStatus(ticketIdNumber, 4);
+			await router.invalidate();
+			await router.load();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
 		} catch (e) {

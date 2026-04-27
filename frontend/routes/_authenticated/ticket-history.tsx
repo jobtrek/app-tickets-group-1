@@ -13,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/ticket-history")({
 		const response = await apiClient.get<Ticket[]>(API_URL);
 		return response.data;
 	},
+	staleTime: 0,
 	component: TicketHistoryPage,
 });
 
