@@ -1,10 +1,13 @@
-import { corsHeaders } from "backend/utils/headers";
+import { corsHeaders } from "../../utils/headers";
 import { statisticsQuery } from "../repositories/statisticsQuery";
 
 export const avgTimeToFirstAssignment = async () => {
 	try {
-		const timeToTake = await statisticsQuery.avgTimeToFirstAssignment();
-		return Response.json(timeToTake, { status: 200, headers: corsHeaders });
+		const [result] = await statisticsQuery.avgTimeToFirstAssignment();
+		return Response.json(result?.moyenneHeures ?? 0, {
+			status: 200,
+			headers: corsHeaders,
+		});
 	} catch (e) {
 		console.error("DB fetch error", e);
 		return new Response("DB Error", { status: 500, headers: corsHeaders });

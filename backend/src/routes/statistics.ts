@@ -1,4 +1,4 @@
-import { corsHeaders } from "backend/utils/headers";
+import { corsHeaders } from "../../utils/headers";
 import { avgTimeToFirstAssignment } from "../controllers/statisticsController";
 
 export const statisticsRoutes = {

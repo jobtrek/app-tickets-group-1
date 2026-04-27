@@ -16,7 +16,10 @@ export const statisticsQuery = {
 		return db
 			.select({
 				moyenneHeures: sql<number>`
-                    AVG(EXTRACT(EPOCH FROM (${firstAssign.assignedAt} - ${tickets.createdAt})) / 3600)
+				ROUND(
+                    AVG(EXTRACT(EPOCH FROM (${firstAssign.assignedAt} - ${tickets.createdAt})) / 3600),
+					2
+				)
                 `.mapWith(Number),
 			})
 			.from(tickets)
