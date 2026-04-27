@@ -296,9 +296,6 @@ export const UpdateConfirmation = async (
 
 	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
 
-	const newStatusId = hasAdminConfirmed ? 3 : 2;
-	await updateStatusQuery.update(newStatusId, idTicket);
-
 	publish(
 		`ticket-${idTicket}`,
 		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed: result }),

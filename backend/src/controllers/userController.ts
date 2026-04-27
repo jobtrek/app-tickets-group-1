@@ -11,7 +11,9 @@ export const updateUserById = async (
 		}
 
 		const { username, email, password } = await req.json();
-		const hashedPassword = await Bun.password.hash(password);
+		const hashedPassword = password
+			? await Bun.password.hash(password)
+			: undefined;
 
 		const result = await updateUserQuery.update(
 			userId,

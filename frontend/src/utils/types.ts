@@ -24,10 +24,10 @@ export interface LoginData {
 }
 
 export interface UpdateUserData {
-	userid: string;
+	userid: number;
 	username: string;
 	email: string;
-	password: string;
+	password?: string;
 }
 
 export interface TicketDetailsProps {
