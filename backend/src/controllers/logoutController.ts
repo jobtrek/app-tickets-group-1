@@ -1,14 +1,7 @@
+import { loginCorsHeaders } from "backend/utils/headers";
 import { eq } from "drizzle-orm";
 import { cookies } from "../data/schema";
 import { db } from "../db/database";
-
-export const loginCorsHeaders = {
-	"Access-Control-Allow-Origin": "http://localhost:5173",
-	"Access-Control-Allow-Methods": "POST, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, Authorization",
-	"Access-Control-Allow-Credentials": "true",
-	"Content-Type": "application/json",
-} as const;
 
 export const logoutUser = async (req: Request) => {
 	try {
@@ -25,14 +18,13 @@ export const logoutUser = async (req: Request) => {
 			);
 		}
 
-		// Delete session from DB
 		await db.delete(cookies).where(eq(cookies.sessionToken, sessionToken));
 
 		const expiredCookie = new Bun.Cookie("session", "", {
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV === "production",
 			path: "/",
-			sameSite: "strict",
+			sameSite: "lax",
 			maxAge: 0,
 		});
 
