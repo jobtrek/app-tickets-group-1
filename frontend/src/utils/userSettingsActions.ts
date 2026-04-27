@@ -5,10 +5,19 @@ import { validateUserSettings } from "./validate";
 interface UpdateUserActionParams {
 	idUser: number;
 	role: string;
-	setUser: (user: { idUser: number; username: string; email: string; role: string }) => void;
+	setUser: (user: {
+		idUser: number;
+		username: string;
+		email: string;
+		role: string;
+	}) => void;
 }
 
-export function createUpdateUserAction({ idUser, role, setUser }: UpdateUserActionParams) {
+export function createUpdateUserAction({
+	idUser,
+	role,
+	setUser,
+}: UpdateUserActionParams) {
 	return async function updateUserAction(
 		_: unknown,
 		formData: FormData,
@@ -18,7 +27,12 @@ export function createUpdateUserAction({ idUser, role, setUser }: UpdateUserActi
 		const newPassword = formData.get("password") as string;
 		const confirmPassword = formData.get("confirmPassword") as string;
 
-		const errors = validateUserSettings({ newUsername, newEmail, newPassword, confirmPassword });
+		const errors = validateUserSettings({
+			newUsername,
+			newEmail,
+			newPassword,
+			confirmPassword,
+		});
 		if (Object.keys(errors).length > 0) {
 			return { success: false, message: "", errors };
 		}

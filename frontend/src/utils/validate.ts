@@ -15,8 +15,7 @@ export function validateUserSettings({
 
 	if (!newUsername.trim())
 		errors.username = "Le nom d'utilisateur est obligatoire.";
-	if (!newEmail.trim())
-		errors.email = "L'email est obligatoire.";
+	if (!newEmail.trim()) errors.email = "L'email est obligatoire.";
 	if (newPassword && newPassword.length < 8)
 		errors.password = "Le mot de passe doit contenir au moins 8 caractères.";
 	if (newPassword !== confirmPassword)
