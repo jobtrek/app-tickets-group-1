@@ -5,6 +5,7 @@ import {
 	FileText,
 	LayoutDashboard,
 	LogOut,
+	Settings,
 } from "lucide-react";
 import { NavbarButton } from "../components/NavbarButton";
 import { useUserStore } from "../store/userStore";
@@ -43,6 +44,11 @@ export function Navbar() {
 			{isAdmin && (
 				<NavbarButton icon={<BarChart2 size={15} />} text="Statistiques" />
 			)}
+			<NavbarButton
+				icon={<Settings size={15} />}
+				text="Paramètres"
+				onClick={() => navigate({ to: "/settings" })}
+			/>
 
 			<div className="flex-1" />
 
