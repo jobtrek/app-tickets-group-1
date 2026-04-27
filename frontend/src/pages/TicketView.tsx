@@ -132,8 +132,8 @@ export default function TicketView({
 	const handleOwnerClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
-      await ownerConfirmTicket(ticketIdNumber, true);
-135
+			await ownerConfirmTicket(ticketIdNumber, true);
+			135;
 			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
 			await router.load();
