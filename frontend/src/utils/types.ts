@@ -23,6 +23,13 @@ export interface LoginData {
 	password: string;
 }
 
+export interface UpdateUserData {
+	userid: string
+	username: string;
+	email: string;
+	password: string;
+}
+
 export interface TicketDetailsProps {
 	id: number;
 	title: string;

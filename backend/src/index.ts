@@ -6,6 +6,7 @@ import { logoutRoutes } from "./routes/logoutRoute";
 import { registerRoutes } from "./routes/registerRoute";
 import { ticketRoutes } from "./routes/ticketsRoute";
 import { setServer } from "./utils/publisher";
+import { UserRoutes } from "./routes/userRoute";
 
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL ?? "http://localhost:5173";
 
@@ -14,6 +15,7 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 	routes: {
 		...LoginRoutes,
 		...logoutRoutes,
+		...UserRoutes
 		...registerRoutes,
 		...ticketRoutes,
 		...CommentRoutes,
