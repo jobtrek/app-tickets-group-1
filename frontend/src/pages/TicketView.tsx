@@ -103,8 +103,6 @@ export default function TicketView({
 	const handleConfirmClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
-			await updateTicketStatus(ticketIdNumber, 4);
-			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
@@ -116,8 +114,6 @@ export default function TicketView({
 	const handleRejectClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, false);
-			await updateTicketStatus(ticketIdNumber, 2);
-			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
 			setStatusName("En cours");
 			setPendingConfirmation(false);
