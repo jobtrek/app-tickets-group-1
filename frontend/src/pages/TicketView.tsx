@@ -4,7 +4,6 @@ import CommentInput from "../components/CommentInput";
 import CommentList from "../components/CommentList";
 import TicketDetails from "../components/TicketDetails";
 import TicketHeader from "../components/TicketHeader";
-import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
@@ -12,7 +11,7 @@ import {
 	updateTicketConfirmation,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
-import type { Ticket, TicketViewProps } from "../utils/types";
+import type { TicketViewProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
 
 export default function TicketView({
@@ -68,7 +67,6 @@ export default function TicketView({
 		try {
 			await createComment(commentInput, userId, ticketIdNumber);
 			await router.invalidate();
-			await router.load();
 
 			setCommentInput("");
 		} catch (e) {
@@ -81,7 +79,6 @@ export default function TicketView({
 			await assignTicket(ticketIdNumber, userId);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await router.invalidate();
-			await router.load();
 
 			setSupportUsername(storeUsername);
 			setStatusName("En cours");
@@ -95,7 +92,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 3);
 			await updateTicketConfirmation(ticketIdNumber, true);
 			await router.invalidate();
-			await router.load();
 
 			setStatusName("Résolu");
 			setPendingConfirmation(true);
@@ -109,7 +105,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 4);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
-			await router.load();
 
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
@@ -123,7 +118,6 @@ export default function TicketView({
 			await updateTicketStatus(ticketIdNumber, 2);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
-			await router.load();
 
 			setStatusName("En cours");
 			setPendingConfirmation(false);

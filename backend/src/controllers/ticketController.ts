@@ -1,7 +1,7 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets, users } from "../data/schema";
@@ -273,7 +273,15 @@ export const UpdateConfirmation = async (
 		);
 	}
 
-	const { hasAdminConfirmed } = await req.json();
+	const body = await req.json().catch(() => ({}));
+	const { hasAdminConfirmed } = body;
+
+	if (typeof hasAdminConfirmed !== "boolean") {
+		return Response.json(
+			{ error: "hasAdminConfirmed must be a boolean" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
 
 	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
 
