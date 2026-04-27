@@ -6,7 +6,7 @@ import { logoutRoutes } from "./routes/logoutRoute";
 import { registerRoutes } from "./routes/registerRoute";
 import { ticketRoutes } from "./routes/ticketsRoute";
 import { setServer } from "./utils/publisher";
-
+import { UserRoutes } from "./routes/userRoute";
 const server = Bun.serve<{ ticketId: string | undefined }>({
 	port: 3001,
 	routes: {
@@ -15,6 +15,7 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		...LoginRoutes,
 		...CommentRoutes,
 		...logoutRoutes,
+		...UserRoutes
 	},
 	async fetch(req, server) {
 		const url = new URL(req.url);

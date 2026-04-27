@@ -1,9 +1,10 @@
 import { apiClient } from "./clientApi";
-import type { LoginData, RegisterData } from "./types";
+import type { LoginData, RegisterData, UpdateUserData } from "./types";
 
 const USER_URL = import.meta.env.VITE_USER_URL;
 const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
+const UPDATEUSER_URL = import.meta.env.VITE_UPDATEUSER_URL;
 
 export const registerUserApi = async (user: RegisterData) => {
 	const postData = await apiClient.post(USER_URL, user);
@@ -19,4 +20,8 @@ export const loginUserApi = async (user: LoginData) => {
 
 export const logoutUser = async () => {
 	await apiClient.post(LOGOUT_URL);
+};
+
+export const updateUser = async (data: UpdateUserData) => {
+	await apiClient.post(UPDATEUSER_URL, data);
 };
