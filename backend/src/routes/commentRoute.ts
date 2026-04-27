@@ -1,18 +1,20 @@
+import { loginCorsHeaders } from "backend/utils/headers";
 import {
 	getAllComment,
 	postComment,
 	websocketUpgrade,
 } from "../controllers/commentController";
-import { loginCorsHeaders } from "../controllers/loginController";
+import { withAuth } from "../middleware/auth.middleware";
+import { withRateLimit } from "../middleware/rateLimit.middleware";
 
 export const CommentRoutes = {
 	"/api/tickets/:id/comment": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: loginCorsHeaders, status: 204 }),
-		POST: postComment,
-		GET: getAllComment,
+		GET: withRateLimit(withAuth(getAllComment)),
+		POST: withRateLimit(withAuth(postComment), 30),
 	},
 	"/api/tickets/:id/ws": {
-		GET: websocketUpgrade,
+		GET: withAuth(websocketUpgrade),
 	},
 };

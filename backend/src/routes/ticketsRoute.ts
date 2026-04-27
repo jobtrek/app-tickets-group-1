@@ -4,35 +4,43 @@ import {
 	createTicket,
 	getAllTickets,
 	getTicketById,
+	ownerConfirmTicket,
 	UpdateConfirmation,
 	updateStatus,
 } from "../controllers/ticketController";
+import { withAuth } from "../middleware/auth.middleware";
+import { withRateLimit } from "../middleware/rateLimit.middleware";
 
 export const ticketRoutes = {
 	"/api/tickets": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		GET: getAllTickets,
-		POST: createTicket,
+		GET: withRateLimit(withAuth(getAllTickets)),
+		POST: withRateLimit(withAuth(createTicket)),
 	},
 	"/api/ticket/:id": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		GET: getTicketById,
+		GET: withRateLimit(withAuth(getTicketById)),
 	},
 	"/api/tickets/:id/assign": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		POST: assignTicket,
+		POST: withRateLimit(withAuth(assignTicket)),
 	},
 	"/api/tickets/:id/status": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		PATCH: updateStatus,
+		PATCH: withRateLimit(withAuth(updateStatus)),
 	},
 	"/api/tickets/:id/confirm": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		PATCH: UpdateConfirmation,
+		PATCH: withAuth(UpdateConfirmation),
+	},
+	"/api/tickets/:id/owner-confirm": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		PATCH: withRateLimit(withAuth(ownerConfirmTicket)),
 	},
 };

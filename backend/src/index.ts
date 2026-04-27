@@ -7,19 +7,28 @@ import { registerRoutes } from "./routes/registerRoute";
 import { ticketRoutes } from "./routes/ticketsRoute";
 import { setServer } from "./utils/publisher";
 import { UserRoutes } from "./routes/userRoute";
+
+const ALLOWED_ORIGIN = process.env.FRONTEND_URL ?? "http://localhost:5173";
+
 const server = Bun.serve<{ ticketId: string | undefined }>({
 	port: 3001,
 	routes: {
-		...ticketRoutes,
-		...registerRoutes,
 		...LoginRoutes,
-		...CommentRoutes,
 		...logoutRoutes,
 		...UserRoutes
+		...registerRoutes,
+		...ticketRoutes,
+		...CommentRoutes,
 	},
+
 	async fetch(req, server) {
 		const url = new URL(req.url);
 		const path = url.pathname;
+
+		const origin = req.headers.get("origin");
+		if (origin && origin !== ALLOWED_ORIGIN && !path.startsWith("/uploads/")) {
+			return new Response("Forbidden", { status: 403 });
+		}
 
 		if (req.method === "OPTIONS") {
 			return new Response(null, { headers: corsHeaders });
@@ -37,12 +46,22 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		}
 
 		if (path === "/ws") {
+			const cookieHeader = req.headers.get("cookie");
+			const sessionToken = cookieHeader
+				?.split(";")
+				.find((c) => c.trim().startsWith("session="))
+				?.split("=")[1]
+				?.trim();
+
+			if (!sessionToken) {
+				return new Response("Unauthorized", { status: 401 });
+			}
+
 			const ticketId = url.searchParams.get("ticketId") || undefined;
 			if (server.upgrade(req, { data: { ticketId } })) {
 				return;
 			}
 		}
-
 		return undefined;
 	},
 

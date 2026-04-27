@@ -8,6 +8,17 @@ export default defineConfig({
 	envDir: "..",
 	server: {
 		host: "0.0.0.0",
+		proxy: {
+			"/api": {
+				target: "http://backend:3001",
+				changeOrigin: true,
+				ws: true,
+			},
+			"/uploads": {
+				target: "http://backend:3001",
+				changeOrigin: true,
+			},
+		},
 	},
 	plugins: [
 		tanstackRouter({

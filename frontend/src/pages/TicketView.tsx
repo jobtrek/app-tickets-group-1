@@ -8,6 +8,7 @@ import { useUserStore } from "../store/userStore";
 import {
 	assignTicket,
 	createComment,
+	ownerConfirmTicket,
 	updateTicketConfirmation,
 	updateTicketStatus,
 } from "../utils/ticketsApi";
@@ -102,6 +103,7 @@ export default function TicketView({
 
 	const handleConfirmClose = async () => {
 		try {
+			await ownerConfirmTicket(ticketIdNumber, true);
 			await updateTicketStatus(ticketIdNumber, 4);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
@@ -115,6 +117,7 @@ export default function TicketView({
 
 	const handleRejectClose = async () => {
 		try {
+			await ownerConfirmTicket(ticketIdNumber, false);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await updateTicketConfirmation(ticketIdNumber, false);
 			await router.invalidate();
@@ -128,6 +131,9 @@ export default function TicketView({
 
 	const handleOwnerClose = async () => {
 		try {
+			await ownerConfirmTicket(ticketIdNumber, true);
+			await ownerConfirmTicket(ticketIdNumber, true);
+			135;
 			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
 			await router.load();
@@ -137,7 +143,6 @@ export default function TicketView({
 			console.error("Failed to close ticket", e);
 		}
 	};
-
 	return (
 		<div className="min-h-screen w-full bg-gray-50 flex flex-col items-center py-12 px-6 gap-8">
 			<TicketHeader
