@@ -1,7 +1,7 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets, users } from "../data/schema";
@@ -294,10 +294,8 @@ export const UpdateConfirmation = async (
 		);
 	}
 
+	
 	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
-
-	const newStatusId = hasAdminConfirmed ? 3 : 2;
-	await updateStatusQuery.update(newStatusId, idTicket);
 
 	publish(
 		`ticket-${idTicket}`,
