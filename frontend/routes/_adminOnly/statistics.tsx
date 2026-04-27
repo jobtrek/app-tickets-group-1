@@ -7,7 +7,7 @@ const STATS_URL = import.meta.env.VITE_STATS_URL;
 export const Route = createFileRoute("/_adminOnly/statistics")({
 	loader: async (): Promise<number> => {
 		const response = await apiClient.get<number>(STATS_URL);
-		return response.data;        
+		return response.data;
 	},
 	staleTime: 0,
 	component: RouteComponent,
