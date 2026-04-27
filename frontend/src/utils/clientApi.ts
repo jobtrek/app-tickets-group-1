@@ -4,7 +4,6 @@ import { useUserStore } from "../store/userStore";
 
 const MAX_RETRIES = 1;
 export const apiClient = axios.create({
-	baseURL: import.meta.env.VITE_API_URL,
 	withCredentials: true,
 });
 apiClient.interceptors.response.use(

@@ -56,7 +56,7 @@ export const updateTicketStatus = async (
 };
 
 export const getTicketById = async (idTicket: number) => {
-	const id = await apiClient.get(`${API_URL}/${idTicket}`);
+	const id = await apiClient.get(`${TICKET_URL}/${idTicket}`);
 	return id;
 };
 
@@ -80,4 +80,14 @@ export const fetchTicketConfirmation = async (
 ): Promise<boolean> => {
 	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
 	return data.hasAdminConfirmed ?? false;
+};
+export const ownerConfirmTicket = async (
+	idTicket: number,
+	accepted: boolean,
+) => {
+	const { data } = await apiClient.patch(
+		`${API_URL}/${idTicket}/owner-confirm`,
+		{ accepted },
+	);
+	return data;
 };

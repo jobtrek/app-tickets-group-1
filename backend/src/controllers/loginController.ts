@@ -1,15 +1,8 @@
+import { loginCorsHeaders } from "backend/utils/headers";
 import * as v from "valibot";
 import { CookieQuery } from "../repositories/cookieQuery";
 import { LoginUserQuery } from "../repositories/loginUserQuery";
 import { UserLoginSchema } from "../validators/authValidator";
-
-export const loginCorsHeaders = {
-	"Access-Control-Allow-Origin": "http://localhost:5173",
-	"Access-Control-Allow-Methods": "POST, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, Authorization",
-	"Access-Control-Allow-Credentials": "true",
-	"Content-Type": "application/json",
-} as const;
 
 export const loginUser = async (req: Request) => {
 	try {
@@ -24,7 +17,6 @@ export const loginUser = async (req: Request) => {
 		}
 
 		const { email, password } = result.output;
-		console.log(result.output);
 
 		const users = await LoginUserQuery.getByEmail(email);
 		const user = users[0];
@@ -35,6 +27,7 @@ export const loginUser = async (req: Request) => {
 				{ status: 401, headers: loginCorsHeaders },
 			);
 		}
+
 		const isMatch = await Bun.password.verify(password, user.password);
 
 		if (!isMatch) {
@@ -45,17 +38,15 @@ export const loginUser = async (req: Request) => {
 		}
 
 		const sessionToken = crypto.randomUUID();
-
 		await CookieQuery.create(sessionToken, user.idUser);
 
 		const cookie = new Bun.Cookie("session", sessionToken, {
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV === "production",
 			path: "/",
-			sameSite: "strict",
+			sameSite: "lax",
 			maxAge: 86400,
 		});
-
 		const headers = new Headers(loginCorsHeaders);
 		headers.append("Set-Cookie", cookie.toString());
 
