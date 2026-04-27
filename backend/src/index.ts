@@ -4,6 +4,7 @@ import { CommentRoutes } from "./routes/commentRoute";
 import { LoginRoutes } from "./routes/loginRoute";
 import { logoutRoutes } from "./routes/logoutRoute";
 import { registerRoutes } from "./routes/registerRoute";
+import { statisticsRoutes } from "./routes/statistics";
 import { ticketRoutes } from "./routes/ticketsRoute";
 import { UserRoutes } from "./routes/userRoute";
 import { setServer } from "./utils/publisher";
@@ -15,6 +16,7 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 	routes: {
 		...LoginRoutes,
 		...logoutRoutes,
+		...statisticsRoutes,
 		...UserRoutes,
 		...registerRoutes,
 		...ticketRoutes,
