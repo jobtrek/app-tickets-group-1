@@ -45,6 +45,7 @@ export default function TicketView({
 	const role = useUserStore((state) => state.role);
 	const isAdmin = role === "admin";
 	const isOwner = storeUsername === username;
+	const isAssignedAdmin = isAdmin && storeUsername === supportUsername;
 
 	const isChatDisabled = statusName === "Résolu" || statusName === "Fermé";
 
@@ -76,12 +77,12 @@ export default function TicketView({
 		}
 	};
 
-	const handleAssign = async () => {
+	const handleAssign = async (adminId: number, adminUsername: string) => {
 		try {
-			await assignTicket(ticketIdNumber, userId);
+			await assignTicket(ticketIdNumber, adminId);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await router.invalidate();
-			setSupportUsername(storeUsername);
+			setSupportUsername(adminUsername);
 			setStatusName("En cours");
 		} catch (e) {
 			console.error("Failed to assign ticket", e);
@@ -125,7 +126,6 @@ export default function TicketView({
 	const handleOwnerClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
-			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
@@ -139,6 +139,7 @@ export default function TicketView({
 			<TicketHeader
 				statusName={statusName}
 				isAdmin={isAdmin}
+				isAssignedAdmin={isAssignedAdmin}
 				pendingConfirmation={pendingConfirmation}
 				onBack={() => navigate({ to: "/" })}
 				onResolve={handleResolve}

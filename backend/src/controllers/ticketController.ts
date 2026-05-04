@@ -183,7 +183,24 @@ export const assignTicket = async (
 		);
 	}
 
-	const idSupport = req.user.idUser;
+	const { idSupport } = await req.json().catch(() => ({}));
+	if (!idSupport || Number.isNaN(Number(idSupport))) {
+		return Response.json(
+			{ error: "Invalid idSupport" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+	const [supportUser] = await db
+		.select({ username: users.username, role: users.role })
+		.from(users)
+		.where(eq(users.idUser, idSupport));
+
+	if (!supportUser || supportUser.role !== "admin") {
+		return Response.json(
+			{ error: "L'utilisateur sélectionné n'est pas un admin" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
 
 	await db.transaction(async (tx) => {
 		await tx
@@ -195,11 +212,7 @@ export const assignTicket = async (
 			.where(eq(tickets.idTicket, idTicket));
 	});
 
-	const [supportUser] = await db
-		.select({ username: users.username })
-		.from(users)
-		.where(eq(users.idUser, idSupport));
-	const supportUsername = supportUser?.username ?? null;
+	const supportUsername = supportUser.username;
 
 	publish(
 		`ticket-${idTicket}`,
@@ -349,4 +362,18 @@ export const ownerConfirmTicket = async (
 		{ message: accepted ? "Ticket closed" : "Ticket reopened" },
 		{ status: 200, headers: corsHeaders },
 	);
+};
+
+export const getAllAdmins = async (
+	req: AuthedRequest<"/api/tickets/admin">,
+) => {
+	if (req.user.role !== "admin") {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
+	const admins = await ticketQueries.getAllSupport();
+
+	return Response.json({ admins }, { status: 200, headers: corsHeaders });
 };

@@ -17,6 +17,7 @@
 		"format:check": "biome format ."
 	},
 	"dependencies": {
+		"@radix-ui/react-dropdown-menu": "^2.1.16",
 		"@tanstack/react-router": "^1.166.3",
 		"axios": "^1.13.6",
 		"dotenv": "^17.4.2",
