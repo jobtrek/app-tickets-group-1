@@ -12,8 +12,9 @@ interface TicketHeaderProps {
 
 export default function TicketHeader({
 	statusName,
-	isAssignedAdmin,
+	
 	pendingConfirmation,
+	isAdmin,
 	onBack,
 	onResolve,
 }: TicketHeaderProps) {
@@ -41,7 +42,7 @@ export default function TicketHeader({
 				Retour
 			</button>
 
-			{isAssignedAdmin && (
+			{isAdmin && (
 				<div className="relative flex items-center gap-2">
 					<button
 						type="button"
