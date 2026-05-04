@@ -55,10 +55,12 @@ export const statisticsQuery = {
 	ticketsPerMonth: () => {
 		return db
 			.select({
-				month: sql<string>`date_trunc('month', ${tickets.createdAt})`.as('month'),
+				month: sql<string>`date_trunc('month', ${tickets.createdAt})`.as(
+					"month",
+				),
 				count: count(),
 			})
 			.from(tickets)
-			.groupBy(sql`month`)
-	}
+			.groupBy(sql`month`);
+	},
 };

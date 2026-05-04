@@ -38,7 +38,6 @@ export default function Statistics({ stats }: StatisticsProps) {
 						icon={<Clock size={20} />}
 						description="Délai moyen entre la prise en charge du ticket et sa fermeture."
 					/>
-					
 				</div>
 			</div>
 		</div>

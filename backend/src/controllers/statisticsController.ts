@@ -3,7 +3,12 @@ import { statisticsQuery } from "../repositories/statisticsQuery";
 
 export const getStatistics = async () => {
 	try {
-		const [avgFirstAssign, avgCloseTicket, ticketsCountPerStatus, ticketsPerMonth] = await Promise.all([
+		const [
+			avgFirstAssign,
+			avgCloseTicket,
+			ticketsCountPerStatus,
+			ticketsPerMonth,
+		] = await Promise.all([
 			statisticsQuery.avgTimeToFirstAssignment(),
 			statisticsQuery.avgTimeToCloseTicket(),
 			statisticsQuery.ticketsCountPerStatus(),
@@ -15,7 +20,7 @@ export const getStatistics = async () => {
 			avgTimeToCloseTicket: avgCloseTicket[0]?.moyenne ?? 0,
 			ticketsCountPerStatus: ticketsCountPerStatus ?? [],
 			ticketsPerMonth: ticketsPerMonth ?? [],
-		};		
+		};
 
 		return Response.json(data, {
 			status: 200,

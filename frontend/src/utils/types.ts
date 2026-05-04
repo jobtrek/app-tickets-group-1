@@ -80,6 +80,6 @@ export interface ActionState {
 export interface StatsProps {
 	avgTimeToFirstAssignment: number;
 	avgTimeToCloseTicket: number;
-	ticketsCountPerStatus: { status: number | null; count: number }[];
+	ticketsCountPerStatus: { status: number; count: number }[];
 	ticketsPerMonth: { month: string; count: number }[];
 }
