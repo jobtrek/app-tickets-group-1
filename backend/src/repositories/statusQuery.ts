@@ -6,6 +6,9 @@ export const updateStatusQuery = {
 	update: (statusId: number, idTicket: number) =>
 		db
 			.update(tickets)
-			.set({ idStatus: statusId })
+			.set({
+				idStatus: statusId,
+				...(statusId === 4 ? { updatedAt: new Date() } : {}),
+			})
 			.where(eq(tickets.idTicket, idTicket)),
 };

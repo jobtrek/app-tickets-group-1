@@ -3,18 +3,19 @@ import { statisticsQuery } from "../repositories/statisticsQuery";
 
 export const getStatistics = async () => {
 	try {
-		// Run all queries in parallel for maximum speed
-		const [avgFirstAssign, avgCloseTicket] = await Promise.all([
+		const [avgFirstAssign, avgCloseTicket, ticketsCountPerStatus, ticketsPerMonth] = await Promise.all([
 			statisticsQuery.avgTimeToFirstAssignment(),
 			statisticsQuery.avgTimeToCloseTicket(),
+			statisticsQuery.ticketsCountPerStatus(),
+			statisticsQuery.ticketsPerMonth(),
 		]);
 
-		// Construct a single clean object
 		const data = {
 			avgTimeToFirstAssignment: avgFirstAssign[0]?.moyenne ?? 0,
 			avgTimeToCloseTicket: avgCloseTicket[0]?.moyenne ?? 0,
-			// Add more here as you grow...
-		};
+			ticketsCountPerStatus: ticketsCountPerStatus ?? 0,
+			ticketsPerMonth: ticketsPerMonth ?? 0,
+		};		
 
 		return Response.json(data, {
 			status: 200,

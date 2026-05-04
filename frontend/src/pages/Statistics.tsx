@@ -22,9 +22,6 @@ export default function Statistics({ stats }: StatisticsProps) {
 			<div className="max-w-5xl mx-auto">
 				<header className="mb-8 border-b border-gray-200 pb-4">
 					<h1 className="text-2xl font-bold text-gray-900">Statistiques IT</h1>
-					<p className="text-sm text-gray-500">
-						Indicateurs de performance en temps réel.
-					</p>
 				</header>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -41,6 +38,7 @@ export default function Statistics({ stats }: StatisticsProps) {
 						icon={<Clock size={20} />}
 						description="Délai moyen entre la prise en charge du ticket et sa fermeture."
 					/>
+					
 				</div>
 			</div>
 		</div>

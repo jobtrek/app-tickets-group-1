@@ -80,5 +80,5 @@ export interface ActionState {
 export interface StatsProps {
 	avgTimeToFirstAssignment: number;
 	avgTimeToCloseTicket: number;
-	// Add new ones here as you create them!
+	ticketsCountPerStatus: number[];
 }
