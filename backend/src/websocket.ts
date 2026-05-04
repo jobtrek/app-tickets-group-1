@@ -1,31 +1,44 @@
 import type { Server, ServerWebSocket } from "bun";
+import { getSessionUser } from "./middleware/auth.middleware";
+import { ticketQueries } from "./repositories/ticketQuery";
 
 type WsData = { ticketId: string | undefined };
 
 const ALLOWED_ORIGIN = process.env.FRONTEND_URL ?? "http://localhost:5173";
 
-export const handleWsUpgrade = (
+export const handleWsUpgrade = async (
 	req: Request,
 	server: Server<WsData>,
-): Response | undefined => {
+): Promise<Response | undefined> => {
 	const origin = req.headers.get("origin");
 	if (origin && origin !== ALLOWED_ORIGIN) {
 		return new Response("Forbidden", { status: 403 });
 	}
 
-	const cookieHeader = req.headers.get("cookie");
-	const sessionToken = cookieHeader
-		?.split(";")
-		.find((c) => c.trim().startsWith("session="))
-		?.split("=")[1]
-		?.trim();
-
-	if (!sessionToken) {
+	const user = await getSessionUser(req);
+	if (!user) {
 		return new Response("Unauthorized", { status: 401 });
 	}
 
-	const ticketId = new URL(req.url).searchParams.get("ticketId") || undefined;
-	server.upgrade(req, { data: { ticketId } });
+	const ticketIdParam = new URL(req.url).searchParams.get("ticketId");
+
+	if (ticketIdParam !== null) {
+		const idTicket = Number(ticketIdParam);
+		if (!Number.isInteger(idTicket) || idTicket <= 0) {
+			return new Response("Bad Request", { status: 400 });
+		}
+
+		const [ticket] = await ticketQueries.getById(idTicket);
+		if (!ticket) {
+			return new Response("Not Found", { status: 404 });
+		}
+
+		if (user.role !== "admin" && ticket.idUser !== user.idUser) {
+			return new Response("Forbidden", { status: 403 });
+		}
+	}
+
+	server.upgrade(req, { data: { ticketId: ticketIdParam ?? undefined } });
 	return undefined;
 };
 

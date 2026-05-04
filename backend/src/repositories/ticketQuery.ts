@@ -58,11 +58,11 @@ export const ticketQueries = {
 	assign: (idTicket: number, idSupport: number) =>
 		db.transaction(async (tx) => {
 			await tx
+				.update(ticket_assignment)
+				.set({ isActive: false })
+				.where(eq(ticket_assignment.idTicket, idTicket));
+			await tx
 				.insert(ticket_assignment)
 				.values({ idTicket, idSupport, isActive: true });
-			await tx
-				.update(tickets)
-				.set({ idSupport, idStatus: 2 })
-				.where(eq(tickets.idTicket, idTicket));
 		}),
 };

@@ -18,7 +18,7 @@ export const errorResponse = (
 	message: string,
 	status: number = 500,
 ): Response => {
-	return new Response(message, { status, headers: corsHeaders });
+	return Response.json({ error: message }, { status, headers: corsHeaders });
 };
 
 export const loginResponseError = (
