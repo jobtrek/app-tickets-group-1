@@ -1,5 +1,6 @@
 import { basename, join } from "node:path";
-import { errorResponse, jsonResponse } from "../utils/responseFactory";
+import { corsHeaders } from "../utils/headers";
+import { errorResponse } from "../utils/responseFactory";
 
 export const serveUpload = async (req: Bun.BunRequest<"/uploads/:file">) => {
 	const fileName = basename(req.params.file);
@@ -7,7 +8,9 @@ export const serveUpload = async (req: Bun.BunRequest<"/uploads/:file">) => {
 	const file = Bun.file(filePath);
 
 	if (await file.exists()) {
-		return jsonResponse(file);
+		const headers = new Headers(corsHeaders);
+		headers.set("Content-Type", file.type);
+		return new Response(file, { headers });
 	}
 	return errorResponse("Not Found", 404);
 };
