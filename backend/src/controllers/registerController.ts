@@ -1,8 +1,8 @@
 import * as v from "valibot";
-import { corsHeaders } from "../../utils/headers";
-import { hashPassword } from "../../utils/passwordHash";
 import { users } from "../data/schema";
 import { db } from "../db/database";
+import { corsHeaders } from "../utils/headers";
+import { hashPassword } from "../utils/passwordHash";
 import { UserRegisterSchema } from "../validators/authValidator";
 export const postUser = async (req: Request) => {
 	try {

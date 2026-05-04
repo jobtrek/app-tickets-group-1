@@ -1,29 +1,48 @@
-import { corsHeaders } from "../../utils/headers";
+import * as v from "valibot";
+import type { AuthedRequest } from "../middleware/auth.middleware";
 import { updateUserQuery } from "../repositories/updateUserQuery";
+import { parseId } from "../utils/idParser";
+import { errorResponse, jsonResponse } from "../utils/responseFactory";
+import { UpdateUserSchema } from "../validators/authValidator";
 
 export const updateUserById = async (
-	req: Bun.BunRequest<"/api/user/:id">,
+	req: AuthedRequest<"/api/user/:id">,
 ): Promise<Response> => {
-	try {
-		const userId = Number(req.params.id);
-		if (Number.isNaN(userId) || !Number.isInteger(userId) || userId <= 0) {
-			throw new Error(`Invalid ID: "${userId}" must be a positive integer.`);
-		}
+	const userId = parseId(req.params.id);
+	if (!userId) return errorResponse("Invalid ID", 400);
 
-		const { username, email, password } = await req.json();
+	if (req.user.idUser !== userId && req.user.role !== "admin") {
+		return errorResponse("Forbidden", 403);
+	}
+
+	const body = await req.json().catch(() => null);
+	if (!body) return errorResponse("Invalid JSON", 400);
+
+	const result = v.safeParse(UpdateUserSchema, body);
+	if (!result.success) return errorResponse("Validation failed", 400);
+
+	const { username, email, password } = result.output;
+	if (!username && !email && !password) {
+		return errorResponse("No fields to update", 400);
+	}
+
+	try {
 		const hashedPassword = password
 			? await Bun.password.hash(password)
 			: undefined;
 
-		const result = await updateUserQuery.update(
+		const [updated] = await updateUserQuery.update(
 			userId,
 			username,
 			email,
 			hashedPassword,
 		);
-		return Response.json(result, { status: 200, headers: corsHeaders });
+
+		if (!updated) return errorResponse("User not found", 404);
+		const { password: _pwd, ...safeUser } = updated;
+		return jsonResponse(safeUser);
 	} catch (e) {
-		console.error("DB fetch error", e);
-		return new Response("DB Error", { status: 500, headers: corsHeaders });
+		console.error("Update user error", e);
+		return errorResponse("Internal Server Error", 500);
 	}
 };

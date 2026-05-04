@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import { corsHeaders } from "../../utils/headers";
 import { cookies, users } from "../data/schema";
 import { db } from "../db/database";
+import { corsHeaders } from "../utils/headers";
 
 export type AuthUser = {
 	idUser: number;
@@ -18,7 +18,9 @@ type AuthenticatedHandler<T extends string = string> = (
 	req: AuthedRequest<T>,
 ) => Response | Promise<Response | undefined> | undefined;
 
-const getSessionUser = async (req: Request): Promise<AuthUser | null> => {
+export const getSessionUser = async (
+	req: Request,
+): Promise<AuthUser | null> => {
 	const cookieHeader = req.headers.get("cookie");
 	const sessionToken = cookieHeader
 		?.split(";")

@@ -1,23 +1,18 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
-import { eq } from "drizzle-orm";
-import { fileTypeFromBuffer } from "file-type";
 import * as v from "valibot";
-import { corsHeaders } from "../../utils/headers";
-import { ticket_assignment, tickets, users } from "../data/schema";
-import { db } from "../db/database";
 import type { AuthedRequest } from "../middleware/auth.middleware";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
+import { userQueries } from "../repositories/userQuery";
+import { statusNames } from "../utils/constants/statusNames";
+import { verifyAndParseId } from "../utils/idParser";
+import { handleImageUpload } from "../utils/imageHandling.ts";
 import { publish } from "../utils/publisher";
+import {
+	publishTicketUpdate,
+	requireAdmin,
+} from "../utils/publishTicketUpdate.ts";
+import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
-
-const statusNames: Record<number, string> = {
-	1: "Ouvert",
-	2: "En cours",
-	3: "Résolu",
-	4: "Fermé",
-};
 
 export const getAllTickets = async (req: AuthedRequest) => {
 	try {
@@ -25,11 +20,10 @@ export const getAllTickets = async (req: AuthedRequest) => {
 			req.user.role === "admin"
 				? await ticketQueries.getAll()
 				: await ticketQueries.getAllByUser(req.user.idUser);
-
-		return Response.json(allTickets, { status: 200, headers: corsHeaders });
+		return jsonResponse(allTickets);
 	} catch (e) {
 		console.error("DB fetch error", e);
-		return new Response("DB Error", { status: 500, headers: corsHeaders });
+		return errorResponse("DB Error", 500);
 	}
 };
 
@@ -37,61 +31,36 @@ export const getTicketById = async (
 	req: AuthedRequest<"/api/ticket/:id">,
 ): Promise<Response> => {
 	try {
-		const id = req.params?.id;
+		const id = verifyAndParseId(req.params?.id ?? "", "Invalid or missing ID");
+		if (id instanceof Response) return id;
 
-		if (!id || Number.isNaN(Number(id))) {
-			return new Response("Invalid or missing ID", {
-				status: 400,
-				headers: corsHeaders,
-			});
+		const [ticket] = await ticketQueries.getById(id);
+		if (!ticket) return errorResponse("Ticket not found", 404);
+		if (req.user.role !== "admin" && ticket.idUser !== req.user.idUser) {
+			return errorResponse("Forbidden", 403);
 		}
 
-		const ticket = await ticketQueries.getById(Number(id));
-
-		if (!ticket.length) {
-			return new Response("Ticket not found", {
-				status: 404,
-				headers: corsHeaders,
-			});
-		}
-
-		const ticketItem = ticket[0];
-
-		if (!ticketItem) {
-			return new Response("Ticket not found", {
-				status: 404,
-				headers: corsHeaders,
-			});
-		}
-
-		if (req.user.role !== "admin" && ticketItem.idUser !== req.user.idUser) {
-			return new Response("Forbidden", { status: 403, headers: corsHeaders });
-		}
-
-		return Response.json(ticketItem, { status: 200, headers: corsHeaders });
+		return jsonResponse(ticket);
 	} catch (e) {
 		console.error("DB fetch error", e);
-		return new Response("DB Error", { status: 500, headers: corsHeaders });
+		return errorResponse("DB Error", 500);
 	}
 };
 
 export const createTicket = async (req: AuthedRequest): Promise<Response> => {
 	try {
 		const formData = await req.formData();
-
-		const rawData = {
+		const validBody = v.safeParse(TicketPostSchema, {
 			title: formData.get("title"),
 			description: formData.get("description"),
 			level: formData.get("level") || undefined,
 			idUser: req.user.idUser,
-		};
-
-		const validBody = v.safeParse(TicketPostSchema, rawData);
+		});
 
 		if (!validBody.success) {
-			return Response.json(
+			return jsonResponse(
 				{ errors: validBody.issues.map((i) => i.message) },
-				{ status: 400, headers: corsHeaders },
+				400,
 			);
 		}
 
@@ -99,281 +68,159 @@ export const createTicket = async (req: AuthedRequest): Promise<Response> => {
 		const file = formData.get("image") as File | null;
 
 		if (file && file.size > 0) {
-			if (file.size > 10 * 1024 * 1024) {
-				return new Response("File too large (Max 10MB)", {
-					status: 400,
-					headers: corsHeaders,
-				});
-			}
-
-			const arrayBuffer = await file.arrayBuffer();
-			const buffer = new Uint8Array(arrayBuffer);
-			const detectedType = await fileTypeFromBuffer(buffer);
-
-			const allowedMimeTypes = [
-				"image/png",
-				"image/jpeg",
-				"image/jpg",
-				"image/webp",
-			];
-
-			if (!detectedType || !allowedMimeTypes.includes(detectedType.mime)) {
-				return new Response("Security Error: Invalid file content.", {
-					status: 400,
-					headers: corsHeaders,
-				});
-			}
-
-			const safeExt = `.${detectedType.ext}`;
-			finalFileName = `${crypto.randomUUID()}${safeExt}`;
-			const uploadDir = path.join(import.meta.dir, "..", "..", "uploads");
-
-			await mkdir(uploadDir, { recursive: true });
-			await Bun.write(path.join(uploadDir, finalFileName), buffer);
+			const result = await handleImageUpload(file);
+			if (result instanceof Response) return result;
+			finalFileName = result;
 		}
 
 		const { title, description, level, idUser } = validBody.output;
-		const defaultStatus = 1;
-
 		const result = await ticketQueries.insert(
 			title,
 			description,
 			finalFileName,
 			level ?? null,
-			defaultStatus,
+			1,
 			idUser,
 		);
-
 		const inserted = result[0];
+
 		if (inserted) {
 			const [fullTicket] = await ticketQueries.getById(inserted.idTicket);
-			if (fullTicket) {
+			if (fullTicket)
 				publish(
 					"tickets",
 					JSON.stringify({ type: "ticket_created", ticket: fullTicket }),
 				);
-			}
 		}
 
-		return Response.json(
-			{ createdTicket: result[0] },
-			{ status: 201, headers: corsHeaders },
-		);
+		return jsonResponse({ createdTicket: inserted }, 201);
 	} catch (e) {
 		console.error("DB insertion error", e);
-		return new Response("Error", { status: 500, headers: corsHeaders });
+		return errorResponse("Error", 500);
 	}
 };
 
 export const assignTicket = async (
 	req: AuthedRequest<"/api/tickets/:id/assign">,
 ) => {
-	if (req.user.role !== "admin") {
-		return Response.json(
-			{ error: "Forbidden" },
-			{ status: 403, headers: corsHeaders },
-		);
-	}
+	const guard = requireAdmin(req);
+	if (guard) return guard;
 
-	const idTicket = Number(req.params.id);
-	if (!idTicket || Number.isNaN(idTicket)) {
-		return Response.json(
-			{ error: "Invalid ticket ID" },
-			{ status: 400, headers: corsHeaders },
-		);
-	}
+	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+	if (idTicket instanceof Response) return idTicket;
 
 	const { idSupport } = await req.json().catch(() => ({}));
 	if (!idSupport || Number.isNaN(Number(idSupport))) {
-		return Response.json(
-			{ error: "Invalid idSupport" },
-			{ status: 400, headers: corsHeaders },
-		);
+		return jsonResponse({ error: "Invalid idSupport" }, 400);
 	}
-	const [supportUser] = await db
-		.select({ username: users.username, role: users.role })
-		.from(users)
-		.where(eq(users.idUser, idSupport));
+
+	const supportUser = await userQueries.getSupportById(idSupport);
 
 	if (!supportUser || supportUser.role !== "admin") {
-		return Response.json(
+		return jsonResponse(
 			{ error: "L'utilisateur sélectionné n'est pas un admin" },
-			{ status: 403, headers: corsHeaders },
+			403,
 		);
 	}
 
-	await db.transaction(async (tx) => {
-		await tx
-			.insert(ticket_assignment)
-			.values({ idTicket, idSupport, isActive: true });
-		await tx
-			.update(tickets)
-			.set({ idSupport, idStatus: 2 })
-			.where(eq(tickets.idTicket, idTicket));
+	await ticketQueries.assign(idTicket, idSupport);
+
+	publishTicketUpdate(idTicket, "assignment_update", {
+		supportUsername: supportUser.username,
 	});
-
-	const supportUsername = supportUser.username;
-
-	publish(
-		`ticket-${idTicket}`,
-		JSON.stringify({ type: "assignment_update", supportUsername }),
-	);
-	publish(
-		"tickets",
-		JSON.stringify({
-			type: "ticket_assignment_update",
-			idTicket,
-			supportUsername,
-		}),
-	);
-
-	return Response.json(
-		{ message: "Ticket assigned", supportUsername },
-		{ status: 200, headers: corsHeaders },
-	);
+	return jsonResponse({
+		message: "Ticket assigned",
+		supportUsername: supportUser.username,
+	});
 };
 
 export const updateStatus = async (
 	req: AuthedRequest<"/api/tickets/:id/status">,
 ) => {
-	if (req.user.role !== "admin") {
-		return Response.json(
-			{ error: "Forbidden" },
-			{ status: 403, headers: corsHeaders },
-		);
-	}
+	const guard = requireAdmin(req);
+	if (guard) return guard;
 
-	const idTicket = Number(req.params.id);
-	if (!idTicket || Number.isNaN(idTicket)) {
-		return Response.json(
-			{ error: "Invalid ticket ID" },
-			{ status: 400, headers: corsHeaders },
-		);
-	}
+	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+	if (idTicket instanceof Response) return idTicket;
 
 	const { statusId } = await req.json();
 	if (!Number.isInteger(statusId) || statusId < 1) {
-		return Response.json(
-			{ error: "Invalid statusId" },
-			{ status: 400, headers: corsHeaders },
-		);
+		return jsonResponse({ error: "Invalid statusId" }, 400);
 	}
 
 	await updateStatusQuery.update(statusId, idTicket);
 
 	const statusName = statusNames[statusId];
-	if (statusName) {
-		publish(
-			`ticket-${idTicket}`,
-			JSON.stringify({ type: "status_update", statusName }),
-		);
-		publish(
-			"tickets",
-			JSON.stringify({ type: "ticket_status_update", idTicket, statusName }),
-		);
-	}
+	if (statusName)
+		publishTicketUpdate(idTicket, "status_update", { statusName });
 
-	return Response.json(
-		{ message: "Status updated" },
-		{ status: 200, headers: corsHeaders },
-	);
+	return jsonResponse({ message: "Status updated" });
 };
 
 export const UpdateConfirmation = async (
 	req: AuthedRequest<"/api/tickets/:id/confirm">,
 ) => {
-	if (req.user.role !== "admin") {
-		return Response.json(
-			{ error: "Forbidden" },
-			{ status: 403, headers: corsHeaders },
-		);
-	}
+	const guard = requireAdmin(req);
+	if (guard) return guard;
 
-	const idTicket = Number(req.params.id);
-	if (!idTicket || Number.isNaN(idTicket)) {
-		return Response.json(
-			{ error: "Invalid ticket ID" },
-			{ status: 400, headers: corsHeaders },
-		);
-	}
+	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+	if (idTicket instanceof Response) return idTicket;
 
-	const body = await req.json().catch(() => ({}));
-	const { hasAdminConfirmed } = body;
-
+	const { hasAdminConfirmed } = await req.json().catch(() => ({}));
 	if (typeof hasAdminConfirmed !== "boolean") {
-		return Response.json(
-			{ error: "hasAdminConfirmed must be a boolean" },
-			{ status: 400, headers: corsHeaders },
-		);
+		return jsonResponse({ error: "hasAdminConfirmed must be a boolean" }, 400);
 	}
 
 	const result = await ticketQueries.confirmed(idTicket, hasAdminConfirmed);
-
 	publish(
 		`ticket-${idTicket}`,
 		JSON.stringify({ type: "confirmation_update", hasAdminConfirmed: result }),
 	);
 
-	return Response.json(
-		{ message: "Ticket confirmation updated", hasAdminConfirmed: result },
-		{ status: 200, headers: corsHeaders },
-	);
+	return jsonResponse({
+		message: "Ticket confirmation updated",
+		hasAdminConfirmed: result,
+	});
 };
 
 export const ownerConfirmTicket = async (
 	req: AuthedRequest<"/api/tickets/:id/owner-confirm">,
 ) => {
-	const idTicket = Number(req.params.id);
-	if (!idTicket || Number.isNaN(idTicket)) {
-		return Response.json(
-			{ error: "Invalid ticket ID" },
-			{ status: 400, headers: corsHeaders },
-		);
-	}
+	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+	if (idTicket instanceof Response) return idTicket;
 
-	const body = await req.json();
-	const accepted: boolean = body.accepted;
+	const { accepted } = await req.json().catch(() => ({}));
+	const [ticket] = await ticketQueries.getById(idTicket);
 
-	const ticket = await ticketQueries.getById(idTicket);
-	if (!ticket.length || ticket[0]?.idUser !== req.user.idUser) {
-		return Response.json(
-			{ error: "Forbidden" },
-			{ status: 403, headers: corsHeaders },
-		);
+	if (!ticket || ticket.idUser !== req.user.idUser) {
+		return jsonResponse({ error: "Forbidden" }, 403);
 	}
 
 	const newStatusId = accepted ? 4 : 2;
 	await updateStatusQuery.update(newStatusId, idTicket);
 
 	if (!accepted) {
-		await db
-			.update(tickets)
-			.set({ hasAdminConfirmed: false })
-			.where(eq(tickets.idTicket, idTicket));
+		await ticketQueries.confirmed(idTicket, false);
 	}
 
-	const statusName = statusNames[newStatusId];
 	publish(
 		`ticket-${idTicket}`,
-		JSON.stringify({ type: "status_update", statusName }),
+		JSON.stringify({
+			type: "status_update",
+			statusName: statusNames[newStatusId],
+		}),
 	);
-
-	return Response.json(
-		{ message: accepted ? "Ticket closed" : "Ticket reopened" },
-		{ status: 200, headers: corsHeaders },
-	);
+	return jsonResponse({
+		message: accepted ? "Ticket closed" : "Ticket reopened",
+	});
 };
 
 export const getAllAdmins = async (
 	req: AuthedRequest<"/api/tickets/admin">,
 ) => {
-	if (req.user.role !== "admin") {
-		return Response.json(
-			{ error: "Forbidden" },
-			{ status: 403, headers: corsHeaders },
-		);
-	}
-	const admins = await ticketQueries.getAllSupport();
+	const guard = requireAdmin(req);
+	if (guard) return guard;
 
-	return Response.json({ admins }, { status: 200, headers: corsHeaders });
+	const admins = await ticketQueries.getAllSupport();
+	return jsonResponse({ admins });
 };

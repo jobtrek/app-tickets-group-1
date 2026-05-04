@@ -1,15 +1,13 @@
-import { basename, join } from "node:path";
-import { corsHeaders } from "../utils/headers";
 import { CommentRoutes } from "./routes/commentRoute";
 import { LoginRoutes } from "./routes/loginRoute";
 import { logoutRoutes } from "./routes/logoutRoute";
 import { registerRoutes } from "./routes/registerRoute";
 import { statisticsRoutes } from "./routes/statistics";
 import { ticketRoutes } from "./routes/ticketsRoute";
+import { uploadsRoutes } from "./routes/uploadsRoute";
 import { UserRoutes } from "./routes/userRoute";
 import { setServer } from "./utils/publisher";
-
-const ALLOWED_ORIGIN = process.env.FRONTEND_URL ?? "http://localhost:5173";
+import { handleWsUpgrade, websocketHandlers } from "./websocket";
 
 const server = Bun.serve<{ ticketId: string | undefined }>({
 	port: 3001,
@@ -21,71 +19,18 @@ const server = Bun.serve<{ ticketId: string | undefined }>({
 		...registerRoutes,
 		...ticketRoutes,
 		...CommentRoutes,
+		...uploadsRoutes,
 	},
 
-	async fetch(req, server) {
-		const url = new URL(req.url);
-		const path = url.pathname;
-
-		const origin = req.headers.get("origin");
-		if (origin && origin !== ALLOWED_ORIGIN && !path.startsWith("/uploads/")) {
-			return new Response("Forbidden", { status: 403 });
-		}
-
-		if (req.method === "OPTIONS") {
-			return new Response(null, { headers: corsHeaders });
-		}
-
-		if (path.startsWith("/uploads/")) {
-			const fileName = basename(path);
-			const filePath = join(import.meta.dir, "..", "uploads", fileName);
-			const file = Bun.file(filePath);
-
-			if (await file.exists()) {
-				return new Response(file, { headers: corsHeaders });
-			}
-			return new Response("Not Found", { status: 404, headers: corsHeaders });
-		}
-
-		if (path === "/ws") {
-			const cookieHeader = req.headers.get("cookie");
-			const sessionToken = cookieHeader
-				?.split(";")
-				.find((c) => c.trim().startsWith("session="))
-				?.split("=")[1]
-				?.trim();
-
-			if (!sessionToken) {
-				return new Response("Unauthorized", { status: 401 });
-			}
-
-			const ticketId = url.searchParams.get("ticketId") || undefined;
-			if (server.upgrade(req, { data: { ticketId } })) {
-				return;
-			}
+	fetch(req, server) {
+		const { pathname } = new URL(req.url);
+		if (pathname === "/ws") {
+			return handleWsUpgrade(req, server);
 		}
 		return undefined;
 	},
 
-	websocket: {
-		open(ws) {
-			if (ws.data.ticketId) {
-				ws.subscribe(`ticket-${ws.data.ticketId}`);
-			} else {
-				ws.subscribe("tickets");
-			}
-		},
-		close(ws) {
-			if (ws.data.ticketId) {
-				ws.unsubscribe(`ticket-${ws.data.ticketId}`);
-			} else {
-				ws.unsubscribe("tickets");
-			}
-		},
-		message() {
-			// Clients send comments via HTTP POST, so this is intentionally empty.
-		},
-	},
+	websocket: websocketHandlers,
 });
 
 setServer(server);

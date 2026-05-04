@@ -1,4 +1,4 @@
-import { loginCorsHeaders } from "backend/utils/headers";
+import { loginCorsHeaders } from "backend/src/utils/headers";
 import { eq } from "drizzle-orm";
 import { cookies } from "../data/schema";
 import { db } from "../db/database";

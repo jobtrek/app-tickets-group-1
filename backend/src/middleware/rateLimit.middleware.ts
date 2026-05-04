@@ -1,4 +1,4 @@
-import { corsHeaders } from "../../utils/headers";
+import { corsHeaders } from "../utils/headers";
 import { isRateLimited } from "../utils/rateLimit";
 
 /**
