@@ -9,9 +9,14 @@ export function LogoutConfirmModal() {
 	const navigate = useNavigate();
 
 	const handleLogout = async () => {
-		await logoutUser();
-		useUserStore.getState().clearUser();
-		navigate({ to: "/login" });
+		try {
+			await logoutUser();
+		} catch (error) {
+			console.error("Logout failed:", error);
+		} finally {
+			useUserStore.getState().clearUser();
+			navigate({ to: "/login" });
+		}
 	};
 
 	return (
