@@ -46,7 +46,11 @@ export const ticketQueries = {
 			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
 			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idUser, idUser)),
-	getAllSupport: () => db.select().from(users).where(eq(users.role, "admin")),
+	getAllSupport: () =>
+		db
+			.select({ idUser: users.idUser, username: users.username })
+			.from(users)
+			.where(eq(users.role, "admin")),
 	insert: async (
 		title: string,
 		description: string,
