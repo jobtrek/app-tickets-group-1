@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useState } from "react";
 import { getInitials } from "../utils/initialsLogic";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
@@ -39,24 +40,8 @@ export default function TicketDetails({
 	onOwnerClose,
 }: TicketDetailsProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [showDropdown, setShowDropdown] = useState(false);
 	const [admins, setAdmins] = useState<AdminUser[]>([]);
 	const [loadingAdmins, setLoadingAdmins] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		if (!showDropdown) return;
-		const handleClickOutside = (e: MouseEvent) => {
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(e.target as Node)
-			) {
-				setShowDropdown(false);
-			}
-		};
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => document.removeEventListener("mousedown", handleClickOutside);
-	}, [showDropdown]);
 
 	const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
 		if (e.key === "Enter" || e.key === " ") {
@@ -67,8 +52,8 @@ export default function TicketDetails({
 		}
 	};
 
-	const handleAssignClick = async () => {
-		setShowDropdown(true);
+	const handleDropdownOpen = async (open: boolean) => {
+		if (!open) return;
 		setLoadingAdmins(true);
 		try {
 			const adminList = await getAllAdmins();
@@ -81,7 +66,6 @@ export default function TicketDetails({
 	};
 
 	const handleSelectAdmin = (admin: AdminUser) => {
-		setShowDropdown(false);
 		onAssign(admin.idUser, admin.username);
 	};
 
@@ -208,11 +192,10 @@ export default function TicketDetails({
 					)}
 
 					{isAdmin && !supportUsername && (
-						<div className="relative">
-							{!showDropdown ? (
+						<DropdownMenu.Root onOpenChange={handleDropdownOpen}>
+							<DropdownMenu.Trigger asChild>
 								<button
 									type="button"
-									onClick={handleAssignClick}
 									className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
 								>
 									<svg
@@ -234,16 +217,20 @@ export default function TicketDetails({
 									</svg>
 									Prendre en charge
 								</button>
-							) : (
-								<div
-									ref={dropdownRef}
-									className="bg-white border border-gray-200 rounded-xl shadow-lg w-56 overflow-hidden"
+							</DropdownMenu.Trigger>
+
+							<DropdownMenu.Portal>
+								<DropdownMenu.Content
+									sideOffset={6}
+									align="start"
+									className="bg-white border border-gray-200 rounded-xl shadow-lg w-56 overflow-hidden z-50"
 								>
 									<div className="px-3 pt-3 pb-2 border-b border-gray-100">
 										<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
 											Assigner à
 										</p>
 									</div>
+
 									{loadingAdmins ? (
 										<div className="flex items-center gap-2 px-3 py-3 text-xs text-gray-400">
 											<svg
@@ -274,28 +261,24 @@ export default function TicketDetails({
 											Aucun admin disponible
 										</p>
 									) : (
-										<ul className="max-h-44 overflow-y-auto py-1">
+										<div className="max-h-44 overflow-y-auto py-1">
 											{admins.map((admin) => (
-												<li key={admin.idUser}>
-													<button
-														type="button"
-														onClick={() => handleSelectAdmin(admin)}
-														className="w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors group"
-													>
-														<div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0 group-hover:bg-blue-200 transition-colors">
-															{getInitials(admin.username)}
-														</div>
-														<span className="font-medium">
-															{admin.username}
-														</span>
-													</button>
-												</li>
+												<DropdownMenu.Item
+													key={admin.idUser}
+													onSelect={() => handleSelectAdmin(admin)}
+													className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer outline-none group"
+												>
+													<div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0 group-hover:bg-blue-200 transition-colors">
+														{getInitials(admin.username)}
+													</div>
+													<span className="font-medium">{admin.username}</span>
+												</DropdownMenu.Item>
 											))}
-										</ul>
+										</div>
 									)}
-								</div>
-							)}
-						</div>
+								</DropdownMenu.Content>
+							</DropdownMenu.Portal>
+						</DropdownMenu.Root>
 					)}
 
 					{isOwner && !supportUsername && !isClosed && (

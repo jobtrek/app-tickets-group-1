@@ -126,7 +126,6 @@ export default function TicketView({
 	const handleOwnerClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
-			await updateTicketStatus(ticketIdNumber, 4);
 			await router.invalidate();
 			setStatusName("Fermé");
 			setPendingConfirmation(false);
