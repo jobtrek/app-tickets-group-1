@@ -8,6 +8,7 @@ interface InputTextProps {
 	defaultValue?: string;
 	type?: "text" | "password" | "email";
 	onChange?: ChangeEventHandler<HTMLInputElement, HTMLInputElement>;
+	value: string;
 }
 
 export default function InputText({
@@ -17,6 +18,7 @@ export default function InputText({
 	defaultValue,
 	type = "text",
 	onChange,
+	value,
 }: InputTextProps) {
 	return (
 		<input
@@ -27,6 +29,7 @@ export default function InputText({
 			required={required}
 			defaultValue={defaultValue}
 			onChange={onChange}
+			value={value}
 			className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
 		></input>
 	);

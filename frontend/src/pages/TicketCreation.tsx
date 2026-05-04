@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Button from "../components/Button";
 import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
@@ -23,9 +23,24 @@ const urgenceOptions = [
 export default function TicketCreation() {
 	const navigate = useNavigate();
 	const user = useUserStore((state) => state.idUser);
+	const [imageFile, setImageFile] = useState<File | null>(null);
+	const [values, setValues] = useState({
+		title: "",
+		description: "",
+		level: "",
+	});
+
+	const handleChange = (
+		e: React.ChangeEvent<
+			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+		>,
+	) => {
+		setValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+	};
 
 	const [state, action, pending] = useActionState(
 		async (_: unknown, formData: FormData): Promise<ActionState> => {
+			if (imageFile) formData.set("image", imageFile);
 			const errors: Record<string, string> = {};
 
 			const title = formData.get("title") as string;
@@ -74,7 +89,12 @@ export default function TicketCreation() {
 						)}
 
 						<FormField label="Titre" id="title">
-							<InputText id="title" placeholder="Résumé de votre problème" />
+							<InputText
+								id="title"
+								placeholder="Résumé de votre problème"
+								onChange={handleChange}
+								value={values.title}
+							/>
 							<Alert variant="error" message={state?.errors?.title} />
 						</FormField>
 
@@ -87,12 +107,17 @@ export default function TicketCreation() {
 						</FormField>
 
 						<FormField id="level" label="Niveau d'urgence">
-							<Select id="level" options={urgenceOptions} />
+							<Select
+								id="level"
+								options={urgenceOptions}
+								onChange={handleChange}
+								value={values.level}
+							/>
 							<Alert variant="error" message={state?.errors?.urgence} />
 						</FormField>
 
 						<FormField label="Pièce jointe" id="image">
-							<InputFile id="image" />
+							<InputFile id="image" onFileChange={setImageFile} />
 						</FormField>
 
 						<Button
