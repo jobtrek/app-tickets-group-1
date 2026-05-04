@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 interface InputFileProps {
 	id: string;
+	onFileChange?: (file: File | null) => void;
 }
 
 interface SelectedFile {
@@ -10,7 +11,7 @@ interface SelectedFile {
 	preview: string;
 }
 
-export default function InputFile({ id }: InputFileProps) {
+export default function InputFile({ id, onFileChange }: InputFileProps) {
 	const [files, setFiles] = useState<SelectedFile[]>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,16 +26,18 @@ export default function InputFile({ id }: InputFileProps) {
 	}, [files]);
 
 	const addFiles = (newFiles: File[]) => {
+		const next = newFiles.slice(0, 1).map((data) => ({
+			id: crypto.randomUUID(),
+			data,
+			preview: URL.createObjectURL(data),
+		}));
+
 		setFiles((prev) => {
-			for (const f of prev) {
-				URL.revokeObjectURL(f.preview);
-			}
-			return newFiles.slice(0, 1).map((data) => ({
-				id: crypto.randomUUID(),
-				data,
-				preview: URL.createObjectURL(data),
-			}));
+			for (const f of prev) URL.revokeObjectURL(f.preview);
+			return next;
 		});
+
+		onFileChange?.(next[0]?.data ?? null);
 	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,6 +55,8 @@ export default function InputFile({ id }: InputFileProps) {
 			if (fileToRemove) URL.revokeObjectURL(fileToRemove.preview);
 			return prev.filter((f) => f.id !== fileId);
 		});
+
+		onFileChange?.(null);
 	};
 
 	return (

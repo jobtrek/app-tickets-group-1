@@ -8,8 +8,8 @@ type Option = {
 interface SelectProps {
 	id: string;
 	options: Option[];
-	value?: string;
-	onChange?: ChangeEventHandler<HTMLSelectElement>;
+	value: string;
+	onChange: ChangeEventHandler<HTMLSelectElement>;
 }
 
 export default function Select({ id, options, value, onChange }: SelectProps) {

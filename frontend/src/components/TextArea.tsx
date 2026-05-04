@@ -1,15 +1,20 @@
-import { useState } from "react";
+import type { ChangeEventHandler } from "react";
 
 interface TextAreaProps {
 	placeholder: string;
 	id: string;
+	onChange: ChangeEventHandler<HTMLTextAreaElement>;
+	value: string;
 }
 
 const MAX = 3000;
 
-export default function TextArea({ placeholder, id }: TextAreaProps) {
-	const [count, setCount] = useState(0);
-
+export default function TextArea({
+	placeholder,
+	id,
+	onChange,
+	value,
+}: TextAreaProps) {
 	return (
 		<div>
 			<textarea
@@ -18,13 +23,14 @@ export default function TextArea({ placeholder, id }: TextAreaProps) {
 				maxLength={MAX}
 				placeholder={placeholder}
 				rows={8}
-				onChange={(e) => setCount(e.target.value.length)}
+				onChange={onChange}
+				value={value}
 				className="block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm resize-none"
 			></textarea>
 			<p
-				className={`mt-1 text-right text-xs ${count >= MAX ? "text-red-500" : "text-gray-400"}`}
+				className={`mt-1 text-right text-xs ${value.length >= MAX ? "text-red-500" : "text-gray-400"}`}
 			>
-				{count} / {MAX}
+				{value.length} / {MAX}
 			</p>
 		</div>
 	);
