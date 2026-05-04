@@ -1,6 +1,6 @@
-import { fileTypeFromBuffer } from "file-type";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { fileTypeFromBuffer } from "file-type";
 import { errorResponse } from "./responseFactory";
 
 export const handleImageUpload = async (

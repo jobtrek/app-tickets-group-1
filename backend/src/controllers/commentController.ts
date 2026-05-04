@@ -1,8 +1,8 @@
 import * as v from "valibot";
 import { commentQuery } from "../repositories/commentQuery";
 import { verifyAndParseId } from "../utils/idParser";
-import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { getServer, publish } from "../utils/publisher";
+import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { CommentPostSchema } from "../validators/commentValidator";
 
 export const postComment = async (req: Request) => {

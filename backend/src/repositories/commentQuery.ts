@@ -37,7 +37,8 @@ export const commentQuery = {
 			})
 			.returning();
 
-		if (!inserted) throw new Error("Comment insertion failed to return the new record.");
+		if (!inserted)
+			throw new Error("Comment insertion failed to return the new record.");
 		return inserted;
 	},
 
@@ -48,7 +49,8 @@ export const commentQuery = {
 			.innerJoin(users, eq(comments.idUser, users.idUser))
 			.where(eq(comments.idComment, idComment))
 			.then(([row]) => {
-				if (!row) throw new Error(`Comment ${idComment} not found after insert.`);
+				if (!row)
+					throw new Error(`Comment ${idComment} not found after insert.`);
 				return row;
 			}),
 };

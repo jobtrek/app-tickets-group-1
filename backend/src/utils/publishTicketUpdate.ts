@@ -1,6 +1,6 @@
 import type { AuthedRequest } from "../middleware/auth.middleware";
-import { jsonResponse } from "./responseFactory";
 import { publish } from "./publisher";
+import { jsonResponse } from "./responseFactory";
 
 export const publishTicketUpdate = (
 	idTicket: number,

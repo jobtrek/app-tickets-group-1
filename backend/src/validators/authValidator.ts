@@ -33,7 +33,6 @@ export const UserGetSchema = v.object({
 	email: v.pipe(v.string(), v.email(), v.maxLength(100)),
 });
 
-
 export const UpdateUserSchema = v.partial(
 	v.object({
 		username: v.string(),
@@ -41,7 +40,6 @@ export const UpdateUserSchema = v.partial(
 		password: v.pipe(v.string(), v.minLength(8)),
 	}),
 );
-
 
 export type UserRegister = v.InferInput<typeof UserRegisterSchema>;
 export type UserLogin = v.InferInput<typeof UserLoginSchema>;
