@@ -13,8 +13,8 @@ export const getStatistics = async () => {
 		const data = {
 			avgTimeToFirstAssignment: avgFirstAssign[0]?.moyenne ?? 0,
 			avgTimeToCloseTicket: avgCloseTicket[0]?.moyenne ?? 0,
-			ticketsCountPerStatus: ticketsCountPerStatus ?? 0,
-			ticketsPerMonth: ticketsPerMonth ?? 0,
+			ticketsCountPerStatus: ticketsCountPerStatus ?? [],
+			ticketsPerMonth: ticketsPerMonth ?? [],
 		};		
 
 		return Response.json(data, {
