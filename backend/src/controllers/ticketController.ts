@@ -357,11 +357,8 @@ export const ownerConfirmTicket = async (
 	);
 };
 
+export const getAllAdmins = async () => {
+	const admins = await ticketQueries.getAllSupport();
 
-export const getAllAdmins = async (
-  req: AuthedRequest<"/api/tickets/admin">,
-) => {
-  const admins = await ticketQueries.getAllSupport();
-
-  return Response.json({ admins }, { status: 200, headers: corsHeaders });
+	return Response.json({ admins }, { status: 200, headers: corsHeaders });
 };

@@ -47,7 +47,10 @@ export default function TicketDetails({
 	useEffect(() => {
 		if (!showDropdown) return;
 		const handleClickOutside = (e: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(e.target as Node)
+			) {
 				setShowDropdown(false);
 			}
 		};
@@ -232,7 +235,10 @@ export default function TicketDetails({
 									Prendre en charge
 								</button>
 							) : (
-								<div ref={dropdownRef} className="bg-white border border-gray-200 rounded-xl shadow-lg w-56 overflow-hidden">
+								<div
+									ref={dropdownRef}
+									className="bg-white border border-gray-200 rounded-xl shadow-lg w-56 overflow-hidden"
+								>
 									<div className="px-3 pt-3 pb-2 border-b border-gray-100">
 										<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
 											Assigner à
@@ -240,10 +246,26 @@ export default function TicketDetails({
 									</div>
 									{loadingAdmins ? (
 										<div className="flex items-center gap-2 px-3 py-3 text-xs text-gray-400">
-											<svg className="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<svg
+												className="animate-spin w-3 h-3"
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+												viewBox="0 0 24 24"
+											>
 												<title>Chargement</title>
-												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-												<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+												<circle
+													className="opacity-25"
+													cx="12"
+													cy="12"
+													r="10"
+													stroke="currentColor"
+													strokeWidth="4"
+												/>
+												<path
+													className="opacity-75"
+													fill="currentColor"
+													d="M4 12a8 8 0 018-8v8z"
+												/>
 											</svg>
 											Chargement...
 										</div>
@@ -263,7 +285,9 @@ export default function TicketDetails({
 														<div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0 group-hover:bg-blue-200 transition-colors">
 															{getInitials(admin.username)}
 														</div>
-														<span className="font-medium">{admin.username}</span>
+														<span className="font-medium">
+															{admin.username}
+														</span>
 													</button>
 												</li>
 											))}
