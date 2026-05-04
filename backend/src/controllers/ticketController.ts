@@ -1,7 +1,7 @@
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import { eq } from "drizzle-orm";
 import { fileTypeFromBuffer } from "file-type";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as v from "valibot";
 import { corsHeaders } from "../../utils/headers";
 import { ticket_assignment, tickets, users } from "../data/schema";
@@ -190,11 +190,15 @@ export const assignTicket = async (
 			{ status: 400, headers: corsHeaders },
 		);
 	}
+	const [supportUser] = await db
+		.select({ username: users.username, role: users.role })
+		.from(users)
+		.where(eq(users.idUser, idSupport));
 
-	if (idSupport === req.user.idUser) {
+	if (!supportUser || supportUser.role !== "admin") {
 		return Response.json(
-			{ error: "Vous étes pas admin" },
-			{ status: 400, headers: corsHeaders },
+			{ error: "L'utilisateur sélectionné n'est pas un admin" },
+			{ status: 403, headers: corsHeaders },
 		);
 	}
 
@@ -208,11 +212,7 @@ export const assignTicket = async (
 			.where(eq(tickets.idTicket, idTicket));
 	});
 
-	const [supportUser] = await db
-		.select({ username: users.username })
-		.from(users)
-		.where(eq(users.idUser, idSupport));
-	const supportUsername = supportUser?.username ?? null;
+	const supportUsername = supportUser.username;
 
 	publish(
 		`ticket-${idTicket}`,
