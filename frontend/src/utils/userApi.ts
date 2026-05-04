@@ -19,7 +19,7 @@ export const loginUserApi = async (user: LoginData) => {
 };
 
 export const logoutUser = async () => {
-	await apiClient.post(LOGOUT_URL);
+	await apiClient.post(LOGOUT_URL, {}, { withCredentials: true });
 };
 
 export const updateUser = async (
