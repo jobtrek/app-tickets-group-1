@@ -100,7 +100,7 @@ function TicketsPerMonthChart({
 					const y = pT + (chartH / ticks) * i;
 					const val = Math.round(max - (max / ticks) * i);
 					return (
-						<g key={i}>
+						<g key={y}>
 							<line
 								x1={pL}
 								x2={W}
