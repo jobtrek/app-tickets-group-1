@@ -37,6 +37,6 @@ export const updateUser = async (
 };
 
 export const getAllAdmins = async (): Promise<AdminUser[]> => {
-	const response = await apiClient.post(`${TICKETS_URL}/admin`);
+	const response = await apiClient.get(`${TICKETS_URL}/admin`);
 	return response.data.admins;
 };

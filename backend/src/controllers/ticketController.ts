@@ -191,6 +191,13 @@ export const assignTicket = async (
 		);
 	}
 
+	if (idSupport === req.user.idUser) {
+		return Response.json(
+			{ error: "Vous étes pas admin" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
+
 	await db.transaction(async (tx) => {
 		await tx
 			.insert(ticket_assignment)
@@ -357,7 +364,15 @@ export const ownerConfirmTicket = async (
 	);
 };
 
-export const getAllAdmins = async () => {
+export const getAllAdmins = async (
+	req: AuthedRequest<"/api/tickets/admin">,
+) => {
+	if (req.user.role !== "admin") {
+		return Response.json(
+			{ error: "Forbidden" },
+			{ status: 403, headers: corsHeaders },
+		);
+	}
 	const admins = await ticketQueries.getAllSupport();
 
 	return Response.json({ admins }, { status: 200, headers: corsHeaders });

@@ -47,6 +47,6 @@ export const ticketRoutes = {
 	"/api/tickets/admin": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		POST: withRateLimit(withAuth(getAllAdmins)),
+		GET: withRateLimit(withAuth(getAllAdmins)),
 	},
 };
