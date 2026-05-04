@@ -6,7 +6,7 @@ interface InputTextProps {
 	id: string;
 	required?: boolean;
 	type?: "text" | "password" | "email";
-	onChange?: ChangeEventHandler<HTMLInputElement, HTMLInputElement>;
+	onChange: ChangeEventHandler<HTMLInputElement>;
 	value: string;
 }
 

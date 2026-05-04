@@ -102,6 +102,8 @@ export default function TicketCreation() {
 							<TextArea
 								id="description"
 								placeholder="Fournissez plus de détails"
+								onChange={handleChange}
+								value={values.description}
 							/>
 							<Alert variant="error" message={state?.errors?.desc} />
 						</FormField>
