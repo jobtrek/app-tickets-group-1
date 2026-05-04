@@ -1,15 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
-import {
-	BarChart2,
-	FilePlus,
-	FileText,
-	LayoutDashboard,
-	LogOut,
-} from "lucide-react";
+import { BarChart2, FilePlus, FileText, LayoutDashboard } from "lucide-react";
+import { LogoutConfirmModal } from "../components/ConfirmationModal";
 import { NavbarButton } from "../components/NavbarButton";
 import { useUserStore } from "../store/userStore";
 import { getInitials } from "../utils/initialsLogic";
-import { logoutUser } from "../utils/userApi";
 
 export function Navbar() {
 	const navigate = useNavigate();
@@ -66,18 +60,7 @@ export function Navbar() {
 								{username}
 							</span>
 						</button>
-						<button
-							type="button"
-							title="Se déconnecter"
-							onClick={async () => {
-								await logoutUser();
-								useUserStore.getState().clearUser();
-								navigate({ to: "/login" });
-							}}
-							className="text-zinc-300 hover:text-zinc-500 transition-colors p-0.5 rounded shrink-0"
-						>
-							<LogOut size={14} />
-						</button>
+						<LogoutConfirmModal />
 					</div>
 				</div>
 			)}
