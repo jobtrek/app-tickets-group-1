@@ -1,4 +1,4 @@
-import { loginCorsHeaders } from "backend/utils/headers";
+import { loginCorsHeaders } from "backend/src/utils/headers";
 import {
 	getAllComment,
 	postComment,

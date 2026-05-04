@@ -1,9 +1,10 @@
-import { updateUserById } from "../controllers/userController";
+import { serveUpload } from "../controllers/uploadsController";
 import { corsHeaders } from "../utils/headers";
-export const UserRoutes = {
-	"/api/user/:id": {
+
+export const uploadsRoutes = {
+	"/uploads/:file": {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
-		PATCH: updateUserById,
+		GET: serveUpload,
 	},
 };

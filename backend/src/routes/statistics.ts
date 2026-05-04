@@ -1,5 +1,5 @@
-import { corsHeaders } from "../../utils/headers";
 import { getStatistics } from "../controllers/statisticsController";
+import { corsHeaders } from "../utils/headers";
 
 export const statisticsRoutes = {
 	"/api/statistics": {

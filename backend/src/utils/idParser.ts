@@ -1,4 +1,4 @@
-import { corsHeaders } from "backend/utils/headers";
+import { corsHeaders } from "backend/src/utils/headers";
 
 export const parseId = (id: string) => {
 	return Number(id);

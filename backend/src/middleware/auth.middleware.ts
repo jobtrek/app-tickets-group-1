@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import { corsHeaders } from "../../utils/headers";
 import { cookies, users } from "../data/schema";
 import { db } from "../db/database";
+import { corsHeaders } from "../utils/headers";
 
 export type AuthUser = {
 	idUser: number;

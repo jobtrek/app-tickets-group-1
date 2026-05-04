@@ -1,4 +1,4 @@
-import { loginCorsHeaders } from "backend/utils/headers";
+import { loginCorsHeaders } from "backend/src/utils/headers";
 import * as v from "valibot";
 import { CookieQuery } from "../repositories/cookieQuery";
 import { LoginUserQuery } from "../repositories/loginUserQuery";
