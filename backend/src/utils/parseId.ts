@@ -21,7 +21,7 @@ export const jsonResponse = (
 	const mergedHeaders = new Headers(corsHeaders);
 	if (headers) {
 		new Headers(headers).forEach((value, key) => {
-			mergedHeaders.set(key, value); 
+			mergedHeaders.set(key, value);
 		});
 	}
 	return Response.json(data, { status, headers: mergedHeaders });
