@@ -189,7 +189,7 @@ export const ownerConfirmTicket = async (
 	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
 	if (idTicket instanceof Response) return idTicket;
 
-	const { accepted } = await req.json();
+	const { accepted } = await req.json().catch(() => ({}));
 	const [ticket] = await ticketQueries.getById(idTicket);
 
 	if (!ticket || ticket.idUser !== req.user.idUser) {
