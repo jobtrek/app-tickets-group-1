@@ -1,14 +1,19 @@
 import * as v from "valibot";
+import type { AuthedRequest } from "../middleware/auth.middleware";
 import { updateUserQuery } from "../repositories/updateUserQuery";
 import { parseId } from "../utils/idParser";
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { UpdateUserSchema } from "../validators/authValidator";
 
 export const updateUserById = async (
-	req: Bun.BunRequest<"/api/user/:id">,
+	req: AuthedRequest<"/api/user/:id">,
 ): Promise<Response> => {
 	const userId = parseId(req.params.id);
 	if (!userId) return errorResponse("Invalid ID", 400);
+
+	if (req.user.idUser !== userId && req.user.role !== "admin") {
+		return errorResponse("Forbidden", 403);
+	}
 
 	const body = await req.json().catch(() => null);
 	if (!body) return errorResponse("Invalid JSON", 400);
