@@ -16,7 +16,6 @@ export function Navbar() {
 			<p className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest px-2.5 pb-3 border-b border-zinc-200 mb-1">
 				Menu
 			</p>
-
 			{isAdmin && (
 				<NavbarButton
 					icon={<LayoutDashboard size={15} />}
@@ -24,11 +23,13 @@ export function Navbar() {
 					onClick={() => navigate({ to: "/dashboard" })}
 				/>
 			)}
-			<NavbarButton
-				icon={<FilePlus size={15} />}
-				text="Créer un ticket"
-				onClick={() => navigate({ to: "/create-ticket" })}
-			/>
+			{!isAdmin && (
+				<NavbarButton
+					icon={<FilePlus size={15} />}
+					text="Créer un ticket"
+					onClick={() => navigate({ to: "/create-ticket" })}
+				/>
+			)}
 			<NavbarButton
 				icon={<FileText size={15} />}
 				text="Historique"
@@ -41,9 +42,7 @@ export function Navbar() {
 					onClick={() => navigate({ to: "/statistics" })}
 				/>
 			)}
-
 			<div className="flex-1" />
-
 			{username && (
 				<div className="border-t border-zinc-200 pt-2.5">
 					<div className="flex items-center gap-2 px-2.5 py-2 rounded-[7px] bg-zinc-50">
