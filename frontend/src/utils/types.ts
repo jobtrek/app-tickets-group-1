@@ -76,3 +76,10 @@ export interface ActionState {
 	message: string;
 	errors?: Record<string, string>;
 }
+
+export interface StatsProps {
+	avgTimeToFirstAssignment: number;
+	avgTimeToCloseTicket: number;
+	ticketsCountPerStatus: { status: number; count: number }[];
+	ticketsPerMonth: { month: string; count: number }[];
+}
