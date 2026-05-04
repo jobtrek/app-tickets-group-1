@@ -5,6 +5,12 @@ const USER_URL = import.meta.env.VITE_USER_URL;
 const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
 const UPDATE_USER_URL = import.meta.env.VITE_UPDATE_USER;
+const TICKETS_URL = import.meta.env.VITE_API_URL;
+
+export interface AdminUser {
+	idUser: number;
+	username: string;
+}
 
 export const registerUserApi = async (user: RegisterData) => {
 	const postData = await apiClient.post(USER_URL, user);
@@ -28,4 +34,9 @@ export const updateUser = async (
 ) => {
 	const response = await apiClient.patch(`${UPDATE_USER_URL}${userId}`, data);
 	return response.data[0];
+};
+
+export const getAllAdmins = async (): Promise<AdminUser[]> => {
+	const response = await apiClient.post(`${TICKETS_URL}/admin`);
+	return response.data.admins;
 };

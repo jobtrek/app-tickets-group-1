@@ -2,6 +2,7 @@ import { eq, getTableColumns } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, tickets, users } from "../data/schema";
 import { db } from "../db/database";
+import { fromCamel } from "postgres";
 
 const supportUsers = alias(users, "support_users");
 
@@ -46,7 +47,10 @@ export const ticketQueries = {
 			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
 			.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser))
 			.where(eq(tickets.idUser, idUser)),
-
+  getAllSupport: () =>
+    db.select()
+      .from(users)
+      .where(eq(users.role, "admin")),
 	insert: async (
 		title: string,
 		description: string,

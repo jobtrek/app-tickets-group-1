@@ -183,7 +183,13 @@ export const assignTicket = async (
 		);
 	}
 
-	const idSupport = req.user.idUser;
+	const { idSupport } = await req.json();
+	if (!idSupport || Number.isNaN(Number(idSupport))) {
+		return Response.json(
+			{ error: "Invalid idSupport" },
+			{ status: 400, headers: corsHeaders },
+		);
+	}
 
 	await db.transaction(async (tx) => {
 		await tx
@@ -349,4 +355,13 @@ export const ownerConfirmTicket = async (
 		{ message: accepted ? "Ticket closed" : "Ticket reopened" },
 		{ status: 200, headers: corsHeaders },
 	);
+};
+
+
+export const getAllAdmins = async (
+  req: AuthedRequest<"/api/tickets/admin">,
+) => {
+  const admins = await ticketQueries.getAllSupport();
+
+  return Response.json({ admins }, { status: 200, headers: corsHeaders });
 };

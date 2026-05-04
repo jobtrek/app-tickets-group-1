@@ -2,6 +2,7 @@ import { corsHeaders } from "backend/utils/headers";
 import {
 	assignTicket,
 	createTicket,
+	getAllAdmins,
 	getAllTickets,
 	getTicketById,
 	ownerConfirmTicket,
@@ -42,5 +43,10 @@ export const ticketRoutes = {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		PATCH: withRateLimit(withAuth(ownerConfirmTicket)),
+	},
+	"/api/tickets/admin": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		POST: withRateLimit(withAuth(getAllAdmins)),
 	},
 };

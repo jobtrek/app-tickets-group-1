@@ -1,6 +1,7 @@
 interface TicketHeaderProps {
 	statusName: string;
 	isAdmin: boolean;
+	isAssignedAdmin: boolean;
 	pendingConfirmation: boolean;
 	onBack: () => void;
 	onResolve: () => void;
@@ -11,7 +12,7 @@ interface TicketHeaderProps {
 
 export default function TicketHeader({
 	statusName,
-	isAdmin,
+	isAssignedAdmin,
 	pendingConfirmation,
 	onBack,
 	onResolve,
@@ -40,7 +41,7 @@ export default function TicketHeader({
 				Retour
 			</button>
 
-			{isAdmin && (
+			{isAssignedAdmin && (
 				<div className="relative flex items-center gap-2">
 					<button
 						type="button"
@@ -49,7 +50,7 @@ export default function TicketHeader({
 							statusName === "Résolu" ||
 							statusName === "Fermé" ||
 							statusName !== "En cours" ||
-							(isAdmin && pendingConfirmation)
+							pendingConfirmation
 						}
 						className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-green-300 bg-green-50 text-green-700 text-sm font-medium hover:bg-green-100 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-green-50 disabled:active:scale-100"
 					>

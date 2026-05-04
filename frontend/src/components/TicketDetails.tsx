@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getInitials } from "../utils/initialsLogic";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 import { urgencyColor } from "../utils/types";
+import type { AdminUser } from "../utils/userApi";
+import { getAllAdmins } from "../utils/userApi";
 
 interface TicketDetailsProps {
 	id: number;
@@ -16,7 +18,7 @@ interface TicketDetailsProps {
 	supportUsername: string | null;
 	isAdmin: boolean;
 	isOwner: boolean;
-	onAssign: () => void;
+	onAssign: (adminId: number, adminUsername: string) => void;
 	onOwnerClose: () => void;
 	ownerUsername: string;
 }
@@ -37,6 +39,21 @@ export default function TicketDetails({
 	onOwnerClose,
 }: TicketDetailsProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [showDropdown, setShowDropdown] = useState(false);
+	const [admins, setAdmins] = useState<AdminUser[]>([]);
+	const [loadingAdmins, setLoadingAdmins] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!showDropdown) return;
+		const handleClickOutside = (e: MouseEvent) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+				setShowDropdown(false);
+			}
+		};
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, [showDropdown]);
 
 	const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
 		if (e.key === "Enter" || e.key === " ") {
@@ -45,6 +62,24 @@ export default function TicketDetails({
 		} else if (e.key === "Escape") {
 			setIsModalOpen(false);
 		}
+	};
+
+	const handleAssignClick = async () => {
+		setShowDropdown(true);
+		setLoadingAdmins(true);
+		try {
+			const adminList = await getAllAdmins();
+			setAdmins(adminList);
+		} catch (e) {
+			console.error("Failed to fetch admins", e);
+		} finally {
+			setLoadingAdmins(false);
+		}
+	};
+
+	const handleSelectAdmin = (admin: AdminUser) => {
+		setShowDropdown(false);
+		onAssign(admin.idUser, admin.username);
 	};
 
 	const isClosed = statusName === "Résolu" || statusName === "Fermé";
@@ -170,30 +205,73 @@ export default function TicketDetails({
 					)}
 
 					{isAdmin && !supportUsername && (
-						<button
-							type="button"
-							onClick={onAssign}
-							className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="12"
-								height="12"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							>
-								<title>Prendre en charge</title>
-								<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-								<circle cx="9" cy="7" r="4" />
-								<line x1="19" y1="8" x2="19" y2="14" />
-								<line x1="22" y1="11" x2="16" y2="11" />
-							</svg>
-							Prendre en charge
-						</button>
+						<div className="relative">
+							{!showDropdown ? (
+								<button
+									type="button"
+									onClick={handleAssignClick}
+									className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<title>Prendre en charge</title>
+										<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+										<circle cx="9" cy="7" r="4" />
+										<line x1="19" y1="8" x2="19" y2="14" />
+										<line x1="22" y1="11" x2="16" y2="11" />
+									</svg>
+									Prendre en charge
+								</button>
+							) : (
+								<div ref={dropdownRef} className="bg-white border border-gray-200 rounded-xl shadow-lg w-56 overflow-hidden">
+									<div className="px-3 pt-3 pb-2 border-b border-gray-100">
+										<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+											Assigner à
+										</p>
+									</div>
+									{loadingAdmins ? (
+										<div className="flex items-center gap-2 px-3 py-3 text-xs text-gray-400">
+											<svg className="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+												<title>Chargement</title>
+												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+												<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+											</svg>
+											Chargement...
+										</div>
+									) : admins.length === 0 ? (
+										<p className="text-xs text-gray-400 px-3 py-3">
+											Aucun admin disponible
+										</p>
+									) : (
+										<ul className="max-h-44 overflow-y-auto py-1">
+											{admins.map((admin) => (
+												<li key={admin.idUser}>
+													<button
+														type="button"
+														onClick={() => handleSelectAdmin(admin)}
+														className="w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors group"
+													>
+														<div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0 group-hover:bg-blue-200 transition-colors">
+															{getInitials(admin.username)}
+														</div>
+														<span className="font-medium">{admin.username}</span>
+													</button>
+												</li>
+											))}
+										</ul>
+									)}
+								</div>
+							)}
+						</div>
 					)}
 
 					{isOwner && !supportUsername && !isClosed && (

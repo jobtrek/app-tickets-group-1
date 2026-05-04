@@ -45,6 +45,7 @@ export default function TicketView({
 	const role = useUserStore((state) => state.role);
 	const isAdmin = role === "admin";
 	const isOwner = storeUsername === username;
+	const isAssignedAdmin = isAdmin && storeUsername === supportUsername;
 
 	const isChatDisabled = statusName === "Résolu" || statusName === "Fermé";
 
@@ -76,12 +77,12 @@ export default function TicketView({
 		}
 	};
 
-	const handleAssign = async () => {
+	const handleAssign = async (adminId: number, adminUsername: string) => {
 		try {
-			await assignTicket(ticketIdNumber, userId);
+			await assignTicket(ticketIdNumber, adminId);
 			await updateTicketStatus(ticketIdNumber, 2);
 			await router.invalidate();
-			setSupportUsername(storeUsername);
+			setSupportUsername(adminUsername);
 			setStatusName("En cours");
 		} catch (e) {
 			console.error("Failed to assign ticket", e);
@@ -139,6 +140,7 @@ export default function TicketView({
 			<TicketHeader
 				statusName={statusName}
 				isAdmin={isAdmin}
+				isAssignedAdmin={isAssignedAdmin}
 				pendingConfirmation={pendingConfirmation}
 				onBack={() => navigate({ to: "/" })}
 				onResolve={handleResolve}
@@ -218,6 +220,23 @@ export default function TicketView({
 						</svg>
 						La messagerie est désactivée pour les tickets{" "}
 						{statusName === "Résolu" ? "résolus" : "fermés"}.
+					</div>
+				) : isAdmin && !isAssignedAdmin ? (
+					<div className="flex items-center gap-2 border border-dashed border-gray-200 rounded-xl px-5 py-4 text-sm text-gray-400">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+						>
+							<title>Chat désactivé</title>
+							<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+							<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+						</svg>
+						Seul l'admin assigné au ticket peut envoyer des messages.
 					</div>
 				) : (
 					<CommentInput
