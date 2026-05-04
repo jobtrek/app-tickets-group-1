@@ -55,13 +55,13 @@ function TicketsPerMonthChart({
 
 	const [selectedYear, setSelectedYear] = useState(defaultYear);
 
-	const monthlyData = Array.from({ length: 12 }, (_, i) => {
-		const match = data.find((d) => {
-			const date = new Date(d.month);
-			return date.getFullYear() === selectedYear && date.getMonth() === i;
-		});
-		return match?.count ?? 0;
-	});
+	const monthlyData = Array.from({ length: 12 }, () => 0);
+	for (const d of data) {
+		const date = new Date(d.month);
+		if (date.getFullYear() === selectedYear) {
+			monthlyData[date.getMonth()] = d.count;
+		}
+	}
 
 	const W = 600;
 	const H = 200;
@@ -79,6 +79,7 @@ function TicketsPerMonthChart({
 		<div>
 			<div className="flex justify-end mb-4">
 				<select
+					aria-label="Sélectionner l'année"
 					value={selectedYear}
 					onChange={(e) => setSelectedYear(Number(e.target.value))}
 					className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -94,7 +95,7 @@ function TicketsPerMonthChart({
 					)}
 				</select>
 			</div>
-			<svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 200 }}>
+			<svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto">
 				<title>Diagramme des tickets par mois</title>
 				{Array.from({ length: ticks + 1 }).map((_, i) => {
 					const y = pT + (chartH / ticks) * i;
@@ -164,9 +165,10 @@ export default function Statistics({ stats }: StatisticsProps) {
 		return `${h}h ${m}m ${s}s`;
 	};
 
-	const sortedStatuses = STATUS_ORDER.map((id) =>
-		stats.ticketsCountPerStatus.find((s) => s.status === id),
-	).filter(Boolean) as { status: number; count: number }[];
+	const sortedStatuses = STATUS_ORDER.map((id) => {
+		const found = stats.ticketsCountPerStatus.find((s) => s.status === id);
+		return { status: id, count: found?.count ?? 0 };
+	});
 
 	return (
 		<div className="min-h-screen w-full bg-gray-50 p-8">
@@ -175,7 +177,7 @@ export default function Statistics({ stats }: StatisticsProps) {
 					<h1 className="text-2xl font-bold text-gray-900">Statistiques IT</h1>
 				</header>
 
-				<div className="grid grid-cols-3 gap-6 mb-8">
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 					<div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col gap-4">
 						<div className="flex items-center justify-between">
 							<span className="text-sm font-medium text-gray-500 uppercase tracking-wider">
