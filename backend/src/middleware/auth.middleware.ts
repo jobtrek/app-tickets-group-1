@@ -18,7 +18,9 @@ type AuthenticatedHandler<T extends string = string> = (
 	req: AuthedRequest<T>,
 ) => Response | Promise<Response | undefined> | undefined;
 
-export const getSessionUser = async (req: Request): Promise<AuthUser | null> => {
+export const getSessionUser = async (
+	req: Request,
+): Promise<AuthUser | null> => {
 	const cookieHeader = req.headers.get("cookie");
 	const sessionToken = cookieHeader
 		?.split(";")
