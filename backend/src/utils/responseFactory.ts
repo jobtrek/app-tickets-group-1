@@ -24,6 +24,10 @@ export const errorResponse = (
 export const loginResponseError = (
 	message: string,
 	status: number = 400,
+	details?: unknown,
 ): Response => {
-	return Response.json(message, { status, headers: loginCorsHeaders });
+	return Response.json(
+		{ error: message, details },
+		{ status, headers: loginCorsHeaders },
+	);
 };

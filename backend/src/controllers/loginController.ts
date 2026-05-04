@@ -19,8 +19,8 @@ export const loginUser = async (req: Request) => {
 	if (!body) return loginResponseError("Invalid JSON", 400);
 
 	const result = v.safeParse(UserLoginSchema, body);
-	if (!result.success) return loginResponseError("Validation failed", 400);
-
+	if (!result.success)
+		return loginResponseError("Validation failed", 400, result.issues);
 	const { email, password } = result.output;
 
 	if (isRateLimited(ip, 10) || isRateLimited(email, 5)) {
