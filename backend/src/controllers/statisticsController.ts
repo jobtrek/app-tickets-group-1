@@ -1,6 +1,5 @@
-import { corsHeaders } from "../../utils/headers";
 import { statisticsQuery } from "../repositories/statisticsQuery";
-
+import { errorResponse, jsonResponse } from "../utils/responseFactory";
 export const getStatistics = async () => {
 	try {
 		const [
@@ -22,15 +21,9 @@ export const getStatistics = async () => {
 			ticketsPerMonth: ticketsPerMonth ?? [],
 		};
 
-		return Response.json(data, {
-			status: 200,
-			headers: corsHeaders,
-		});
+		return jsonResponse(data, 200);
 	} catch (e) {
 		console.error("Statistics Fetch Error:", e);
-		return new Response("Error fetching dashboard stats", {
-			status: 500,
-			headers: corsHeaders,
-		});
+		return errorResponse("Error fetching dashboard stats", 500);
 	}
 };
