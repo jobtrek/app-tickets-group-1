@@ -11,6 +11,7 @@ export function useTicketComments(
 ) {
 	const [comments, setComments] = useState<Comment[]>([]);
 	const onStatusUpdateRef = useRef(onStatusUpdate);
+	// Ref to hold the latest onStatusUpdate callback without triggering re-renders
 	const onConfirmationUpdateRef = useRef(onConfirmationUpdate);
 	const onAssignmentUpdateRef = useRef(onAssignmentUpdate);
 	const onUrgencyUpdateRef = useRef(onUrgencyUpdate);

@@ -101,5 +101,5 @@ export const updateTicketUrgencyLevel = async (
 	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/urgency`, {
 		level,
 	});
-	return { data };
+	return data;
 };
