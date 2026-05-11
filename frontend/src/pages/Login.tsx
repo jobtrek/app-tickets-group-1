@@ -95,7 +95,7 @@ export default function LoginForm() {
 
 						<FormField id="email" label="Adresse e-mail">
 							<InputText
-								value=""
+								value={formData.email}
 								id="email"
 								name="email"
 								placeholder="Entrez votre email"

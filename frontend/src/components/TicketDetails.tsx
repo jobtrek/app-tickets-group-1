@@ -22,7 +22,15 @@ interface TicketDetailsProps {
 	onAssign: (adminId: number, adminUsername: string) => void;
 	onOwnerClose: () => void;
 	ownerUsername: string;
+	onUrgencyChange?: (level: Ticket["level"]) => void;
 }
+
+const urgencyLevels: { value: Ticket["level"]; label: string }[] = [
+	{ value: "urgent", label: "Urgent" },
+	{ value: "haut", label: "Haut" },
+	{ value: "moyen", label: "Moyen" },
+	{ value: "bas", label: "Bas" },
+];
 
 export default function TicketDetails({
 	id,
@@ -38,6 +46,7 @@ export default function TicketDetails({
 	isOwner,
 	onAssign,
 	onOwnerClose,
+	onUrgencyChange,
 }: TicketDetailsProps) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [admins, setAdmins] = useState<AdminUser[]>([]);
@@ -173,11 +182,60 @@ export default function TicketDetails({
 					<p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">
 						Niveau d'urgence
 					</p>
-					<p
-						className={`text-base font-medium ${urgencyColor[level] ?? "text-gray-700"}`}
-					>
-						{level}
-					</p>
+					{isAdmin && onUrgencyChange ? (
+						<DropdownMenu.Root>
+							<DropdownMenu.Trigger asChild>
+								<button
+									type="button"
+									className={`inline-flex items-center gap-1.5 text-sm font-medium ${urgencyColor[level] ?? "text-gray-700"} hover:opacity-70 transition-opacity`}
+								>
+									{level ?? "—"}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="12"
+										height="12"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<title>Modifier</title>
+										<polyline points="6 9 12 15 18 9" />
+									</svg>
+								</button>
+							</DropdownMenu.Trigger>
+							<DropdownMenu.Portal>
+								<DropdownMenu.Content
+									sideOffset={6}
+									align="start"
+									className="bg-white border border-gray-200 rounded-xl shadow-lg w-40 overflow-hidden z-50"
+								>
+									<div className="px-3 pt-3 pb-2 border-b border-gray-100">
+										<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+											Urgence
+										</p>
+									</div>
+									<div className="py-1">
+										{urgencyLevels.map(({ value, label }) => (
+											<DropdownMenu.Item
+												key={value}
+												onSelect={() => onUrgencyChange(value)}
+												className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none hover:bg-gray-50 transition-colors ${urgencyColor[value]} ${level === value ? "opacity-50 pointer-events-none" : ""}`}
+											>
+												{label}
+											</DropdownMenu.Item>
+										))}
+									</div>
+								</DropdownMenu.Content>
+							</DropdownMenu.Portal>
+						</DropdownMenu.Root>
+					) : (
+						<p className={`text-base font-medium ${urgencyColor[level] ?? "text-gray-700"}`}>
+							{level ?? "—"}
+						</p>
+					)}
 				</div>
 				<div>
 					<p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">

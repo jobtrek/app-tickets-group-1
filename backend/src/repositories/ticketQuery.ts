@@ -65,4 +65,11 @@ export const ticketQueries = {
 				.insert(ticket_assignment)
 				.values({ idTicket, idSupport, isActive: true });
 		}),
+
+	updateUrgency: (idTicket: number, level: string | null) =>
+		db
+			.update(tickets)
+			.set({ level })
+			.where(eq(tickets.idTicket, idTicket))
+			.returning({ idTicket: tickets.idTicket, level: tickets.level }),
 };
