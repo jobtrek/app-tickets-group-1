@@ -124,27 +124,28 @@ export const assignTicket = async (
 		);
 	}
 
+	const [currentTicket] = await ticketQueries.getById(idTicket);
+
 	await ticketQueries.assign(idTicket, idSupport);
 
 	publishTicketUpdate(idTicket, "assignment_update", {
 		supportUsername: supportUser.username,
 	});
 
+	const commentText = currentTicket?.supportUsername
+		? `Ticket réassigné de ${currentTicket.supportUsername} à ${supportUser.username}`
+		: `Ticket assigné à ${supportUser.username}`;
+
 	const insertedAssign = await commentQuery.insert({
 		idTicket,
 		idUser: req.user.idUser,
-		commentText: `Ticket assigné à ${supportUser.username}`,
+		commentText,
 		userRole: "system",
 	});
 	const fullAssignComment = await commentQuery.getById(
 		insertedAssign.idComment,
 	);
 	publish(`ticket-${idTicket}`, JSON.stringify(fullAssignComment));
-
-	return jsonResponse({
-		message: "Ticket assigned",
-		supportUsername: supportUser.username,
-	});
 };
 
 export const updateStatus = async (
@@ -240,7 +241,7 @@ export const ownerConfirmTicket = async (
 	const insertedOwner = await commentQuery.insert({
 		idTicket,
 		idUser: req.user.idUser,
-		commentText: `Statut changé de ${currentStatusName} à  ${newStatusName}`,
+		commentText: `Statut changé de ${currentStatusName} à ${newStatusName}`,
 		userRole: "system",
 	});
 	const fullOwnerComment = await commentQuery.getById(insertedOwner.idComment);

@@ -63,7 +63,7 @@ export interface Comment {
 	commentText: string;
 	createdAt: string;
 	authorRole: string;
-	userRole: "user" | "admin" | "system";
+	userRole: "user" | "system";
 }
 
 export const urgencyColor: Record<Ticket["level"], string> = {
