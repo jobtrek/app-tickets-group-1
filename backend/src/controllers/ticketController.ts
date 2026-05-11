@@ -59,7 +59,7 @@ export const getAllTickets = async (req: AuthedRequest) => {
 
 		if (req.user.role === "admin") {
 const data = await ticketQueries.getAll(size, offset, filters);
-const [countResult] = await ticketQueries.countAll();
+const [countResult] = await ticketQueries.countAll(filters);
 
 			if (!countResult) {
 				return errorResponse("Failed to fetch ticket count", 500);
