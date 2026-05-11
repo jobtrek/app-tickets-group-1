@@ -37,16 +37,17 @@ export const postComment = async (
 };
 
 export const getAllComment = async (
-	req: Bun.BunRequest<"/api/tickets/:id/comment">,
+	req: AuthedRequest<"/api/tickets/:id/comment">,
 ) => {
-	try {
-		const id = verifyAndParseId(req.params.id, "Invalid or missing ticket ID");
-		if (id instanceof Response) return id;
+	const id = verifyAndParseId(req.params.id, "Invalid or missing ticket ID");
+	if (id instanceof Response) return id;
 
-		const comments = await commentQuery.getAll(id);
-		return jsonResponse(comments);
-	} catch (e) {
-		console.error("getAllComment error:", e);
-		return errorResponse("DB Error", 500);
+	const [ticket] = await ticketQueries.getById(id);
+	if (!ticket) return errorResponse("Ticket not found", 404);
+	if (req.user.role !== "admin" && ticket.idUser !== req.user.idUser) {
+		return errorResponse("Forbidden", 403);
 	}
+
+	const comments = await commentQuery.getAll(id);
+	return jsonResponse(comments);
 };
