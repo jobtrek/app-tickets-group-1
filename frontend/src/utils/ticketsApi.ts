@@ -78,8 +78,6 @@ export const fetchTickets = async (
   status: string[],
   level: string[],
 ) => {
-	  console.log("fetchTickets params:", { page, size, sort, status, level })
-
   const params = new URLSearchParams({
     page: String(page),
     size: String(size),
@@ -90,7 +88,6 @@ export const fetchTickets = async (
   for (const l of level) params.append("level", l)
 
   const url = `${API_URL}?${params.toString()}`
-  console.log("URL envoyée:", url)  // ← ajoute ça
 
   const response = await apiClient.get<PaginatedResponse<Ticket>>(url)
   return response.data
