@@ -84,6 +84,16 @@ export default function TicketView({
 			console.error("Failed to post comment", e);
 		}
 	};
+	const handleOwnerClose = async () => {
+		try {
+			await ownerConfirmTicket(ticketIdNumber, true);
+			await router.invalidate();
+			setStatusName("Fermé");
+			setPendingConfirmation(false);
+		} catch (e) {
+			console.error("Failed to close ticket", e);
+		}
+	};
 
 	const handleAssign = async (adminId: number, adminUsername: string) => {
 		try {
@@ -149,6 +159,7 @@ export default function TicketView({
 				pendingConfirmation={pendingConfirmation}
 				onBack={() => navigate({ to: "/" })}
 				onResolve={handleResolve}
+				onOwnerClose={handleOwnerClose}
 				onConfirmResolve={handleConfirmClose}
 				onRejectResolve={handleRejectClose}
 			/>

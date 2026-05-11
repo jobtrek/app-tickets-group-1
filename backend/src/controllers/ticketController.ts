@@ -206,13 +206,9 @@ export const ownerConfirmTicket = async (
 		await ticketQueries.confirmed(idTicket, false);
 	}
 
-	publish(
-		`ticket-${idTicket}`,
-		JSON.stringify({
-			type: "status_update",
-			statusName: statusNames[newStatusId],
-		}),
-	);
+	publishTicketUpdate(idTicket, "status_update", {
+		statusName: statusNames[newStatusId],
+	});
 	return jsonResponse({
 		message: accepted ? "Ticket closed" : "Ticket reopened",
 	});
