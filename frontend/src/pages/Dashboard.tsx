@@ -1,9 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useShallow } from "zustand/shallow";
+import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useTicketStore } from "../store/ticketStore";
-import { getFilteredTickets } from "../utils/sorting";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -37,83 +35,77 @@ const statusOptions: Ticket["statusName"][] = [
 ];
 const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
-export default function Dashboard() {
-	const navigate = useNavigate();
-	const sort = useTicketStore((state) => state.sort);
-	const setSort = useTicketStore((state) => state.setSort);
-	const toggleStatusFilter = useTicketStore(
-		(state) => state.toggleStatusFilter,
-	);
-	const toggleUrgencyFilter = useTicketStore(
-		(state) => state.toggleUrgencyFilter,
-	);
-	const statusFilter = useTicketStore((state) => state.statusFilter);
-	const urgencyFilter = useTicketStore((state) => state.urgencyFilter);
-	const filteredTickets = useTicketStore(useShallow(getFilteredTickets));
-	const statusByTicketId = useTicketStatusStore(
-		(state) => state.statusByTicketId,
-	);
+interface DashboardProps {
+  tickets: Ticket[];
+  totalPages: number;
+  page: number;
+  sort: string;
+  status: string[];
+  level: string[];
+}
 
-	return (
-		<div className="p-6 bg-white min-h-screen font-sans">
-			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
+export default function Dashboard({ tickets, totalPages, page, sort, status, level }: DashboardProps) {
+  const navigate = useNavigate({ from: "/dashboard" });
+  const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
 
-			<div className="flex gap-8 pb-8">
-				<div className="w-xs text-gray-500 ">
-					<Select
-						id="sort"
-						value={sort}
-						onChange={(e) => setSort(e.currentTarget.value)}
-						options={sortOptions}
-					/>
-				</div>
+  const updateSearch = (updates: Record<string, unknown>) =>
+    navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) })
 
-				<div className="flex flex-col gap-1 pr-6">
-					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
-					<div className="flex gap-3">
-						{statusOptions.map((status) => (
-							<label
-								key={status}
-								className="flex items-center gap-1.5 cursor-pointer"
-							>
-								<input
-									type="checkbox"
-									checked={statusFilter.includes(status)}
-									onChange={() => toggleStatusFilter(status)}
-								/>
-								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
-								>
-									{status}
-								</span>
-							</label>
-						))}
-					</div>
-				</div>
+  const toggleFilter = (key: "status" | "level", value: string, current: string[]) => {
+    const next = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value]
+    updateSearch({ [key]: next })
+  }
 
-				<div className="flex flex-col gap-1">
-					<span className="text-xs text-gray-400 font-medium pb-1">
-						Urgence
-					</span>
-					<div className="flex gap-3">
-						{urgencyOptions.map((urgency) => (
-							<label
-								key={urgency}
-								className="flex items-center gap-1.5 cursor-pointer"
-							>
-								<input
-									type="checkbox"
-									checked={urgencyFilter.includes(urgency)}
-									onChange={() => toggleUrgencyFilter(urgency)}
-								/>
-								<span className={`text-xs py-0.5 ${urgenceStyles[urgency]}`}>
-									{urgency}
-								</span>
-							</label>
-						))}
-					</div>
-				</div>
-			</div>
+  return (
+    <div className="p-6 bg-white min-h-screen font-sans">
+      <h1 className="text-2xl font-bold pb-4">Dashboard</h1>
+
+      <div className="flex gap-8 pb-8">
+        <div className="w-xs text-gray-500">
+          <Select
+            id="sort"
+            value={sort}
+            onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
+            options={sortOptions}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1 pr-6">
+          <span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
+          <div className="flex gap-3">
+            {statusOptions.map((s) => (
+              <label key={s} className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={status.includes(s)}
+                  onChange={() => toggleFilter("status", s, status)}
+                />
+                <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}>
+                  {s}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-gray-400 font-medium pb-1">Urgence</span>
+          <div className="flex gap-3">
+            {urgencyOptions.map((u) => (
+              <label key={u} className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={level.includes(u)}
+                  onChange={() => toggleFilter("level", u, level)}
+                />
+                <span className={`text-xs py-0.5 ${urgenceStyles[u]}`}>{u}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
 
 			<table className="w-full border-collapse">
 				<thead>
@@ -129,7 +121,7 @@ export default function Dashboard() {
 					</tr>
 				</thead>
 				<tbody>
-					{filteredTickets.map((row) => (
+					{tickets.map((row) => (
 						<tr
 							onClick={() =>
 								navigate({
@@ -195,6 +187,14 @@ export default function Dashboard() {
 					))}
 				</tbody>
 			</table>
+    <Pagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={(p) =>
+            navigate({ search: (prev) => ({ ...prev, page: p }) })
+        }
+    />
+
 		</div>
 	);
 }

@@ -1,10 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useShallow } from "zustand/shallow";
+import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useTicketStore } from "../store/ticketStore";
-import { useUserStore } from "../store/userStore";
-import { getFilteredUserTickets } from "../utils/getFilteredUserTickets";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -28,59 +25,62 @@ const statusOptions: Ticket["statusName"][] = [
 	"Résolu",
 ];
 
-export default function TicketHistory() {
-	const navigate = useNavigate();
-	const sort = useTicketStore((state) => state.sort);
-	const setSort = useTicketStore((state) => state.setSort);
-	const toggleStatusFilter = useTicketStore(
-		(state) => state.toggleStatusFilter,
-	);
-	const statusFilter = useTicketStore((state) => state.statusFilter);
-	const userId = useUserStore((state) => state.idUser);
-	const filteredTickets = useTicketStore(
-		useShallow(getFilteredUserTickets(userId)),
-	);
-	const statusByTicketId = useTicketStatusStore(
-		(state) => state.statusByTicketId,
-	);
+interface TicketHistoryProps {
+  tickets: Ticket[];
+  totalPages: number;
+  page: number;
+  sort: string;
+  status: string[];
+  level: string[];
+}
 
-	return (
-		<div className="p-6 bg-white min-h-screen font-sans">
-			<h1 className="text-2xl font-bold pb-4">Historique des tickets</h1>
+export default function TicketHistory({ tickets, totalPages, page, sort, status, level }: TicketHistoryProps) {
+  const navigate = useNavigate({ from: "/ticket-history" });
+  const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
 
-			<div className="flex gap-8 pb-8">
-				<div className="w-xs text-gray-500 ">
-					<Select
-						id="sort"
-						value={sort}
-						onChange={(e) => setSort(e.currentTarget.value)}
-						options={sortOptions}
-					/>
-				</div>
+  const updateSearch = (updates: Record<string, unknown>) =>
+	navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) })
 
-				<div className="flex flex-col gap-1 pr-6">
-					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
-					<div className="flex gap-3">
-						{statusOptions.map((status) => (
-							<label
-								key={status}
-								className="flex items-center gap-1.5 cursor-pointer"
-							>
-								<input
-									type="checkbox"
-									checked={statusFilter.includes(status)}
-									onChange={() => toggleStatusFilter(status)}
-								/>
-								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
-								>
-									{status}
-								</span>
-							</label>
-						))}
-					</div>
-				</div>
-			</div>
+  const toggleFilter = (key: "status" | "level", value: string, current: string[]) => {
+	const next = current.includes(value)
+	  ? current.filter((v) => v !== value)
+	  : [...current, value]
+	updateSearch({ [key]: next })
+  }
+
+  return (
+	<div className="p-6 bg-white min-h-screen font-sans">
+	  <h1 className="text-2xl font-bold pb-4">Historique de ticket</h1>
+
+	  <div className="flex gap-8 pb-8">
+		<div className="w-xs text-gray-500">
+		  <Select
+			id="sort"
+			value={sort}
+			onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
+			options={sortOptions}
+		  />
+		</div>
+
+		<div className="flex flex-col gap-1 pr-6">
+		  <span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
+		  <div className="flex gap-3">
+			{statusOptions.map((s) => (
+			  <label key={s} className="flex items-center gap-1.5 cursor-pointer">
+				<input
+				  type="checkbox"
+				  checked={status.includes(s)}
+				  onChange={() => toggleFilter("status", s, status)}
+				/>
+				<span className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}>
+				  {s}
+				</span>
+			  </label>
+			))}
+		  </div>
+		</div>
+		</div>
+
 
 			<table className="w-full border-collapse">
 				<thead>
@@ -96,7 +96,7 @@ export default function TicketHistory() {
 					</tr>
 				</thead>
 				<tbody>
-					{filteredTickets.length === 0 ? (
+					{tickets.length === 0 ? (
 						<tr>
 							<td
 								colSpan={colonnes.length}
@@ -117,7 +117,7 @@ export default function TicketHistory() {
 							</td>
 						</tr>
 					) : (
-						filteredTickets.map((row) => (
+						tickets.map((row) => (
 							<tr
 								onClick={() =>
 									navigate({
@@ -172,6 +172,13 @@ export default function TicketHistory() {
 					)}
 				</tbody>
 			</table>
+			<Pagination
+				page={page}
+				totalPages={totalPages}
+				onPageChange={(p) =>
+					navigate({ search: (prev) => ({ ...prev, page: p }) })
+				}
+			/>
 		</div>
 	);
 }

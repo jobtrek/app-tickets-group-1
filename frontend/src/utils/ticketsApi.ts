@@ -1,4 +1,5 @@
 import { apiClient } from "./clientApi";
+import type { PaginatedResponse, Ticket } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
@@ -91,3 +92,28 @@ export const ownerConfirmTicket = async (
 	);
 	return data;
 };
+
+export const fetchTickets = async (
+  page: number,
+  size: number,
+  sort: string,
+  status: string[],
+  level: string[],
+) => {
+	  console.log("fetchTickets params:", { page, size, sort, status, level })
+
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+    sort,
+  })
+
+  for (const s of status) params.append("status", s)
+  for (const l of level) params.append("level", l)
+
+  const url = `${API_URL}?${params.toString()}`
+  console.log("URL envoyée:", url)  // ← ajoute ça
+
+  const response = await apiClient.get<PaginatedResponse<Ticket>>(url)
+  return response.data
+}

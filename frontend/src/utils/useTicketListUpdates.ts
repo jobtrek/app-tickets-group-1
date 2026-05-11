@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { router } from "../router";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useTicketStore } from "../store/ticketStore";
 import type { Ticket } from "./types";
 
@@ -6,6 +8,12 @@ export function useTicketListUpdates() {
 	const addTicket = useTicketStore((state) => state.addTicket);
 	const updateTicketInList = useTicketStore(
 		(state) => state.updateTicketInList,
+	);
+	const setTicketStatus = useTicketStatusStore(
+		(state) => state.setTicketStatus,
+	);
+	const setTicketAssignment = useTicketStatusStore(
+		(state) => state.setTicketAssignment,
 	);
 
 	useEffect(() => {
@@ -19,15 +27,14 @@ export function useTicketListUpdates() {
 			try {
 				const data = JSON.parse(event.data);
 				if (data.type === "ticket_created") {
-					addTicket(data.ticket as Ticket);
+					router.invalidate();
 				} else if (data.type === "ticket_status_update") {
-					updateTicketInList(data.idTicket, {
-						statusName: data.statusName as Ticket["statusName"],
-					});
+					setTicketStatus(
+						data.idTicket,
+						data.statusName as Ticket["statusName"],
+					);
 				} else if (data.type === "ticket_assignment_update") {
-					updateTicketInList(data.idTicket, {
-						supportUsername: data.supportUsername,
-					});
+					setTicketAssignment(data.idTicket, data.supportUsername);
 				}
 			} catch (error) {
 				console.error("Failed to parse WebSocket message:", error);
