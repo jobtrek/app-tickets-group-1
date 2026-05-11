@@ -17,21 +17,6 @@ export interface TicketStore {
 	setQuery: (query: string) => void;
 }
 
-export const getFilteredTickets = (state: TicketStore): Ticket[] => {
-	const { tickets, statusFilter, urgencyFilter, sort, query } = state;
-	return tickets
-		.filter(
-			(t) => statusFilter.length === 0 || statusFilter.includes(t.statusName),
-		)
-		.filter(
-			(t) => urgencyFilter.length === 0 || urgencyFilter.includes(t.level),
-		)
-		.sort((a, b) =>
-			sort === "asc" ? a.idTicket - b.idTicket : b.idTicket - a.idTicket,
-		)
-		.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()));
-};
-
 export const useTicketStore = create<TicketStore>()(
 	persist(
 		(set) => ({

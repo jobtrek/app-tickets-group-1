@@ -32,6 +32,9 @@ export default function TicketHistory() {
 	const navigate = useNavigate();
 	const sort = useTicketStore((state) => state.sort);
 	const setSort = useTicketStore((state) => state.setSort);
+	const query = useTicketStore((state) => state.query);
+	const setQuery = useTicketStore((state) => state.setQuery);
+
 	const toggleStatusFilter = useTicketStore(
 		(state) => state.toggleStatusFilter,
 	);
@@ -39,6 +42,12 @@ export default function TicketHistory() {
 	const userId = useUserStore((state) => state.idUser);
 	const filteredTickets = useTicketStore(
 		useShallow(getFilteredUserTickets(userId)),
+	);
+	const hasAnyTickets = useTicketStore((state) =>
+		state.tickets.some((t) => t.idUser === userId),
+	);
+	const hasActiveFilters = useTicketStore(
+		(state) => !!state.query || state.statusFilter.length > 0,
 	);
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
@@ -48,8 +57,19 @@ export default function TicketHistory() {
 		<div className="p-6 bg-white min-h-screen font-sans">
 			<h1 className="text-2xl font-bold pb-4">Historique des tickets</h1>
 
-			<div className="flex gap-8 pb-8">
-				<div className="w-xs text-gray-500 ">
+			<div className="flex gap-8 pb-8 items-end">
+				<div className="flex flex-col gap-1">
+					<span className="text-xs text-gray-400 font-medium pb-1">Rechercher</span>
+					<input
+						type="text"
+						value={query}
+						onChange={(e) => setQuery(e.currentTarget.value)}
+						placeholder="Rechercher un ticket..."
+						className="w-xs border border-gray-200 rounded-md px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
+					/>
+				</div>
+				<div className="flex flex-col gap-1 text-gray-500">
+					<span className="text-xs text-gray-400 font-medium pb-1">Tri</span>
 					<Select
 						id="sort"
 						value={sort}
@@ -102,18 +122,29 @@ export default function TicketHistory() {
 								colSpan={colonnes.length}
 								className="text-center py-16 text-gray-400"
 							>
-								<div className="flex flex-col items-center gap-4">
-									<span className="text-sm">
-										Vous n'avez créé aucun ticket pour l'instant.
-									</span>
-									<button
-										type="button"
-										onClick={() => navigate({ to: "/create-ticket" })}
-										className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-									>
-										Créer un ticket
-									</button>
-								</div>
+								{hasAnyTickets && hasActiveFilters ? (
+									<div className="flex flex-col items-center gap-2">
+										<span className="text-sm">
+											Aucun ticket ne correspond à vos filtres.
+										</span>
+										<span className="text-xs text-gray-300">
+											Essayez de modifier ou supprimer certains filtres.
+										</span>
+									</div>
+								) : (
+									<div className="flex flex-col items-center gap-4">
+										<span className="text-sm">
+											Vous n'avez créé aucun ticket pour l'instant.
+										</span>
+										<button
+											type="button"
+											onClick={() => navigate({ to: "/create-ticket" })}
+											className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+										>
+											Créer un ticket
+										</button>
+									</div>
+								)}
 							</td>
 						</tr>
 					) : (
