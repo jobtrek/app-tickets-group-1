@@ -1,13 +1,20 @@
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { useEffect } from "react";
 import { Alert } from "../src/components/ErrorMessage";
 import { Spinner } from "../src/components/Loading";
 import { Navbar } from "../src/pages/Navbar";
+import type { RouterContext } from "../src/router";
 import { useErrorStore } from "../src/store/errorStore";
 import { useUserStore } from "../src/store/userStore";
+import { checkSession } from "../src/utils/checkSession";
 import { useTicketListUpdates } from "../src/utils/useTicketListUpdates";
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<RouterContext>()({
+	beforeLoad: async () => {
+		const user = await checkSession().catch(() => null);
+		return { user };
+	},
 	errorComponent: ({ error }) => (
 		<div className="flex h-screen items-center justify-center bg-gray-50">
 			<div className="bg-white rounded-xl border border-gray-200 shadow-sm p-10 flex flex-col items-center gap-5 max-w-sm w-full mx-4">
@@ -42,7 +49,13 @@ export const Route = createRootRoute({
 	component: () => {
 		const username = useUserStore((state) => state.username);
 		const error = useErrorStore((state) => state.error);
-		const _clearError = useErrorStore((state) => state.clearError);
+		const clearError = useErrorStore((state) => state.clearError);
+
+		useEffect(() => {
+			if (!error) return;
+			const timer = setTimeout(clearError, 5000);
+			return () => clearTimeout(timer);
+		}, [error, clearError]);
 
 		useTicketListUpdates();
 

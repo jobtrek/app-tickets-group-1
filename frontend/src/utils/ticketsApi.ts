@@ -17,15 +17,9 @@ export const userLogout = async () => {
 	await apiClient.post(LOGOUT_URL);
 };
 
-export const createComment = async (
-	commentText: string,
-	idUser: number,
-	idTicket: number,
-) => {
+export const createComment = async (commentText: string, idTicket: number) => {
 	const { data } = await apiClient.post(`${API_URL}/${idTicket}/comment`, {
 		commentText,
-		idUser,
-		idTicket,
 	});
 	return data;
 };

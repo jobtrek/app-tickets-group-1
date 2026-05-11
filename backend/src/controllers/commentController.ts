@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import type { AuthedRequest } from "../middleware/auth.middleware";
 import { commentQuery } from "../repositories/commentQuery";
+import { ticketQueries } from "../repositories/ticketQuery";
 import { verifyAndParseId } from "../utils/idParser";
 import { publish } from "../utils/publisher";
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
@@ -10,9 +11,19 @@ export const postComment = async (
 	req: AuthedRequest<"/api/tickets/:id/comment">,
 ) => {
 	try {
+		const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+		if (idTicket instanceof Response) return idTicket;
+
+		const [ticket] = await ticketQueries.getById(idTicket);
+		if (!ticket) return errorResponse("Ticket not found", 404);
+		if (req.user.role !== "admin" && ticket.idUser !== req.user.idUser) {
+			return errorResponse("Forbidden", 403);
+		}
+
 		const validated = v.parse(CommentPostSchema, await req.json());
 		const inserted = await commentQuery.insert({
 			...validated,
+			idTicket,
 			idUser: req.user.idUser,
 			userRole: req.user.role,
 		});

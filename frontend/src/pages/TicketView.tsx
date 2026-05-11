@@ -46,7 +46,6 @@ export default function TicketView({
 		hasAdminConfirmed && initialStatusName === "Résolu",
 	);
 
-	const userId = useUserStore((state) => state.idUser);
 	const storeUsername = useUserStore((state) => state.username);
 	const role = useUserStore((state) => state.role);
 	const isAdmin = role === "admin";
@@ -77,7 +76,7 @@ export default function TicketView({
 	const handleSubmit = async () => {
 		if (!commentInput.trim()) return;
 		try {
-			await createComment(commentInput, userId, ticketIdNumber);
+			await createComment(commentInput, ticketIdNumber);
 			await router.invalidate();
 			setCommentInput("");
 		} catch (e) {
