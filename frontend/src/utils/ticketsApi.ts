@@ -12,10 +12,7 @@ export const createTicketFromForm = async (
 ) => {
 	ticket.append("idUser", idUser.toString());
 	const postResponse = await apiClient.post(API_URL, ticket);
-	const getResponse = await apiClient.get(API_URL);
-	const createdTicket = postResponse.data.createdTicket;
-	const allTickets = getResponse.data;
-	return { createdTicket, allTickets };
+	return { createdTicket: postResponse.data.createdTicket };
 };
 export const userLogout = async () => {
 	await apiClient.post(LOGOUT_URL);

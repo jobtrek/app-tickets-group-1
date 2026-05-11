@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import { cookies, users } from "../data/schema";
 import { db } from "../db/database";
 import { corsHeaders } from "../utils/headers";
@@ -42,7 +42,7 @@ export const getSessionUser = async (
 		.where(
 			and(
 				eq(cookies.sessionToken, sessionToken),
-				//gt(cookies.expiresAt, new Date()),      THIS IS FOR WHEN WE ADD EXIRATION FOR SESSION IN DB DO NO TOUCH IT
+				gt(cookies.expiresAt, new Date()),
 			),
 		);
 

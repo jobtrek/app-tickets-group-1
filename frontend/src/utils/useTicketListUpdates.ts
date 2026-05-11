@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { useTicketStore } from "../store/ticketStore";
 import type { Ticket } from "./types";
 
@@ -7,6 +8,7 @@ export function useTicketListUpdates() {
 	const updateTicketInList = useTicketStore(
 		(state) => state.updateTicketInList,
 	);
+	const setTicketStatus = useTicketStatusStore((state) => state.setTicketStatus);
 
 	useEffect(() => {
 		const origin = new URL(import.meta.env.VITE_API_URL).origin.replace(
@@ -24,6 +26,7 @@ export function useTicketListUpdates() {
 					updateTicketInList(data.idTicket, {
 						statusName: data.statusName as Ticket["statusName"],
 					});
+					setTicketStatus(data.idTicket, data.statusName);
 				} else if (data.type === "ticket_assignment_update") {
 					updateTicketInList(data.idTicket, {
 						supportUsername: data.supportUsername,
@@ -35,5 +38,5 @@ export function useTicketListUpdates() {
 		};
 
 		return () => ws.close();
-	}, [addTicket, updateTicketInList]);
+	}, [addTicket, updateTicketInList, setTicketStatus]);
 }

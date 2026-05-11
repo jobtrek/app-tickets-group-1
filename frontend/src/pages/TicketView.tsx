@@ -140,17 +140,6 @@ export default function TicketView({
 		}
 	};
 
-	const handleOwnerClose = async () => {
-		try {
-			await ownerConfirmTicket(ticketIdNumber, true);
-			await router.invalidate();
-			setStatusName("Fermé");
-			setPendingConfirmation(false);
-		} catch (e) {
-			console.error("Failed to close ticket", e);
-		}
-	};
-
 	return (
 		<div className="min-h-screen w-full bg-gray-50 flex flex-col items-center py-12 px-6 gap-8">
 			<TicketHeader
@@ -177,7 +166,7 @@ export default function TicketView({
 				isAdmin={isAdmin}
 				isOwner={isOwner}
 				onAssign={handleAssign}
-				onOwnerClose={handleOwnerClose}
+				onOwnerClose={handleConfirmClose}
 				ownerUsername={username}
 				onUrgencyChange={handleUrgencyChange}
 			/>

@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { commentQuery } from "../repositories/commentQuery";
 import { verifyAndParseId } from "../utils/idParser";
-import { getServer, publish } from "../utils/publisher";
+import { publish } from "../utils/publisher";
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { CommentPostSchema } from "../validators/commentValidator";
 
@@ -33,11 +33,4 @@ export const getAllComment = async (
 	}
 };
 
-export const websocketUpgrade = (
-	req: Bun.BunRequest<"/api/tickets/:id/ws">,
-) => {
-	const success = getServer()?.upgrade(req, {
-		data: { ticketId: req.params.id },
-	});
-	if (!success) return errorResponse("WS upgrade failed", 400);
-};
+

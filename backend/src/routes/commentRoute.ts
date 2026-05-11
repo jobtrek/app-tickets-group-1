@@ -1,9 +1,5 @@
 import { corsHeaders } from "backend/src/utils/headers";
-import {
-	getAllComment,
-	postComment,
-	websocketUpgrade,
-} from "../controllers/commentController";
+import { getAllComment, postComment } from "../controllers/commentController";
 import { withAuth } from "../middleware/auth.middleware";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
 
@@ -13,8 +9,5 @@ export const CommentRoutes = {
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		GET: withRateLimit(withAuth(getAllComment)),
 		POST: withRateLimit(withAuth(postComment), 30),
-	},
-	"/api/tickets/:id/ws": {
-		GET: withAuth(websocketUpgrade),
 	},
 };

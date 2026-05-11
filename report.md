@@ -8,6 +8,8 @@
 
 ## Critical Issues
 
+# DONE 1
+
 ### 1. Double WebSocket connection on ticket-history page
 
 **Files:** `frontend/routes/__root.tsx:14`, `frontend/routes/_authenticated/ticket-history.tsx:24`
@@ -16,8 +18,9 @@
 
 **Fix:** Remove the `useTicketListUpdates()` call from `ticket-history.tsx`. The root already covers it.
 
----
 
+---
+# DONE 2
 ### 2. `ticketStatusStore` is entirely dead
 
 **Files:** `frontend/src/store/ticketStatusStore.ts`, `frontend/src/pages/Dashboard.tsx:53`, `frontend/src/pages/TicketHistory.tsx:43`
@@ -27,6 +30,8 @@ Both `Dashboard.tsx` and `TicketHistory.tsx` read `statusByTicketId` to display 
 **Fix:** Either call `setTicketStatus` inside `useTicketListUpdates` when a `ticket_status_update` event arrives, or delete the store and read `row.statusName` directly.
 
 ---
+
+# DONE 3
 
 ### 3. `/api/tickets/:id/ws` bypasses all WebSocket security checks
 
@@ -39,7 +44,7 @@ The frontend does not use this route at all — it connects to `/ws?ticketId=` i
 **Fix:** Remove the `/api/tickets/:id/ws` route entirely, or run it through the same guard logic as `handleWsUpgrade`.
 
 ---
-
+# DONE 4
 ### 4. Session tokens never expire
 
 **Files:** `backend/src/middleware/auth.middleware.ts:45`, `backend/src/data/schema.ts:41-47`
@@ -51,7 +56,7 @@ The expiry check in `auth.middleware.ts` is commented out, and the `cookies` tab
 ---
 
 ## Warnings
-
+# DONE 5
 ### 5. `handleConfirmClose` and `handleOwnerClose` are identical
 
 **File:** `frontend/src/pages/TicketView.tsx:112-121` and `:143-152`
@@ -61,7 +66,7 @@ Both functions call `ownerConfirmTicket(ticketIdNumber, true)`, invalidate the r
 **Fix:** Delete `handleOwnerClose` and pass `handleConfirmClose` wherever `handleOwnerClose` is used.
 
 ---
-
+# TODO 6
 ### 6. `createTicketFromForm` fires a redundant GET after POST
 
 **File:** `frontend/src/utils/ticketsApi.ts:15`
@@ -72,6 +77,8 @@ After POSTing a new ticket the function immediately calls `GET /api/tickets` to 
 
 ---
 
+
+# FIXED
 ### 7. Route naming inconsistency — plural vs. singular
 
 **File:** `backend/src/routes/ticketsRoute.ts:17` vs `:23`
@@ -112,17 +119,7 @@ Every query that filters or joins on these columns (which is every query) will d
 
 ## Improvements
 
-### 10. `Dashboard.tsx` and `TicketHistory.tsx` duplicate ~80 lines of table code
-
-**Files:** `frontend/src/pages/Dashboard.tsx`, `frontend/src/pages/TicketHistory.tsx`
-
-Both files render a clickable ticket table with the same row structure, keyboard navigation (`Enter`/`Space`), status badge using `statusStyles`, and identical date formatting via `toLocaleDateString("fr-CH", ...)`. Any future column change must be made in two places.
-
-**Fix:** Extract a shared `TicketTable` component that accepts `columns` and `rows` as props.
-
----
-
-### 11. `getFilteredTickets` and `getFilteredUserTickets` duplicate sort logic
+### 10. `getFilteredTickets` and `getFilteredUserTickets` duplicate sort logic
 
 **Files:** `frontend/src/utils/sorting.ts`, `frontend/src/utils/getFilteredUserTickets.ts`
 
