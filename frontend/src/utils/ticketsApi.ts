@@ -2,9 +2,6 @@ import { apiClient } from "./clientApi";
 import type { PaginatedResponse, Ticket } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
-const TICKET_URL = import.meta.env.VITE_TICKET_URL;
-type TicketStatus = "Ouvert" | "En cours" | "Fermé" | "Résolu";
 
 export const createTicketFromForm = async (
 	ticket: FormData,
@@ -12,13 +9,8 @@ export const createTicketFromForm = async (
 ) => {
 	ticket.append("idUser", idUser.toString());
 	const postResponse = await apiClient.post(API_URL, ticket);
-	const getResponse = await apiClient.get(API_URL);
 	const createdTicket = postResponse.data.createdTicket;
-	const allTickets = getResponse.data;
-	return { createdTicket, allTickets };
-};
-export const userLogout = async () => {
-	await apiClient.post(LOGOUT_URL);
+	return { createdTicket };
 };
 
 export const createComment = async (
@@ -56,15 +48,7 @@ export const updateTicketStatus = async (
 	return response.data;
 };
 
-export const getTicketById = async (idTicket: number) => {
-	const id = await apiClient.get(`${TICKET_URL}/${idTicket}`);
-	return id;
-};
 
-export const fetchTicketStatus = async (idTicket: number): Promise<string> => {
-	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
-	return data.statusName as TicketStatus;
-};
 
 export const updateTicketConfirmation = async (
 	idTicket: number,
@@ -76,12 +60,6 @@ export const updateTicketConfirmation = async (
 	return data.hasAdminConfirmed;
 };
 
-export const fetchTicketConfirmation = async (
-	idTicket: number,
-): Promise<boolean> => {
-	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
-	return data.hasAdminConfirmed ?? false;
-};
 export const ownerConfirmTicket = async (
 	idTicket: number,
 	accepted: boolean,

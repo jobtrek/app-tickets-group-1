@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
+import { useSearchStore } from "../store/searchStore";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
@@ -37,6 +38,14 @@ interface TicketHistoryProps {
 export default function TicketHistory({ tickets, totalPages, page, sort, status, level }: TicketHistoryProps) {
   const navigate = useNavigate({ from: "/ticket-history" });
   const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
+  const query = useSearchStore((state) => state.query);
+  const setQuery = useSearchStore((state) => state.setQuery);
+
+  const displayedTickets = query
+    ? tickets.filter((t) =>
+        t.title.toLowerCase().includes(query.toLowerCase()),
+      )
+    : tickets;
 
   const updateSearch = (updates: Record<string, unknown>) =>
 	navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) })
@@ -51,6 +60,16 @@ export default function TicketHistory({ tickets, totalPages, page, sort, status,
   return (
 	<div className="p-6 bg-white min-h-screen font-sans">
 	  <h1 className="text-2xl font-bold pb-4">Historique de ticket</h1>
+
+	  <div className="pb-4">
+		<input
+		  type="text"
+		  placeholder="Rechercher par titre..."
+		  value={query}
+		  onChange={(e) => setQuery(e.currentTarget.value)}
+		  className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+		/>
+	  </div>
 
 	  <div className="flex gap-8 pb-8">
 		<div className="w-xs text-gray-500">
@@ -96,7 +115,7 @@ export default function TicketHistory({ tickets, totalPages, page, sort, status,
 					</tr>
 				</thead>
 				<tbody>
-					{tickets.length === 0 ? (
+					{tickets.length === 0 || (query && displayedTickets.length === 0) ? (
 						<tr>
 							<td
 								colSpan={colonnes.length}
@@ -104,7 +123,9 @@ export default function TicketHistory({ tickets, totalPages, page, sort, status,
 							>
 								<div className="flex flex-col items-center gap-4">
 									<span className="text-sm">
-										Vous n'avez créé aucun ticket pour l'instant.
+										{query && displayedTickets.length === 0
+											? "Aucun ticket ne correspond à votre recherche."
+											: "Vous n'avez créé aucun ticket pour l'instant."}
 									</span>
 									<button
 										type="button"
@@ -117,7 +138,7 @@ export default function TicketHistory({ tickets, totalPages, page, sort, status,
 							</td>
 						</tr>
 					) : (
-						tickets.map((row) => (
+						displayedTickets.map((row) => (
 							<tr
 								onClick={() =>
 									navigate({

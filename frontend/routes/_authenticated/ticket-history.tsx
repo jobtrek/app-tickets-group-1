@@ -2,8 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import TicketHistory from "../../src/pages/TicketHistory";
 import { fetchTickets } from "../../src/utils/ticketsApi";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const Route = createFileRoute("/_authenticated/ticket-history")({
 	validateSearch: (search) => ({
 		page: Number(search.page ?? 1),

@@ -1,14 +1,9 @@
 import { useEffect } from "react";
 import { router } from "../router";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useTicketStore } from "../store/ticketStore";
 import type { Ticket } from "./types";
 
 export function useTicketListUpdates() {
-	const addTicket = useTicketStore((state) => state.addTicket);
-	const updateTicketInList = useTicketStore(
-		(state) => state.updateTicketInList,
-	);
 	const setTicketStatus = useTicketStatusStore(
 		(state) => state.setTicketStatus,
 	);
@@ -42,5 +37,5 @@ export function useTicketListUpdates() {
 		};
 
 		return () => ws.close();
-	}, [addTicket, updateTicketInList]);
+	}, []);
 }
