@@ -119,7 +119,6 @@ export const assignTicket = async (
 	}
 
 	const supportUser = await userQueries.getSupportById(idSupport);
-
 	if (!supportUser || supportUser.role !== "admin") {
 		return jsonResponse(
 			{ error: "L'utilisateur sélectionné n'est pas un admin" },
@@ -128,16 +127,33 @@ export const assignTicket = async (
 	}
 
 	const [currentTicket] = await ticketQueries.getById(idTicket);
-
-	await ticketQueries.assign(idTicket, idSupport);
-
-	publishTicketUpdate(idTicket, "assignment_update", {
-		supportUsername: supportUser.username,
-	});
-
+	if (!currentTicket) return errorResponse("Ticket not found", 404);
 	const commentText = currentTicket?.supportUsername
 		? `Ticket réassigné de ${currentTicket.supportUsername} à ${supportUser.username}`
 		: `Ticket assigné à ${supportUser.username}`;
+
+	await ticketQueries.assign(idTicket, idSupport);
+	publishTicketUpdate(idTicket, "status_update", { statusName: "En cours" });
+	publishTicketUpdate(idTicket, "assignment_update", {
+		supportUsername: supportUser.username,
+	});
+	const currentStatusName = statusNames[currentTicket.idStatus];
+	if (currentTicket.idStatus !== 2) {
+		publishTicketUpdate(idTicket, "status_update", {
+			statusName: statusNames[2],
+		});
+
+		const insertedStatus = await commentQuery.insert({
+			idTicket,
+			idUser: req.user.idUser,
+			commentText: `Statut changé de ${currentStatusName} à En cours`,
+			userRole: "system",
+		});
+		const fullStatusComment = await commentQuery.getById(
+			insertedStatus.idComment,
+		);
+		publish(`ticket-${idTicket}`, JSON.stringify(fullStatusComment));
+	}
 
 	const insertedAssign = await commentQuery.insert({
 		idTicket,
@@ -149,6 +165,11 @@ export const assignTicket = async (
 		insertedAssign.idComment,
 	);
 	publish(`ticket-${idTicket}`, JSON.stringify(fullAssignComment));
+
+	return jsonResponse({
+		message: "Ticket assigned",
+		supportUsername: supportUser.username,
+	});
 };
 
 export const updateStatus = async (

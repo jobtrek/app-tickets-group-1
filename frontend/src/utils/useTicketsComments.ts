@@ -41,7 +41,11 @@ export function useTicketComments(
 			} else if (data.type === "urgency_update") {
 				onUrgencyUpdateRef.current?.(data.adminLevel);
 			} else {
-				setComments((prev) => [...prev, data]);
+				setComments((prev) =>
+					prev.some((c) => c.idComment === data.idComment)
+						? prev
+						: [...prev, data],
+				);
 			}
 		};
 

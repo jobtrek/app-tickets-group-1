@@ -66,7 +66,7 @@ export const ticketQueries = {
 				.values({ idTicket, idSupport, isActive: true });
 			await tx
 				.update(tickets)
-				.set({ idSupport })
+				.set({ idStatus: 2, idSupport })
 				.where(eq(tickets.idTicket, idTicket));
 		}),
 
