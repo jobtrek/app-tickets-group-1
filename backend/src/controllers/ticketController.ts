@@ -139,12 +139,14 @@ export const assignTicket = async (
 	});
 	const currentStatusName = statusNames[currentTicket.idStatus];
 	if (currentTicket.idStatus !== 2) {
-		publishTicketUpdate(idTicket, "status_update", { statusName: "En cours" });
+		publishTicketUpdate(idTicket, "status_update", {
+			statusName: statusNames[2],
+		});
 
 		const insertedStatus = await commentQuery.insert({
 			idTicket,
 			idUser: req.user.idUser,
-			commentText: `Statut changé de ${currentStatusName} à « En cours »`,
+			commentText: `Statut changé de ${currentStatusName} à En cours`,
 			userRole: "system",
 		});
 		const fullStatusComment = await commentQuery.getById(
