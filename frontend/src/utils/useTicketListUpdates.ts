@@ -8,7 +8,9 @@ export function useTicketListUpdates() {
 	const updateTicketInList = useTicketStore(
 		(state) => state.updateTicketInList,
 	);
-	const setTicketStatus = useTicketStatusStore((state) => state.setTicketStatus);
+	const setTicketStatus = useTicketStatusStore(
+		(state) => state.setTicketStatus,
+	);
 
 	useEffect(() => {
 		const origin = new URL(import.meta.env.VITE_API_URL).origin.replace(

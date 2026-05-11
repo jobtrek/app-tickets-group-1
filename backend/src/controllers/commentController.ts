@@ -32,5 +32,3 @@ export const getAllComment = async (
 		return errorResponse("DB Error", 500);
 	}
 };
-
-
