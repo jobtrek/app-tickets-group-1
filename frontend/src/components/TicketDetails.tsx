@@ -225,6 +225,7 @@ export default function TicketDetails({
 											<DropdownMenu.Item
 												key={value}
 												onSelect={() => onUrgencyChange(value)}
+												disabled={displayLevel === value}
 												className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none hover:bg-gray-50 transition-colors ${urgencyColor[value]} ${displayLevel === value ? "opacity-50 pointer-events-none" : ""}`}
 											>
 												{label}

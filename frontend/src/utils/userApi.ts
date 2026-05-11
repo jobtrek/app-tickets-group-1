@@ -33,7 +33,7 @@ export const updateUser = async (
 	data: Omit<UpdateUserData, "userid">,
 ) => {
 	const response = await apiClient.patch(`${UPDATE_USER_URL}${userId}`, data);
-	return response.data;
+	return response.data[0];
 };
 
 export const getAllAdmins = async (): Promise<AdminUser[]> => {
