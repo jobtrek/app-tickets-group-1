@@ -39,6 +39,9 @@ const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
 export default function Dashboard() {
 	const navigate = useNavigate();
+	const query = useTicketStore((state) => state.query);
+	const setQuery = useTicketStore((state) => state.setQuery);
+
 	const sort = useTicketStore((state) => state.sort);
 	const setSort = useTicketStore((state) => state.setSort);
 	const toggleStatusFilter = useTicketStore(
@@ -59,6 +62,16 @@ export default function Dashboard() {
 			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
 
 			<div className="flex gap-8 pb-8">
+				<div className="w-xs">
+					<input
+						type="text"
+						value={query}
+						onChange={(e) => setQuery(e.currentTarget.value)}
+						placeholder="Rechercher un ticket..."
+						className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
+					/>
+				</div>
+
 				<div className="w-xs text-gray-500 ">
 					<Select
 						id="sort"

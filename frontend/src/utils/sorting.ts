@@ -23,5 +23,11 @@ export const getFilteredTickets = (state: TicketStore) => {
 		filtered.sort((a, b) => a.title.localeCompare(b.title));
 	}
 
+	if (state.query) {
+		filtered = filtered.filter((t) =>
+			t.title.toLowerCase().includes(state.query.toLowerCase()),
+		);
+	}
+
 	return filtered;
 };

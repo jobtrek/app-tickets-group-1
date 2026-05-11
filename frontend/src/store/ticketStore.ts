@@ -11,9 +11,26 @@ export interface TicketStore {
 	sort: string;
 	statusFilter: string[];
 	urgencyFilter: string[];
+	query: string;
 	toggleStatusFilter: (status: Ticket["statusName"]) => void;
 	toggleUrgencyFilter: (status: Ticket["level"]) => void;
+	setQuery: (query: string) => void;
 }
+
+export const getFilteredTickets = (state: TicketStore): Ticket[] => {
+	const { tickets, statusFilter, urgencyFilter, sort, query } = state;
+	return tickets
+		.filter(
+			(t) => statusFilter.length === 0 || statusFilter.includes(t.statusName),
+		)
+		.filter(
+			(t) => urgencyFilter.length === 0 || urgencyFilter.includes(t.level),
+		)
+		.sort((a, b) =>
+			sort === "asc" ? a.idTicket - b.idTicket : b.idTicket - a.idTicket,
+		)
+		.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()));
+};
 
 export const useTicketStore = create<TicketStore>()(
 	persist(
@@ -22,6 +39,7 @@ export const useTicketStore = create<TicketStore>()(
 			sort: "desc",
 			statusFilter: [],
 			urgencyFilter: [],
+			query: "",
 			setTickets: (tickets) => set({ tickets }),
 			addTicket: (ticket) =>
 				set((state) => ({ tickets: [ticket, ...state.tickets] })),
@@ -45,6 +63,7 @@ export const useTicketStore = create<TicketStore>()(
 						? state.urgencyFilter.filter((u) => u !== urgency)
 						: [...state.urgencyFilter, urgency],
 				})),
+			setQuery: (query) => set({ query }),
 		}),
 		{
 			name: "ticket-store",
