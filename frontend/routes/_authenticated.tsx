@@ -1,10 +1,6 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { isAuthenticated } from "../src/utils/IsAuthenticated";
+import { createFileRoute } from "@tanstack/react-router";
+import { checkSession } from "../src/utils/checkSession";
 
 export const Route = createFileRoute("/_authenticated")({
-	beforeLoad: () => {
-		if (!isAuthenticated()) {
-			throw redirect({ to: "/login" });
-		}
-	},
+	beforeLoad: () => checkSession(),
 });

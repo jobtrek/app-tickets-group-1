@@ -1,14 +1,21 @@
 import * as v from "valibot";
+import type { AuthedRequest } from "../middleware/auth.middleware";
 import { commentQuery } from "../repositories/commentQuery";
 import { verifyAndParseId } from "../utils/idParser";
 import { publish } from "../utils/publisher";
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { CommentPostSchema } from "../validators/commentValidator";
 
-export const postComment = async (req: Request) => {
+export const postComment = async (
+	req: AuthedRequest<"/api/tickets/:id/comment">,
+) => {
 	try {
 		const validated = v.parse(CommentPostSchema, await req.json());
-		const inserted = await commentQuery.insert(validated);
+		const inserted = await commentQuery.insert({
+			...validated,
+			idUser: req.user.idUser,
+			userRole: req.user.role,
+		});
 		const fullComment = await commentQuery.getById(inserted.idComment);
 		publish(`ticket-${inserted.idTicket}`, JSON.stringify(fullComment));
 		return jsonResponse(fullComment, 201);

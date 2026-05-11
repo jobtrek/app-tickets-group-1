@@ -10,6 +10,7 @@
 
 ## Critical Issues
 
+# DONE 1
 ### 1. Comment `idUser` is user-controlled — any user can post as any other user
 
 **Files:** `backend/src/controllers/commentController.ts:8`, `backend/src/repositories/commentQuery.ts:35`, `backend/src/validators/commentValidator.ts`
@@ -36,7 +37,7 @@ export const postComment = async (req: AuthedRequest<"/api/tickets/:id/comment">
   ...
 };
 ```
-
+# DONE 2
 ---
 
 ### 2. Uploaded files are publicly accessible without authentication
@@ -55,25 +56,6 @@ export const postComment = async (req: AuthedRequest<"/api/tickets/:id/comment">
 
 For stricter control, also verify the requesting user owns or is assigned to the ticket that image belongs to.
 
----
-
-### 3. PostgreSQL data is not persisted between container restarts
-
-**File:** `docker-compose.yaml:9`
-
-The volume is mounted as:
-```yaml
-- db_data:/var/lib/postgresql
-```
-
-The official PostgreSQL Docker image stores data in `/var/lib/postgresql/data` (`$PGDATA`). The volume is mounted one directory too high, so the actual data directory lives inside the container's ephemeral layer. Every `docker compose down && docker compose up` starts with a completely empty database.
-
-**Fix:**
-```yaml
-- db_data:/var/lib/postgresql/data
-```
-
----
 
 ## Warnings
 

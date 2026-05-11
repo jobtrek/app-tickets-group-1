@@ -5,6 +5,7 @@ import { db } from "../db/database";
 type CommentInsertValues = {
 	idTicket: number;
 	idUser: number;
+	userRole: string;
 	commentText: string;
 };
 
@@ -32,7 +33,7 @@ export const commentQuery = {
 			.values({
 				idTicket: values.idTicket,
 				idUser: values.idUser,
-				userRole: "user",
+				userRole: values.userRole,
 				commentText: values.commentText,
 			})
 			.returning();
