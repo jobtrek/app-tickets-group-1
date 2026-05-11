@@ -10,3 +10,9 @@ export interface UserResult {
 	username: string;
 	email: string;
 }
+
+export type TicketFilters = {
+	sort?: "asc" | "desc";
+	status?: string[];
+	level?: string[];
+};

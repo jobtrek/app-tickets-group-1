@@ -1,7 +1,16 @@
-import { eq, getTableColumns } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	getTableColumns,
+	inArray,
+} from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, ticket_assignment, tickets, users } from "../data/schema";
 import { db } from "../db/database";
+import type { TicketFilters } from "../utils/constants/types";
 
 const supportUsers = alias(users, "support_users");
 
@@ -19,13 +28,88 @@ const baseTicketQuery = () =>
 		.leftJoin(supportUsers, eq(tickets.idSupport, supportUsers.idUser));
 
 export const ticketQueries = {
-	getAll: () => baseTicketQuery(),
+	getAll: (limit: number, offset: number, filters: TicketFilters = {}) => {
+		const conditions = [];
+
+		if (filters.status?.length) {
+			conditions.push(inArray(status.statusName, filters.status));
+		}
+		if (filters.level?.length) {
+			conditions.push(inArray(tickets.level, filters.level));
+		}
+
+		const order =
+			filters.sort === "asc" ? asc(tickets.createdAt) : desc(tickets.createdAt);
+
+		return baseTicketQuery()
+			.where(conditions.length ? and(...conditions) : undefined)
+			.limit(limit)
+			.offset(offset)
+			.orderBy(order);
+	},
+
+	countAll: (filters: TicketFilters = {}) => {
+		const conditions = [];
+
+		if (filters.status?.length) {
+			conditions.push(inArray(status.statusName, filters.status));
+		}
+		if (filters.level?.length) {
+			conditions.push(inArray(tickets.level, filters.level));
+		}
+
+		return db
+			.select({ total: count() })
+			.from(tickets)
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.where(conditions.length ? and(...conditions) : undefined);
+	},
 
 	getById: (idTicket: number) =>
 		baseTicketQuery().where(eq(tickets.idTicket, idTicket)),
 
-	getAllByUser: (idUser: number) =>
-		baseTicketQuery().where(eq(tickets.idUser, idUser)),
+	getAllByUser: (
+		idUser: number,
+		limit: number,
+		offset: number,
+		filters: TicketFilters = {},
+	) => {
+		const conditions = [eq(tickets.idUser, idUser)];
+
+		if (filters.status?.length) {
+			conditions.push(inArray(status.statusName, filters.status));
+		}
+		if (filters.level?.length) {
+			conditions.push(inArray(tickets.level, filters.level));
+		}
+
+		const order =
+			filters.sort === "asc" ? asc(tickets.createdAt) : desc(tickets.createdAt);
+
+		return baseTicketQuery()
+			.where(and(...conditions))
+			.limit(limit)
+			.offset(offset)
+			.orderBy(order);
+	},
+
+	countAllByUser: (idUser: number, filters: TicketFilters = {}) => {
+		const conditions = [eq(tickets.idUser, idUser)];
+
+		if (filters.status?.length) {
+			conditions.push(inArray(status.statusName, filters.status));
+		}
+		if (filters.level?.length) {
+			conditions.push(inArray(tickets.level, filters.level));
+		}
+
+		return db
+			.select({ total: count() })
+			.from(tickets)
+			.innerJoin(status, eq(tickets.idStatus, status.idStatus))
+			.where(and(...conditions));
+	},
+
 	getAllSupport: () =>
 		db
 			.select({ idUser: users.idUser, username: users.username })

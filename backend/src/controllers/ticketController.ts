@@ -4,6 +4,7 @@ import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { userQueries } from "../repositories/userQuery";
 import { statusNames } from "../utils/constants/statusNames";
+import type { TicketFilters } from '../utils/constants/types.ts';
 import { verifyAndParseId } from "../utils/idParser";
 import { handleImageUpload } from "../utils/imageHandling.ts";
 import { publish } from "../utils/publisher";
@@ -14,13 +15,84 @@ import {
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
 import { TicketPostSchema } from "../validators/ticketValidator.ts";
 
+const PaginationSchema = v.object({
+	page: v.optional(
+		v.pipe(v.string(), v.transform(Number), v.number(), v.minValue(1)),
+		"1",
+	),
+	size: v.optional(
+		v.pipe(
+			v.string(),
+			v.transform(Number),
+			v.number(),
+			v.minValue(1),
+			v.maxValue(100),
+		),
+		"20",
+	),
+  sort: v.optional(v.picklist(["asc", "desc"]), "desc"),
+  status: v.optional(v.array(v.string()), []),
+  level: v.optional(v.array(v.string()), []),
+});
+
 export const getAllTickets = async (req: AuthedRequest) => {
 	try {
-		const allTickets =
-			req.user.role === "admin"
-				? await ticketQueries.getAll()
-				: await ticketQueries.getAllByUser(req.user.idUser);
-		return jsonResponse(allTickets);
+		const url = new URL(req.url);
+		const rawParams = {
+			page: url.searchParams.get("page") ?? undefined,
+			size: url.searchParams.get("size") ?? undefined,
+			sort: url.searchParams.get("sort") ?? undefined,
+			status: url.searchParams.getAll("status"),
+			level: url.searchParams.getAll("level"),
+
+		};
+
+		const parsed = v.safeParse(PaginationSchema, rawParams);
+		if (!parsed.success) {
+			return jsonResponse({ error: "Invalid pagination params" }, 400);
+		}
+
+		const { page, size, sort, status, level } = parsed.output;
+		const offset = (page - 1) * size;
+
+		const filters: TicketFilters = {sort, status, level}
+
+		if (req.user.role === "admin") {
+const data = await ticketQueries.getAll(size, offset, filters);
+const [countResult] = await ticketQueries.countAll();
+
+			if (!countResult) {
+				return errorResponse("Failed to fetch ticket count", 500);
+			}
+
+			return jsonResponse({
+				data,
+				total: countResult.total,
+				page,
+				size,
+				totalPages: Math.ceil(countResult.total / size),
+			});
+		}
+
+		const data = await ticketQueries.getAllByUser(
+			req.user.idUser,
+			size,
+			offset,
+			filters
+		);
+		const [countResult] = await ticketQueries.countAllByUser(req.user.idUser, filters);
+
+		if (!countResult) {
+			return errorResponse("Failed to fetch ticket count", 500);
+		}
+
+		return jsonResponse({
+			data,
+			total: countResult.total,
+			page,
+			size,
+			totalPages: Math.ceil(countResult.total / size),
+		});
 	} catch (e) {
 		console.error("DB fetch error", e);
 		return errorResponse("DB Error", 500);
