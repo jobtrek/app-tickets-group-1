@@ -7,7 +7,7 @@ export function useTicketComments(
 	onStatusUpdate?: (statusName: string) => void,
 	onConfirmationUpdate?: (hasAdminConfirmed: boolean) => void,
 	onAssignmentUpdate?: (supportUsername: string) => void,
-	onUrgencyUpdate?: (level: string) => void,
+	onUrgencyUpdate?: (adminLevel: string) => void,
 ) {
 	const [comments, setComments] = useState<Comment[]>([]);
 	const onStatusUpdateRef = useRef(onStatusUpdate);
@@ -38,7 +38,7 @@ export function useTicketComments(
 			} else if (data.type === "assignment_update") {
 				onAssignmentUpdateRef.current?.(data.supportUsername);
 			} else if (data.type === "urgency_update") {
-				onUrgencyUpdateRef.current?.(data.level);
+				onUrgencyUpdateRef.current?.(data.adminLevel);
 			} else {
 				setComments((prev) => [...prev, data]);
 			}

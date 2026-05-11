@@ -21,6 +21,7 @@ export default function TicketView({
 	description,
 	date,
 	level: initialLevel,
+	adminLevel: initialAdminLevel,
 	image,
 	username,
 	statusName: initialStatusName,
@@ -34,6 +35,7 @@ export default function TicketView({
 
 	const [statusName, setStatusName] = useState(initialStatusName);
 	const [level, setLevel] = useState(initialLevel);
+	const [adminLevel, setAdminLevel] = useState<typeof initialLevel | null>(initialAdminLevel);
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
@@ -65,8 +67,8 @@ export default function TicketView({
 		(newSupportUsername) => {
 			setSupportUsername(newSupportUsername);
 		},
-		(newLevel) => {
-			setLevel(newLevel as typeof initialLevel);
+		(newAdminLevel) => {
+			if (isAdmin) setAdminLevel(newAdminLevel as typeof initialLevel);
 		},
 	);
 
@@ -130,7 +132,7 @@ export default function TicketView({
 	const handleUrgencyChange = async (newLevel: typeof initialLevel) => {
 		try {
 			await updateTicketUrgencyLevel(ticketIdNumber, newLevel);
-			setLevel(newLevel);
+			setAdminLevel(newLevel);
 		} catch (e) {
 			console.error("Failed to update urgency", e);
 		}
@@ -165,6 +167,7 @@ export default function TicketView({
 				date={date}
 				description={description}
 				level={level}
+				adminLevel={adminLevel}
 				image={image}
 				username={username}
 				statusName={statusName}

@@ -246,11 +246,11 @@ export const updateUrgency = async (
 		return jsonResponse({ errors: parsed.issues.map((i) => i.message) }, 400);
 	}
 
-	const level = parsed.output.level ?? null;
-	const [updated] = await ticketQueries.updateUrgency(idTicket, level);
+	const adminLevel = parsed.output.level ?? null;
+	const [updated] = await ticketQueries.updateUrgency(idTicket, adminLevel);
 	if (!updated) return errorResponse("Ticket not found", 404);
 
-	publishTicketUpdate(idTicket, "urgency_update", { level });
+	publishTicketUpdate(idTicket, "urgency_update", { adminLevel });
 
-	return jsonResponse({ message: "Urgency updated", level });
+	return jsonResponse({ message: "Urgency updated", adminLevel });
 };

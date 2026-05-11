@@ -13,6 +13,7 @@ interface TicketDetailsProps {
 	date: string;
 	description: string;
 	level: Ticket["level"];
+	adminLevel: Ticket["level"] | null;
 	image: string | null;
 	username: string;
 	statusName: Ticket["statusName"];
@@ -38,6 +39,7 @@ export default function TicketDetails({
 	date,
 	description,
 	level,
+	adminLevel,
 	image,
 	username,
 	statusName,
@@ -48,6 +50,7 @@ export default function TicketDetails({
 	onOwnerClose,
 	onUrgencyChange,
 }: TicketDetailsProps) {
+	const displayLevel = isAdmin ? (adminLevel ?? level) : level;
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [admins, setAdmins] = useState<AdminUser[]>([]);
 	const [loadingAdmins, setLoadingAdmins] = useState(false);
@@ -187,9 +190,9 @@ export default function TicketDetails({
 							<DropdownMenu.Trigger asChild>
 								<button
 									type="button"
-									className={`inline-flex items-center gap-1.5 text-sm font-medium ${urgencyColor[level] ?? "text-gray-700"} hover:opacity-70 transition-opacity`}
+									className={`inline-flex items-center gap-1.5 text-sm font-medium ${urgencyColor[displayLevel] ?? "text-gray-700"} hover:opacity-70 transition-opacity`}
 								>
-									{level ?? "—"}
+									{displayLevel ?? "—"}
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										width="12"
@@ -222,7 +225,7 @@ export default function TicketDetails({
 											<DropdownMenu.Item
 												key={value}
 												onSelect={() => onUrgencyChange(value)}
-												className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none hover:bg-gray-50 transition-colors ${urgencyColor[value]} ${level === value ? "opacity-50 pointer-events-none" : ""}`}
+												className={`flex items-center gap-2 px-3 py-2 text-sm cursor-pointer outline-none hover:bg-gray-50 transition-colors ${urgencyColor[value]} ${displayLevel === value ? "opacity-50 pointer-events-none" : ""}`}
 											>
 												{label}
 											</DropdownMenu.Item>
@@ -232,8 +235,8 @@ export default function TicketDetails({
 							</DropdownMenu.Portal>
 						</DropdownMenu.Root>
 					) : (
-						<p className={`text-base font-medium ${urgencyColor[level] ?? "text-gray-700"}`}>
-							{level ?? "—"}
+						<p className={`text-base font-medium ${urgencyColor[displayLevel] ?? "text-gray-700"}`}>
+							{displayLevel ?? "—"}
 						</p>
 					)}
 				</div>
@@ -249,31 +252,55 @@ export default function TicketDetails({
 						<p className="text-sm text-gray-400 italic mb-2">Non assigné</p>
 					)}
 
-					{isAdmin && !supportUsername && (
+					{isAdmin && (
 						<DropdownMenu.Root onOpenChange={handleDropdownOpen}>
 							<DropdownMenu.Trigger asChild>
 								<button
 									type="button"
 									className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors"
 								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										width="12"
-										height="12"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										strokeWidth="2"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									>
-										<title>Prendre en charge</title>
-										<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-										<circle cx="9" cy="7" r="4" />
-										<line x1="19" y1="8" x2="19" y2="14" />
-										<line x1="22" y1="11" x2="16" y2="11" />
-									</svg>
-									Prendre en charge
+									{supportUsername ? (
+										<>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="12"
+												height="12"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<title>Réassigner</title>
+												<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+												<circle cx="9" cy="7" r="4" />
+												<polyline points="16 11 18 13 22 9" />
+											</svg>
+											Réassigner
+										</>
+									) : (
+										<>
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="12"
+												height="12"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
+												<title>Prendre en charge</title>
+												<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+												<circle cx="9" cy="7" r="4" />
+												<line x1="19" y1="8" x2="19" y2="14" />
+												<line x1="22" y1="11" x2="16" y2="11" />
+											</svg>
+											Prendre en charge
+										</>
+									)}
 								</button>
 							</DropdownMenu.Trigger>
 
@@ -285,7 +312,7 @@ export default function TicketDetails({
 								>
 									<div className="px-3 pt-3 pb-2 border-b border-gray-100">
 										<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-											Assigner à
+											{supportUsername ? "Réassigner à" : "Assigner à"}
 										</p>
 									</div>
 
@@ -320,18 +347,25 @@ export default function TicketDetails({
 										</p>
 									) : (
 										<div className="max-h-44 overflow-y-auto py-1">
-											{admins.map((admin) => (
-												<DropdownMenu.Item
-													key={admin.idUser}
-													onSelect={() => handleSelectAdmin(admin)}
-													className="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors cursor-pointer outline-none group"
-												>
-													<div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-semibold text-blue-600 shrink-0 group-hover:bg-blue-200 transition-colors">
-														{getInitials(admin.username)}
-													</div>
-													<span className="font-medium">{admin.username}</span>
-												</DropdownMenu.Item>
-											))}
+											{admins.map((admin) => {
+												const isCurrent = admin.username === supportUsername;
+												return (
+													<DropdownMenu.Item
+														key={admin.idUser}
+														onSelect={() => handleSelectAdmin(admin)}
+														disabled={isCurrent}
+														className={`flex items-center gap-2.5 px-3 py-2 text-sm transition-colors cursor-pointer outline-none group ${isCurrent ? "opacity-40 pointer-events-none" : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"}`}
+													>
+														<div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 transition-colors ${isCurrent ? "bg-gray-100 text-gray-500" : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"}`}>
+															{getInitials(admin.username)}
+														</div>
+														<span className="font-medium">{admin.username}</span>
+														{isCurrent && (
+															<span className="ml-auto text-xs text-gray-400">Actuel</span>
+														)}
+													</DropdownMenu.Item>
+												);
+											})}
 										</div>
 									)}
 								</DropdownMenu.Content>

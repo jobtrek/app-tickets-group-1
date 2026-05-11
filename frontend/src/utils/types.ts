@@ -49,6 +49,7 @@ export interface TicketViewProps {
 	date: string;
 	description: string;
 	level: Ticket["level"];
+	adminLevel: Ticket["level"] | null;
 	image: string | null;
 	username: string;
 	statusName: Ticket["statusName"];
