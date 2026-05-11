@@ -10,7 +10,9 @@ export const getFilteredTickets = (state: TicketStore) => {
 	}
 
 	if (state.urgencyFilter.length > 0) {
-		filtered = filtered.filter((t) => state.urgencyFilter.includes(t.level));
+		filtered = filtered.filter((t) =>
+			state.urgencyFilter.includes(t.adminLevel ?? t.level),
+		);
 	}
 
 	if (state.sort === "asc") {

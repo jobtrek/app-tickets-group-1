@@ -4,6 +4,7 @@ export interface Ticket {
 	description: string;
 	image: string | null;
 	level: "bas" | "moyen" | "haut" | "urgent";
+	adminLevel: "bas" | "moyen" | "haut" | "urgent" | null;
 	createdAt: string;
 	updatedAt: string;
 	statusName: "Ouvert" | "En cours" | "Fermé" | "Résolu";
