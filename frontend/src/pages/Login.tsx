@@ -64,7 +64,7 @@ export default function LoginForm() {
 				role: response.data.role,
 			});
 			navigate({
-				to: response.data.role === "admin" ? "/dashboard" : "/create-ticket",
+				to: response.data.role === "admin" ? "/dashboard" : "/ticket-history",
 			});
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
