@@ -7,6 +7,7 @@ type CommentInsertValues = {
 	idUser: number;
 	userRole: string;
 	commentText: string;
+	userRole?: "user" | "system";
 };
 
 const fullCommentSelect = {
@@ -16,6 +17,7 @@ const fullCommentSelect = {
 	authorId: comments.idUser,
 	authorName: users.username,
 	authorRole: users.role,
+	userRole: comments.userRole,
 };
 
 export const commentQuery = {
@@ -33,7 +35,7 @@ export const commentQuery = {
 			.values({
 				idTicket: values.idTicket,
 				idUser: values.idUser,
-				userRole: values.userRole,
+				userRole: values.userRole ?? "user",
 				commentText: values.commentText,
 			})
 			.returning();
