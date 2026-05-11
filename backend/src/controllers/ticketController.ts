@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import type { AuthedRequest } from "../middleware/auth.middleware";
+import { commentQuery } from "../repositories/commentQuery";
 import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { userQueries } from "../repositories/userQuery";
@@ -128,6 +129,18 @@ export const assignTicket = async (
 	publishTicketUpdate(idTicket, "assignment_update", {
 		supportUsername: supportUser.username,
 	});
+
+	const insertedAssign = await commentQuery.insert({
+		idTicket,
+		idUser: req.user.idUser,
+		commentText: `Ticket assigné à ${supportUser.username}`,
+		userRole: "system",
+	});
+	const fullAssignComment = await commentQuery.getById(
+		insertedAssign.idComment,
+	);
+	publish(`ticket-${idTicket}`, JSON.stringify(fullAssignComment));
+
 	return jsonResponse({
 		message: "Ticket assigned",
 		supportUsername: supportUser.username,
@@ -148,11 +161,29 @@ export const updateStatus = async (
 		return jsonResponse({ error: "Invalid statusId" }, 400);
 	}
 
+	const [currentTicket] = await ticketQueries.getById(idTicket);
+	if (!currentTicket) return errorResponse("Ticket not found", 404);
+	const currentStatusName = statusNames[currentTicket.idStatus];
+
 	await updateStatusQuery.update(statusId, idTicket);
 
-	const statusName = statusNames[statusId];
-	if (statusName)
-		publishTicketUpdate(idTicket, "status_update", { statusName });
+	const newStatusName = statusNames[statusId];
+	if (newStatusName) {
+		publishTicketUpdate(idTicket, "status_update", {
+			statusName: newStatusName,
+		});
+
+		const insertedStatus = await commentQuery.insert({
+			idTicket,
+			idUser: req.user.idUser,
+			commentText: `Statut changé de ${currentStatusName} à  ${newStatusName}`,
+			userRole: "system",
+		});
+		const fullStatusComment = await commentQuery.getById(
+			insertedStatus.idComment,
+		);
+		publish(`ticket-${idTicket}`, JSON.stringify(fullStatusComment));
+	}
 
 	return jsonResponse({ message: "Status updated" });
 };
@@ -197,19 +228,32 @@ export const ownerConfirmTicket = async (
 	}
 
 	const newStatusId = accepted ? 4 : 2;
+	const currentStatusName = statusNames[ticket.idStatus];
+	const newStatusName = statusNames[newStatusId];
+
 	await updateStatusQuery.update(newStatusId, idTicket);
 
 	if (!accepted) {
 		await ticketQueries.confirmed(idTicket, false);
 	}
 
+	const insertedOwner = await commentQuery.insert({
+		idTicket,
+		idUser: req.user.idUser,
+		commentText: `Statut changé de ${currentStatusName} à  ${newStatusName}`,
+		userRole: "system",
+	});
+	const fullOwnerComment = await commentQuery.getById(insertedOwner.idComment);
+	publish(`ticket-${idTicket}`, JSON.stringify(fullOwnerComment));
+
 	publish(
 		`ticket-${idTicket}`,
 		JSON.stringify({
 			type: "status_update",
-			statusName: statusNames[newStatusId],
+			statusName: newStatusName,
 		}),
 	);
+
 	return jsonResponse({
 		message: accepted ? "Ticket closed" : "Ticket reopened",
 	});
