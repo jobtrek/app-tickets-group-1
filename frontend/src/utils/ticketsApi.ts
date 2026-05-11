@@ -48,8 +48,6 @@ export const updateTicketStatus = async (
 	return response.data;
 };
 
-
-
 export const updateTicketConfirmation = async (
 	idTicket: number,
 	value: boolean,
@@ -72,23 +70,23 @@ export const ownerConfirmTicket = async (
 };
 
 export const fetchTickets = async (
-  page: number,
-  size: number,
-  sort: string,
-  status: string[],
-  level: string[],
+	page: number,
+	size: number,
+	sort: string,
+	status: string[],
+	level: string[],
 ) => {
-  const params = new URLSearchParams({
-    page: String(page),
-    size: String(size),
-    sort,
-  })
+	const params = new URLSearchParams({
+		page: String(page),
+		size: String(size),
+		sort,
+	});
 
-  for (const s of status) params.append("status", s)
-  for (const l of level) params.append("level", l)
+	for (const s of status) params.append("status", s);
+	for (const l of level) params.append("level", l);
 
-  const url = `${API_URL}?${params.toString()}`
+	const url = `${API_URL}?${params.toString()}`;
 
-  const response = await apiClient.get<PaginatedResponse<Ticket>>(url)
-  return response.data
-}
+	const response = await apiClient.get<PaginatedResponse<Ticket>>(url);
+	return response.data;
+};

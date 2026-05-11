@@ -37,12 +37,12 @@ const statusOptions: Ticket["statusName"][] = [
 const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
 interface DashboardProps {
-  tickets: Ticket[];
-  totalPages: number;
-  page: number;
-  sort: string;
-  status: string[];
-  level: string[];
+	tickets: Ticket[];
+	totalPages: number;
+	page: number;
+	sort: string;
+	status: string[];
+	level: string[];
 }
 
 export default function Dashboard({
@@ -53,85 +53,101 @@ export default function Dashboard({
 	status,
 	level,
 }: DashboardProps) {
-  const navigate = useNavigate({ from: "/dashboard" });
-  const statusByTicketId = useTicketStatusStore((state) => state.statusByTicketId);
-  const query = useSearchStore((state) => state.query);
-  const setQuery = useSearchStore((state) => state.setQuery);
+	const navigate = useNavigate({ from: "/dashboard" });
+	const statusByTicketId = useTicketStatusStore(
+		(state) => state.statusByTicketId,
+	);
+	const query = useSearchStore((state) => state.query);
+	const setQuery = useSearchStore((state) => state.setQuery);
 
-  const displayedTickets = query
-    ? tickets.filter((t) =>
-        t.title.toLowerCase().includes(query.toLowerCase()),
-      )
-    : tickets;
+	const displayedTickets = query
+		? tickets.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
+		: tickets;
 
-  const updateSearch = (updates: Record<string, unknown>) =>
-    navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) })
+	const updateSearch = (updates: Record<string, unknown>) =>
+		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });
 
-  const toggleFilter = (key: "status" | "level", value: string, current: string[]) => {
-    const next = current.includes(value)
-      ? current.filter((v) => v !== value)
-      : [...current, value]
-    updateSearch({ [key]: next })
-  }
+	const toggleFilter = (
+		key: "status" | "level",
+		value: string,
+		current: string[],
+	) => {
+		const next = current.includes(value)
+			? current.filter((v) => v !== value)
+			: [...current, value];
+		updateSearch({ [key]: next });
+	};
 
-  return (
-    <div className="p-6 bg-white min-h-screen font-sans">
-      <h1 className="text-2xl font-bold pb-4">Dashboard</h1>
+	return (
+		<div className="p-6 bg-white min-h-screen font-sans">
+			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
 
-      <div className="pb-4">
-        <input
-          type="text"
-          placeholder="Rechercher par titre..."
-          value={query}
-          onChange={(e) => setQuery(e.currentTarget.value)}
-          className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+			<div className="pb-4">
+				<input
+					type="text"
+					placeholder="Rechercher par titre..."
+					value={query}
+					onChange={(e) => setQuery(e.currentTarget.value)}
+					className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+			</div>
 
-      <div className="flex gap-8 pb-8">
-        <div className="w-xs text-gray-500">
-          <Select
-            id="sort"
-            value={sort}
-            onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
-            options={sortOptions}
-          />
-        </div>
+			<div className="flex gap-8 pb-8">
+				<div className="w-xs text-gray-500">
+					<Select
+						id="sort"
+						value={sort}
+						onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
+						options={sortOptions}
+					/>
+				</div>
 
-        <div className="flex flex-col gap-1 pr-6">
-          <span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
-          <div className="flex gap-3">
-            {statusOptions.map((s) => (
-              <label key={s} className="flex items-center gap-1.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={status.includes(s)}
-                  onChange={() => toggleFilter("status", s, status)}
-                />
-                <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}>
-                  {s}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+				<div className="flex flex-col gap-1 pr-6">
+					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
+					<div className="flex gap-3">
+						{statusOptions.map((s) => (
+							<label
+								key={s}
+								className="flex items-center gap-1.5 cursor-pointer"
+							>
+								<input
+									type="checkbox"
+									checked={status.includes(s)}
+									onChange={() => toggleFilter("status", s, status)}
+								/>
+								<span
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}
+								>
+									{s}
+								</span>
+							</label>
+						))}
+					</div>
+				</div>
 
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-gray-400 font-medium pb-1">Urgence</span>
-          <div className="flex gap-3">
-            {urgencyOptions.map((u) => (
-              <label key={u} className="flex items-center gap-1.5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={level.includes(u)}
-                  onChange={() => toggleFilter("level", u, level)}
-                />
-                <span className={`text-xs py-0.5 ${urgenceStyles[u]}`}>{u}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
+				<div className="flex flex-col gap-1">
+					<span className="text-xs text-gray-400 font-medium pb-1">
+						Urgence
+					</span>
+					<div className="flex gap-3">
+						{urgencyOptions.map((u) => (
+							<label
+								key={u}
+								className="flex items-center gap-1.5 cursor-pointer"
+							>
+								<input
+									type="checkbox"
+									checked={level.includes(u)}
+									onChange={() => toggleFilter("level", u, level)}
+								/>
+								<span className={`text-xs py-0.5 ${urgenceStyles[u]}`}>
+									{u}
+								</span>
+							</label>
+						))}
+					</div>
+				</div>
+			</div>
 
 			<table className="w-full border-collapse">
 				<thead>
@@ -213,14 +229,13 @@ export default function Dashboard({
 					))}
 				</tbody>
 			</table>
-    <Pagination
-        page={page}
-        totalPages={totalPages}
-        onPageChange={(p) =>
-            navigate({ search: (prev) => ({ ...prev, page: p }) })
-        }
-    />
-
+			<Pagination
+				page={page}
+				totalPages={totalPages}
+				onPageChange={(p) =>
+					navigate({ search: (prev) => ({ ...prev, page: p }) })
+				}
+			/>
 		</div>
 	);
 }

@@ -4,7 +4,7 @@ import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { userQueries } from "../repositories/userQuery";
 import { statusNames } from "../utils/constants/statusNames";
-import type { TicketFilters } from '../utils/constants/types.ts';
+import type { TicketFilters } from "../utils/constants/types.ts";
 import { verifyAndParseId } from "../utils/idParser";
 import { handleImageUpload } from "../utils/imageHandling.ts";
 import { publish } from "../utils/publisher";
@@ -30,9 +30,9 @@ const PaginationSchema = v.object({
 		),
 		"20",
 	),
-  sort: v.optional(v.picklist(["asc", "desc", "az"]), "desc"),
-  status: v.optional(v.array(v.string()), []),
-  level: v.optional(v.array(v.string()), []),
+	sort: v.optional(v.picklist(["asc", "desc", "az"]), "desc"),
+	status: v.optional(v.array(v.string()), []),
+	level: v.optional(v.array(v.string()), []),
 });
 
 export const getAllTickets = async (req: AuthedRequest) => {
@@ -44,7 +44,6 @@ export const getAllTickets = async (req: AuthedRequest) => {
 			sort: url.searchParams.get("sort") ?? undefined,
 			status: url.searchParams.getAll("status"),
 			level: url.searchParams.getAll("level"),
-
 		};
 
 		const parsed = v.safeParse(PaginationSchema, rawParams);
@@ -55,11 +54,11 @@ export const getAllTickets = async (req: AuthedRequest) => {
 		const { page, size, sort, status, level } = parsed.output;
 		const offset = (page - 1) * size;
 
-		const filters: TicketFilters = {sort, status, level}
+		const filters: TicketFilters = { sort, status, level };
 
 		if (req.user.role === "admin") {
-const data = await ticketQueries.getAll(size, offset, filters);
-const [countResult] = await ticketQueries.countAll(filters);
+			const data = await ticketQueries.getAll(size, offset, filters);
+			const [countResult] = await ticketQueries.countAll(filters);
 
 			if (!countResult) {
 				return errorResponse("Failed to fetch ticket count", 500);
@@ -78,9 +77,12 @@ const [countResult] = await ticketQueries.countAll(filters);
 			req.user.idUser,
 			size,
 			offset,
-			filters
+			filters,
 		);
-		const [countResult] = await ticketQueries.countAllByUser(req.user.idUser, filters);
+		const [countResult] = await ticketQueries.countAllByUser(
+			req.user.idUser,
+			filters,
+		);
 
 		if (!countResult) {
 			return errorResponse("Failed to fetch ticket count", 500);

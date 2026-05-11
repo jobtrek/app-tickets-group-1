@@ -38,7 +38,7 @@ export const ticketQueries = {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
 
-				const order =
+		const order =
 			filters.sort === "asc"
 				? asc(tickets.createdAt)
 				: filters.sort === "az"
@@ -87,7 +87,7 @@ export const ticketQueries = {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
 
-				const order =
+		const order =
 			filters.sort === "asc"
 				? asc(tickets.createdAt)
 				: filters.sort === "az"
