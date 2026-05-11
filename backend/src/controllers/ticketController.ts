@@ -30,7 +30,7 @@ const PaginationSchema = v.object({
 		),
 		"20",
 	),
-  sort: v.optional(v.picklist(["asc", "desc"]), "desc"),
+  sort: v.optional(v.picklist(["asc", "desc", "az"]), "desc"),
   status: v.optional(v.array(v.string()), []),
   level: v.optional(v.array(v.string()), []),
 });

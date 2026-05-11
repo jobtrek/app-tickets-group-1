@@ -12,7 +12,7 @@ export interface UserResult {
 }
 
 export type TicketFilters = {
-	sort?: "asc" | "desc";
+	sort?: "asc" | "desc" | "az";
 	status?: string[];
 	level?: string[];
 };

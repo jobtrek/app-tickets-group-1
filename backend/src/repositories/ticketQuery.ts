@@ -38,8 +38,12 @@ export const ticketQueries = {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
 
-		const order =
-			filters.sort === "asc" ? asc(tickets.createdAt) : desc(tickets.createdAt);
+				const order =
+			filters.sort === "asc"
+				? asc(tickets.createdAt)
+				: filters.sort === "az"
+					? asc(tickets.title)
+					: desc(tickets.createdAt);
 
 		return baseTicketQuery()
 			.where(conditions.length ? and(...conditions) : undefined)
@@ -83,8 +87,12 @@ export const ticketQueries = {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
 
-		const order =
-			filters.sort === "asc" ? asc(tickets.createdAt) : desc(tickets.createdAt);
+				const order =
+			filters.sort === "asc"
+				? asc(tickets.createdAt)
+				: filters.sort === "az"
+					? asc(tickets.title)
+					: desc(tickets.createdAt);
 
 		return baseTicketQuery()
 			.where(and(...conditions))
