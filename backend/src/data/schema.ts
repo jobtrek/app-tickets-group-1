@@ -27,6 +27,7 @@ export const tickets = pgTable("ticket", {
 	description: varchar("description").notNull(),
 	image: varchar("image"),
 	level: varchar("level", { length: 30 }),
+	adminLevel: varchar("admin_level", { length: 30 }),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at").defaultNow(),
 	hasAdminConfirmed: boolean("has_admin_confirmed").default(false),

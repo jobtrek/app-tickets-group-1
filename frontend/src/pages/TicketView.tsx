@@ -11,6 +11,7 @@ import {
 	ownerConfirmTicket,
 	updateTicketConfirmation,
 	updateTicketStatus,
+	updateTicketUrgencyLevel,
 } from "../utils/ticketsApi";
 import type { TicketViewProps } from "../utils/types";
 import { useTicketComments } from "../utils/useTicketsComments";
@@ -19,7 +20,8 @@ export default function TicketView({
 	title,
 	description,
 	date,
-	level,
+	level: initialLevel,
+	adminLevel: initialAdminLevel,
 	image,
 	username,
 	statusName: initialStatusName,
@@ -32,6 +34,10 @@ export default function TicketView({
 	const router = useRouter();
 
 	const [statusName, setStatusName] = useState(initialStatusName);
+	const level = initialLevel;
+	const [adminLevel, setAdminLevel] = useState<typeof initialLevel | null>(
+		initialAdminLevel,
+	);
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,
@@ -53,7 +59,6 @@ export default function TicketView({
 		ticketIdNumber,
 		(newStatusName) => {
 			setStatusName(newStatusName as typeof initialStatusName);
-
 			if (isAdmin && newStatusName !== "Résolu") {
 				setPendingConfirmation(false);
 			}
@@ -63,6 +68,9 @@ export default function TicketView({
 		},
 		(newSupportUsername) => {
 			setSupportUsername(newSupportUsername);
+		},
+		(newAdminLevel) => {
+			if (isAdmin) setAdminLevel(newAdminLevel as typeof initialLevel);
 		},
 	);
 
@@ -123,6 +131,15 @@ export default function TicketView({
 		}
 	};
 
+	const handleUrgencyChange = async (newLevel: typeof initialLevel) => {
+		try {
+			await updateTicketUrgencyLevel(ticketIdNumber, newLevel);
+			setAdminLevel(newLevel);
+		} catch (e) {
+			console.error("Failed to update urgency", e);
+		}
+	};
+
 	const handleOwnerClose = async () => {
 		try {
 			await ownerConfirmTicket(ticketIdNumber, true);
@@ -152,6 +169,7 @@ export default function TicketView({
 				date={date}
 				description={description}
 				level={level}
+				adminLevel={adminLevel}
 				image={image}
 				username={username}
 				statusName={statusName}
@@ -161,6 +179,7 @@ export default function TicketView({
 				onAssign={handleAssign}
 				onOwnerClose={handleOwnerClose}
 				ownerUsername={username}
+				onUrgencyChange={handleUrgencyChange}
 			/>
 
 			<div className="w-full max-w-5xl">

@@ -187,9 +187,9 @@ export default function Dashboard() {
 								})}
 							</td>
 							<td
-								className={`text-left text-sm pr-6 ${urgenceStyles[row.level]}`}
+								className={`text-left text-sm pr-6 ${urgenceStyles[row.adminLevel ?? row.level]}`}
 							>
-								{row.level}
+								{row.adminLevel ?? row.level}
 							</td>
 						</tr>
 					))}

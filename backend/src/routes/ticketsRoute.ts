@@ -8,6 +8,7 @@ import {
 	ownerConfirmTicket,
 	UpdateConfirmation,
 	updateStatus,
+	updateUrgency,
 } from "../controllers/ticketController";
 import { withAuth } from "../middleware/auth.middleware";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
@@ -48,5 +49,10 @@ export const ticketRoutes = {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		GET: withRateLimit(withAuth(getAllAdmins)),
+	},
+	"/api/tickets/:id/urgency": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		PATCH: withRateLimit(withAuth(updateUrgency)),
 	},
 };

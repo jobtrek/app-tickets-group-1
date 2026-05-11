@@ -12,7 +12,10 @@ import {
 	requireAdmin,
 } from "../utils/publishTicketUpdate.ts";
 import { errorResponse, jsonResponse } from "../utils/responseFactory";
-import { TicketPostSchema } from "../validators/ticketValidator.ts";
+import {
+	TicketLevelEnum,
+	TicketPostSchema,
+} from "../validators/ticketValidator.ts";
 
 export const getAllTickets = async (req: AuthedRequest) => {
 	try {
@@ -223,4 +226,31 @@ export const getAllAdmins = async (
 
 	const admins = await ticketQueries.getAllSupport();
 	return jsonResponse({ admins });
+};
+
+export const updateUrgency = async (
+	req: AuthedRequest<"/api/tickets/:id/urgency">,
+): Promise<Response> => {
+	const guard = requireAdmin(req);
+	if (guard) return guard;
+
+	const idTicket = verifyAndParseId(req.params.id, "Invalid ticket ID");
+	if (idTicket instanceof Response) return idTicket;
+
+	const body = await req.json().catch(() => ({}));
+	const parsed = v.safeParse(
+		v.object({ level: v.optional(TicketLevelEnum) }),
+		body,
+	);
+	if (!parsed.success) {
+		return jsonResponse({ errors: parsed.issues.map((i) => i.message) }, 400);
+	}
+
+	const adminLevel = parsed.output.level ?? null;
+	const [updated] = await ticketQueries.updateUrgency(idTicket, adminLevel);
+	if (!updated) return errorResponse("Ticket not found", 404);
+
+	publishTicketUpdate(idTicket, "urgency_update", { adminLevel });
+
+	return jsonResponse({ message: "Urgency updated", adminLevel });
 };

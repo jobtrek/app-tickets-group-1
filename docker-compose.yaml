@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18
+    image: postgres:18.3
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -29,7 +29,11 @@ services:
     ports:
       - "5173:5173"
     volumes:
-      - .:/app
+      - ./frontend:/app/frontend
+      - ./package.json:/app/package.json
+      - ./bun.lock:/app/bun.lock
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./biome.json:/app/biome.json
       - /app/node_modules
     depends_on:
       - backend
@@ -48,15 +52,18 @@ services:
     ports:
       - "3001:3001"
     volumes:
-      - .:/app
+      - ./backend:/app/backend
+      - ./drizzle:/app/drizzle
+      - ./drizzle.config.ts:/app/drizzle.config.ts
+      - ./package.json:/app/package.json
+      - ./bun.lock:/app/bun.lock
+      - ./tsconfig.json:/app/tsconfig.json
       - /app/node_modules
     depends_on:
       db:
         condition: service_healthy
     networks:
       - app_network
-    links:
-      - db
 
 volumes:
   db_data:

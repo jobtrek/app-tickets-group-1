@@ -4,6 +4,7 @@ export interface Ticket {
 	description: string;
 	image: string | null;
 	level: "bas" | "moyen" | "haut" | "urgent";
+	adminLevel: "bas" | "moyen" | "haut" | "urgent" | null;
 	createdAt: string;
 	updatedAt: string;
 	statusName: "Ouvert" | "En cours" | "Fermé" | "Résolu";
@@ -49,6 +50,7 @@ export interface TicketViewProps {
 	date: string;
 	description: string;
 	level: Ticket["level"];
+	adminLevel: Ticket["level"] | null;
 	image: string | null;
 	username: string;
 	statusName: Ticket["statusName"];

@@ -64,5 +64,19 @@ export const ticketQueries = {
 			await tx
 				.insert(ticket_assignment)
 				.values({ idTicket, idSupport, isActive: true });
+			await tx
+				.update(tickets)
+				.set({ idSupport })
+				.where(eq(tickets.idTicket, idTicket));
 		}),
+
+	updateUrgency: (idTicket: number, adminLevel: string | null) =>
+		db
+			.update(tickets)
+			.set({ adminLevel })
+			.where(eq(tickets.idTicket, idTicket))
+			.returning({
+				idTicket: tickets.idTicket,
+				adminLevel: tickets.adminLevel,
+			}),
 };

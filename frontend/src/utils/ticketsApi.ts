@@ -1,4 +1,5 @@
 import { apiClient } from "./clientApi";
+import type { Ticket } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
@@ -89,5 +90,16 @@ export const ownerConfirmTicket = async (
 		`${API_URL}/${idTicket}/owner-confirm`,
 		{ accepted },
 	);
+	return data;
+};
+
+// /api/tickets/:id/urgency
+export const updateTicketUrgencyLevel = async (
+	idTicket: number,
+	level: Ticket["level"],
+) => {
+	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/urgency`, {
+		level,
+	});
 	return data;
 };
