@@ -7,12 +7,14 @@ interface CommentListProps {
 }
 
 export default function CommentList({ comments }: CommentListProps) {
+	const userComments = comments.filter((c) => c.userRole !== "system");
 	return (
 		<div className="w-full max-w-5xl">
 			<div className="flex items-center justify-between mb-4">
 				<h2 className="text-lg font-medium text-gray-800">Commentaires</h2>
 				<span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
-					{comments.length} commentaire{comments.length !== 1 ? "s" : ""}
+					{userComments.length} commentaire
+					{userComments.length !== 1 ? "s" : ""}
 				</span>
 			</div>
 
@@ -41,7 +43,17 @@ export default function CommentList({ comments }: CommentListProps) {
 										<div className="flex-1 border-t border-gray-100" />
 									</div>
 								)}
-								<CommentCard comment={comment} />
+								{comment.userRole === "system" ? (
+									<div className="flex items-center gap-3 my-3">
+										<div className="flex-1 border-t border-gray-100" />
+										<span className="text-xs text-gray-400 italic">
+											{comment.commentText}
+										</span>
+										<div className="flex-1 border-t border-gray-100" />
+									</div>
+								) : (
+									<CommentCard comment={comment} />
+								)}
 							</div>
 						);
 					})
