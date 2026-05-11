@@ -5,9 +5,8 @@ import { db } from "../db/database";
 type CommentInsertValues = {
 	idTicket: number;
 	idUser: number;
-	userRole: string;
 	commentText: string;
-	userRole?: "user" | "system";
+	userRole: string;
 };
 
 const fullCommentSelect = {
