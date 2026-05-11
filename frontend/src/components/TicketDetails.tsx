@@ -20,7 +20,7 @@ interface TicketDetailsProps {
 	supportUsername: string | null;
 	isAdmin: boolean;
 	isOwner: boolean;
-	onAssign: (adminId: number, adminUsername: string) => void;
+	onAssign: (adminId: number) => void;
 	onOwnerClose: () => void;
 	ownerUsername: string;
 	onUrgencyChange?: (level: Ticket["level"]) => void;
@@ -78,7 +78,7 @@ export default function TicketDetails({
 	};
 
 	const handleSelectAdmin = (admin: AdminUser) => {
-		onAssign(admin.idUser, admin.username);
+		onAssign(admin.idUser);
 	};
 
 	const isClosed = statusName === "Résolu" || statusName === "Fermé";
