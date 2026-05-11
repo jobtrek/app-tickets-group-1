@@ -34,8 +34,10 @@ export default function TicketView({
 	const router = useRouter();
 
 	const [statusName, setStatusName] = useState(initialStatusName);
-	const [level, setLevel] = useState(initialLevel);
-	const [adminLevel, setAdminLevel] = useState<typeof initialLevel | null>(initialAdminLevel);
+	const level = initialLevel;
+	const [adminLevel, setAdminLevel] = useState<typeof initialLevel | null>(
+		initialAdminLevel,
+	);
 	const [commentInput, setCommentInput] = useState("");
 	const [supportUsername, setSupportUsername] = useState(
 		initialSupportUsername,

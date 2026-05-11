@@ -75,5 +75,8 @@ export const ticketQueries = {
 			.update(tickets)
 			.set({ adminLevel })
 			.where(eq(tickets.idTicket, idTicket))
-			.returning({ idTicket: tickets.idTicket, adminLevel: tickets.adminLevel }),
+			.returning({
+				idTicket: tickets.idTicket,
+				adminLevel: tickets.adminLevel,
+			}),
 };

@@ -235,7 +235,9 @@ export default function TicketDetails({
 							</DropdownMenu.Portal>
 						</DropdownMenu.Root>
 					) : (
-						<p className={`text-base font-medium ${urgencyColor[displayLevel] ?? "text-gray-700"}`}>
+						<p
+							className={`text-base font-medium ${urgencyColor[displayLevel] ?? "text-gray-700"}`}
+						>
 							{displayLevel ?? "—"}
 						</p>
 					)}
@@ -356,12 +358,18 @@ export default function TicketDetails({
 														disabled={isCurrent}
 														className={`flex items-center gap-2.5 px-3 py-2 text-sm transition-colors cursor-pointer outline-none group ${isCurrent ? "opacity-40 pointer-events-none" : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"}`}
 													>
-														<div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 transition-colors ${isCurrent ? "bg-gray-100 text-gray-500" : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"}`}>
+														<div
+															className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 transition-colors ${isCurrent ? "bg-gray-100 text-gray-500" : "bg-blue-100 text-blue-600 group-hover:bg-blue-200"}`}
+														>
 															{getInitials(admin.username)}
 														</div>
-														<span className="font-medium">{admin.username}</span>
+														<span className="font-medium">
+															{admin.username}
+														</span>
 														{isCurrent && (
-															<span className="ml-auto text-xs text-gray-400">Actuel</span>
+															<span className="ml-auto text-xs text-gray-400">
+																Actuel
+															</span>
 														)}
 													</DropdownMenu.Item>
 												);
