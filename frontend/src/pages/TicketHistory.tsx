@@ -96,58 +96,80 @@ export default function TicketHistory() {
 					</tr>
 				</thead>
 				<tbody>
-					{filteredTickets.map((row) => (
-						<tr
-							onClick={() =>
-								navigate({
-									to: "/ticket/$id",
-									params: { id: String(row.idTicket) },
-								})
-							}
-							onKeyDown={(e) => {
-								if (e.key === "Enter" || e.key === " ") {
+					{filteredTickets.length === 0 ? (
+						<tr>
+							<td
+								colSpan={colonnes.length}
+								className="text-center py-16 text-gray-400"
+							>
+								<div className="flex flex-col items-center gap-4">
+									<span className="text-sm">
+										Vous n'avez créé aucun ticket pour l'instant.
+									</span>
+									<button
+										type="button"
+										onClick={() => navigate({ to: "/create-ticket" })}
+										className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+									>
+										Créer un ticket
+									</button>
+								</div>
+							</td>
+						</tr>
+					) : (
+						filteredTickets.map((row) => (
+							<tr
+								onClick={() =>
 									navigate({
 										to: "/ticket/$id",
 										params: { id: String(row.idTicket) },
-									});
+									})
 								}
-							}}
-							tabIndex={0}
-							key={row.idTicket}
-							className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
-						>
-							<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
-								{row.username}
-							</td>
-							<td className="text-left text-sm text-gray-700 pr-6">
-								{row.title}
-							</td>
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ") {
+										navigate({
+											to: "/ticket/$id",
+											params: { id: String(row.idTicket) },
+										});
+									}
+								}}
+								tabIndex={0}
+								key={row.idTicket}
+								className="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+							>
+								<td className="text-left text-sm font-semibold text-gray-800 py-5 pr-6">
+									{row.username}
+								</td>
+								<td className="text-left text-sm text-gray-700 pr-6">
+									{row.title}
+								</td>
 
-							<td className="text-left pr-6">
-								{(() => {
-									const liveStatus = (statusByTicketId[row.idTicket] ??
-										row.statusName) as Ticket["statusName"];
-									return (
-										<span
-											className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[liveStatus]}`}
-										>
-											{liveStatus}
-										</span>
-									);
-								})()}
-							</td>
-							<td className="text-left text-sm text-gray-600 pr-6">
-								{new Date(row.createdAt).toLocaleString("fr-CH", {
-									day: "numeric",
-									month: "short",
-									year: "numeric",
-									hour: "numeric",
-									minute: "numeric",
-									second: "numeric",
-								})}{" "}
-							</td>
-						</tr>
-					))}
+								<td className="text-left pr-6">
+									{(() => {
+										const liveStatus = (statusByTicketId[row.idTicket] ??
+											row.statusName) as Ticket["statusName"];
+										return (
+											<span
+												className={`inline-block text-xs px-3 py-1 rounded-md font-medium ${statusStyles[liveStatus]}`}
+											>
+												{liveStatus}
+											</span>
+										);
+									})()}
+								</td>
+								<td className="text-left text-sm text-gray-600 pr-6">
+									{new Date(row.createdAt).toLocaleString("fr-CH", {
+										day: "numeric",
+										month: "short",
+										year: "numeric",
+										hour: "numeric",
+										minute: "numeric",
+										second: "numeric",
+									})}{" "}
+								</td>
+							</tr>
+						))
+					)}
 				</tbody>
 			</table>
 		</div>

@@ -12,7 +12,7 @@ interface TicketHeaderProps {
 
 export default function TicketHeader({
 	statusName,
-	
+
 	pendingConfirmation,
 	isAdmin,
 	onBack,
