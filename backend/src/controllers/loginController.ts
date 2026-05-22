@@ -23,7 +23,7 @@ export const loginUser = async (req: Request) => {
 		return loginResponseError("Validation failed", 400, result.issues);
 	const { email, password } = result.output;
 
-	if (isRateLimited(ip, 10) || isRateLimited(email, 5)) {
+	if (isRateLimited(ip, 50) || isRateLimited(email, 20)) {
 		return loginResponseError(
 			"Too many login attempts. Please try again later.",
 			429,
