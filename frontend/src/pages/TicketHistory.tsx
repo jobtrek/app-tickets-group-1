@@ -1,8 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
-import { useSearchStore } from "../store/searchStore";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
+import { useDebounce } from "../utils/useDebounce";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -32,6 +33,7 @@ interface TicketHistoryProps {
 	page: number;
 	sort: string;
 	status: string[];
+	search: string;
 }
 
 export default function TicketHistory({
@@ -40,17 +42,25 @@ export default function TicketHistory({
 	page,
 	sort,
 	status,
+	search,
 }: TicketHistoryProps) {
 	const navigate = useNavigate({ from: "/ticket-history" });
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
 	);
-	const query = useSearchStore((state) => state.query);
-	const setQuery = useSearchStore((state) => state.setQuery);
 
-	const displayedTickets = query
-		? tickets.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
-		: tickets;
+	const [localSearch, setLocalSearch] = useState(search);
+	const debouncedSearch = useDebounce(localSearch, 300);
+
+	useEffect(() => {
+		setLocalSearch(search);
+	}, [search]);
+
+	useEffect(() => {
+		if (debouncedSearch !== search) {
+			navigate({ search: (prev) => ({ ...prev, search: debouncedSearch, page: 1 }) });
+		}
+	}, [debouncedSearch]);
 
 	const updateSearch = (updates: Record<string, unknown>) =>
 		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });
@@ -74,8 +84,8 @@ export default function TicketHistory({
 				<input
 					type="text"
 					placeholder="Rechercher par titre..."
-					value={query}
-					onChange={(e) => setQuery(e.currentTarget.value)}
+					value={localSearch}
+					onChange={(e) => setLocalSearch(e.currentTarget.value)}
 					className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 			</div>
@@ -128,7 +138,7 @@ export default function TicketHistory({
 					</tr>
 				</thead>
 				<tbody>
-					{tickets.length === 0 || (query && displayedTickets.length === 0) ? (
+					{tickets.length === 0 ? (
 						<tr>
 							<td
 								colSpan={colonnes.length}
@@ -136,7 +146,7 @@ export default function TicketHistory({
 							>
 								<div className="flex flex-col items-center gap-4">
 									<span className="text-sm">
-										{query && displayedTickets.length === 0
+										{search
 											? "Aucun ticket ne correspond à votre recherche."
 											: "Vous n'avez créé aucun ticket pour l'instant."}
 									</span>
@@ -151,7 +161,7 @@ export default function TicketHistory({
 							</td>
 						</tr>
 					) : (
-						displayedTickets.map((row) => (
+						tickets.map((row) => (
 							<tr
 								onClick={() =>
 									navigate({

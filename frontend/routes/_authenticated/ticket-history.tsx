@@ -10,9 +10,10 @@ export const Route = createFileRoute("/_authenticated/ticket-history")({
 		size: search.size,
 		sort: search.sort,
 		status: search.status,
+		search: search.search
 	}),
 	loader: async ({ deps }) =>
-		fetchTickets(deps.page, deps.size, deps.sort, deps.status),
+		fetchTickets(deps.page, deps.size, deps.sort, deps.status, deps.search),
 	shouldReload: true,
 	staleTime: 0,
 	component: TicketHistoryPage,
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/ticket-history")({
 
 function TicketHistoryPage() {
 	const { data, totalPages, page } = Route.useLoaderData();
-	const { sort, status } = Route.useSearch();
+	const { sort, status, search } = Route.useSearch();
 
 	return (
 		<TicketHistory
@@ -29,6 +30,7 @@ function TicketHistoryPage() {
 			page={page}
 			sort={sort}
 			status={status}
+			search={search}
 		/>
 	);
 }

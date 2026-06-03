@@ -89,7 +89,8 @@ export const fetchTickets = async (
 	size: number,
 	sort: string,
 	status: string[],
-	level?: string[],
+	search?: string,
+	level?: string[]
 ) => {
 	const params = new URLSearchParams({
 		page: String(page),
@@ -100,6 +101,9 @@ export const fetchTickets = async (
 	for (const s of status) params.append("status", s);
 	if (level) {
 		for (const l of level) params.append("level", l);
+	}
+	if(search) {
+		params.append("search", search)
 	}
 
 	const url = `${API_URL}?${params.toString()}`;

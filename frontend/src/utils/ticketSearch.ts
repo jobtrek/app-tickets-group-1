@@ -1,10 +1,5 @@
 import * as v from "valibot";
 
-// Search-param schemas for the paginated ticket lists.
-// Every field is optional with a default, so navigating to these routes
-// (e.g. from the Navbar) doesn't have to spell out pagination params, while
-// loaders/components still read fully-resolved values.
-
 const numberField = (fallback: number) =>
 	v.optional(
 		v.fallback(
@@ -18,7 +13,6 @@ const numberField = (fallback: number) =>
 		fallback,
 	);
 
-// Accepts a single value or a repeated param and always yields a string[].
 const stringArray = v.optional(
 	v.fallback(
 		v.pipe(
@@ -37,6 +31,7 @@ export const ticketHistorySearchSchema = v.object({
 	size: numberField(20),
 	sort: sortField,
 	status: stringArray,
+	search: v.optional(v.fallback(v.string(), ""), ""),
 });
 
 export const dashboardSearchSchema = v.object({
@@ -45,4 +40,5 @@ export const dashboardSearchSchema = v.object({
 	sort: sortField,
 	status: stringArray,
 	level: stringArray,
+	search: v.optional(v.fallback(v.string(), ""), ""),
 });

@@ -1,10 +1,11 @@
 import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
-import { useSearchStore } from "../store/searchStore";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
+import { useDebounce } from "../utils/useDebounce";
 
 const urgenceStyles: Record<Ticket["level"], string> = {
 	urgent: "text-red-500 font-semibold",
@@ -44,6 +45,7 @@ interface DashboardProps {
 	sort: string;
 	status: string[];
 	level: string[];
+	search: string;
 }
 
 export default function Dashboard({
@@ -53,17 +55,26 @@ export default function Dashboard({
 	sort,
 	status,
 	level,
+	search,
 }: DashboardProps) {
 	const navigate = useNavigate({ from: "/dashboard" });
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
 	);
-	const query = useSearchStore((state) => state.query);
-	const setQuery = useSearchStore((state) => state.setQuery);
 
-	const displayedTickets = query
-		? tickets.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
-		: tickets;
+	const [localSearch, setLocalSearch] = useState(search);
+	const debouncedSearch = useDebounce(localSearch, 300);
+
+	//remet l'input en phase avec l'URL quand on clique sur le bouton Précédent/Retour du navigateur
+	useEffect(() => {
+		setLocalSearch(search);
+	}, [search]);
+
+	useEffect(() => {
+		if (debouncedSearch !== search) {
+			navigate({ search: (prev) => ({ ...prev, search: debouncedSearch, page: 1 }) });
+		}
+	}, [debouncedSearch]);
 
 	const updateSearch = (updates: Record<string, unknown>) =>
 		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });
@@ -87,8 +98,8 @@ export default function Dashboard({
 				<input
 					type="text"
 					placeholder="Rechercher par titre..."
-					value={query}
-					onChange={(e) => setQuery(e.currentTarget.value)}
+					value={localSearch}
+					onChange={(e) => setLocalSearch(e.currentTarget.value)}
 					className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
 				/>
 			</div>
@@ -164,7 +175,7 @@ export default function Dashboard({
 					</tr>
 				</thead>
 				<tbody>
-					{displayedTickets.map((row) => (
+					{tickets.map((row) => (
 						<tr
 							onClick={() =>
 								navigate({

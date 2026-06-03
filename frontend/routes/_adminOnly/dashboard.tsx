@@ -12,16 +12,17 @@ export const Route = createFileRoute("/_adminOnly/dashboard")({
 		size: search.size,
 		sort: search.sort,
 		status: search.status,
+		search: search.search,
 		level: search.level,
 	}),
 	loader: async ({ deps }) =>
-		fetchTickets(deps.page, deps.size, deps.sort, deps.status, deps.level),
+		fetchTickets(deps.page, deps.size, deps.sort, deps.status, deps.search,deps.level),
 	component: DashboardPage,
 });
 
 function DashboardPage() {
 	const { data, totalPages, page } = Route.useLoaderData();
-	const { sort, status, level } = Route.useSearch();
+	const { sort, status, level, search } = Route.useSearch();
 
 	return (
 		<Dashboard
@@ -31,6 +32,7 @@ function DashboardPage() {
 			sort={sort}
 			status={status}
 			level={level}
+			search={search}
 		/>
 	);
 }
