@@ -40,6 +40,27 @@ services:
     networks:
       - app_network
 
+  seed:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: bun run db:seed
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app/backend
+      - ./package.json:/app/package.json
+      - ./bun.lock:/app/bun.lock
+      - ./tsconfig.json:/app/tsconfig.json
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - app_network
+
   backend:
     build:
       context: .

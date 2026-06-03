@@ -6,7 +6,7 @@ type CommentInsertValues = {
 	idTicket: number;
 	idUser: number;
 	commentText: string;
-	userRole?: "user" | "system";
+	userRole: string;
 };
 
 const fullCommentSelect = {

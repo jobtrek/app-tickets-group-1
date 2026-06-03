@@ -34,6 +34,7 @@ const statusOptions: Ticket["statusName"][] = [
 	"Fermé",
 	"Résolu",
 ];
+
 const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
 interface DashboardProps {
@@ -189,7 +190,6 @@ export default function Dashboard({
 							<td className="text-left text-sm text-gray-700 pr-6">
 								{row.title}
 							</td>
-
 							<td className="text-left pr-6">
 								{(() => {
 									const liveStatus = (statusByTicketId[row.idTicket] ??

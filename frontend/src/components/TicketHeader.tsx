@@ -6,13 +6,13 @@ interface TicketHeaderProps {
 	onBack: () => void;
 	onResolve: () => void;
 	onConfirmResolve: () => void;
+	onOwnerClose: () => void;
 	onRejectResolve: () => void;
 	isOwner?: boolean;
 }
 
 export default function TicketHeader({
 	statusName,
-
 	pendingConfirmation,
 	isAdmin,
 	onBack,
