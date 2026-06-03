@@ -1,9 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useShallow } from "zustand/shallow";
+import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
+import { useSearchStore } from "../store/searchStore";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useTicketStore } from "../store/ticketStore";
-import { getFilteredTickets } from "../utils/sorting";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -35,89 +34,92 @@ const statusOptions: Ticket["statusName"][] = [
 	"Fermé",
 	"Résolu",
 ];
+
 const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
-export default function Dashboard() {
-	const navigate = useNavigate();
+interface DashboardProps {
+	tickets: Ticket[];
+	totalPages: number;
+	page: number;
+	sort: string;
+	status: string[];
+	level: string[];
+}
 
-	const tickets = useTicketStore((state) => state.tickets);
-	const adminOptions = [
-		{ value: "", label: "Trier par: Technicien - tous" },
-		...Array.from(
-			new Set(tickets.map((t) => t.supportUsername).filter(Boolean)),
-		).map((name) => ({ value: name, label: name })),
-	];
-
-	const query = useTicketStore((state) => state.query);
-	const setQuery = useTicketStore((state) => state.setQuery);
-
-	const sort = useTicketStore((state) => state.sort);
-	const setSort = useTicketStore((state) => state.setSort);
-	const supportFilter = useTicketStore((state) => state.supportFilter);
-	const setSupportFilter = useTicketStore((state) => state.setSupportFilter);
-	const toggleStatusFilter = useTicketStore(
-		(state) => state.toggleStatusFilter,
-	);
-	const toggleUrgencyFilter = useTicketStore(
-		(state) => state.toggleUrgencyFilter,
-	);
-	const statusFilter = useTicketStore((state) => state.statusFilter);
-	const urgencyFilter = useTicketStore((state) => state.urgencyFilter);
-	const filteredTickets = useTicketStore(useShallow(getFilteredTickets));
+export default function Dashboard({
+	tickets,
+	totalPages,
+	page,
+	sort,
+	status,
+	level,
+}: DashboardProps) {
+	const navigate = useNavigate({ from: "/dashboard" });
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
 	);
+	const query = useSearchStore((state) => state.query);
+	const setQuery = useSearchStore((state) => state.setQuery);
+
+	const displayedTickets = query
+		? tickets.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
+		: tickets;
+
+	const updateSearch = (updates: Record<string, unknown>) =>
+		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });
+
+	const toggleFilter = (
+		key: "status" | "level",
+		value: string,
+		current: string[],
+	) => {
+		const next = current.includes(value)
+			? current.filter((v) => v !== value)
+			: [...current, value];
+		updateSearch({ [key]: next });
+	};
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
 			<h1 className="text-2xl font-bold pb-4">Dashboard</h1>
 
-			<div className="flex gap-8 pb-8">
-				<div className="w-xs">
-					<input
-						type="text"
-						value={query}
-						onChange={(e) => setQuery(e.currentTarget.value)}
-						placeholder="Rechercher un ticket..."
-						className="w-full border border-gray-200 rounded-md px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
-					/>
-				</div>
+			<div className="pb-4">
+				<input
+					type="text"
+					placeholder="Rechercher par titre..."
+					value={query}
+					onChange={(e) => setQuery(e.currentTarget.value)}
+					className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+			</div>
 
-				<div className="w-xs text-gray-500 ">
+			<div className="flex gap-8 pb-8">
+				<div className="w-xs text-gray-500">
 					<Select
 						id="sort"
 						value={sort}
-						onChange={(e) => setSort(e.currentTarget.value)}
+						onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
 						options={sortOptions}
-					/>
-				</div>
-
-				<div className="w-xs text-gray-500">
-					<Select
-						id="support-filter"
-						value={supportFilter}
-						onChange={(e) => setSupportFilter(e.currentTarget.value)}
-						options={adminOptions}
 					/>
 				</div>
 
 				<div className="flex flex-col gap-1 pr-6">
 					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
 					<div className="flex gap-3">
-						{statusOptions.map((status) => (
+						{statusOptions.map((s) => (
 							<label
-								key={status}
+								key={s}
 								className="flex items-center gap-1.5 cursor-pointer"
 							>
 								<input
 									type="checkbox"
-									checked={statusFilter.includes(status)}
-									onChange={() => toggleStatusFilter(status)}
+									checked={status.includes(s)}
+									onChange={() => toggleFilter("status", s, status)}
 								/>
 								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}
 								>
-									{status}
+									{s}
 								</span>
 							</label>
 						))}
@@ -129,18 +131,18 @@ export default function Dashboard() {
 						Urgence
 					</span>
 					<div className="flex gap-3">
-						{urgencyOptions.map((urgency) => (
+						{urgencyOptions.map((u) => (
 							<label
-								key={urgency}
+								key={u}
 								className="flex items-center gap-1.5 cursor-pointer"
 							>
 								<input
 									type="checkbox"
-									checked={urgencyFilter.includes(urgency)}
-									onChange={() => toggleUrgencyFilter(urgency)}
+									checked={level.includes(u)}
+									onChange={() => toggleFilter("level", u, level)}
 								/>
-								<span className={`text-xs py-0.5 ${urgenceStyles[urgency]}`}>
-									{urgency}
+								<span className={`text-xs py-0.5 ${urgenceStyles[u]}`}>
+									{u}
 								</span>
 							</label>
 						))}
@@ -162,7 +164,7 @@ export default function Dashboard() {
 					</tr>
 				</thead>
 				<tbody>
-					{filteredTickets.map((row) => (
+					{displayedTickets.map((row) => (
 						<tr
 							onClick={() =>
 								navigate({
@@ -188,7 +190,6 @@ export default function Dashboard() {
 							<td className="text-left text-sm text-gray-700 pr-6">
 								{row.title}
 							</td>
-
 							<td className="text-left pr-6">
 								{(() => {
 									const liveStatus = (statusByTicketId[row.idTicket] ??
@@ -228,6 +229,13 @@ export default function Dashboard() {
 					))}
 				</tbody>
 			</table>
+			<Pagination
+				page={page}
+				totalPages={totalPages}
+				onPageChange={(p) =>
+					navigate({ search: (prev) => ({ ...prev, page: p }) })
+				}
+			/>
 		</div>
 	);
 }

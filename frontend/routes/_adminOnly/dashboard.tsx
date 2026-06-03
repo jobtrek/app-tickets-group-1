@@ -1,29 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
 import Dashboard from "../../src/pages/Dashboard";
-import { useTicketStore } from "../../src/store/ticketStore";
-import { apiClient } from "../../src/utils/clientApi";
-import type { Ticket } from "../../src/utils/types";
+import { dashboardSearchSchema } from "../../src/utils/ticketSearch";
+import { fetchTickets } from "../../src/utils/ticketsApi";
 
 // import { useTicketListUpdates } from "../../src/utils/useTicketListUpdates";
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 export const Route = createFileRoute("/_adminOnly/dashboard")({
-	loader: async (): Promise<Ticket[]> => {
-		const response = await apiClient.get<Ticket[]>(API_URL);
-		return response.data;
-	},
+	validateSearch: dashboardSearchSchema,
+	loaderDeps: ({ search }) => ({
+		page: search.page,
+		size: search.size,
+		sort: search.sort,
+		status: search.status,
+		level: search.level,
+	}),
+	loader: async ({ deps }) =>
+		fetchTickets(deps.page, deps.size, deps.sort, deps.status, deps.level),
 	component: DashboardPage,
 });
 
 function DashboardPage() {
-	const loaderTickets = Route.useLoaderData();
-	const setTickets = useTicketStore((state) => state.setTickets);
+	const { data, totalPages, page } = Route.useLoaderData();
+	const { sort, status, level } = Route.useSearch();
 
-	useEffect(() => {
-		setTickets(loaderTickets);
-	}, [loaderTickets, setTickets]);
-
-	return <Dashboard />;
+	return (
+		<Dashboard
+			tickets={data}
+			totalPages={totalPages}
+			page={page}
+			sort={sort}
+			status={status}
+			level={level}
+		/>
+	);
 }

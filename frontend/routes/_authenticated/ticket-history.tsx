@@ -1,29 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect } from "react";
 import TicketHistory from "../../src/pages/TicketHistory";
-import { useTicketStore } from "../../src/store/ticketStore";
-import { apiClient } from "../../src/utils/clientApi";
-import type { Ticket } from "../../src/utils/types";
-
-const API_URL = import.meta.env.VITE_API_URL;
+import { ticketHistorySearchSchema } from "../../src/utils/ticketSearch";
+import { fetchTickets } from "../../src/utils/ticketsApi";
 
 export const Route = createFileRoute("/_authenticated/ticket-history")({
-	loader: async (): Promise<Ticket[]> => {
-		const response = await apiClient.get<Ticket[]>(API_URL);
-		return response.data;
-	},
+	validateSearch: ticketHistorySearchSchema,
+	loaderDeps: ({ search }) => ({
+		page: search.page,
+		size: search.size,
+		sort: search.sort,
+		status: search.status,
+	}),
+	loader: async ({ deps }) =>
+		fetchTickets(deps.page, deps.size, deps.sort, deps.status),
 	shouldReload: true,
 	staleTime: 0,
 	component: TicketHistoryPage,
 });
 
 function TicketHistoryPage() {
-	const loaderTickets = Route.useLoaderData();
-	const setTickets = useTicketStore((state) => state.setTickets);
+	const { data, totalPages, page } = Route.useLoaderData();
+	const { sort, status } = Route.useSearch();
 
-	useEffect(() => {
-		setTickets(loaderTickets);
-	}, [loaderTickets, setTickets]);
-
-	return <TicketHistory />;
+	return (
+		<TicketHistory
+			tickets={data}
+			totalPages={totalPages}
+			page={page}
+			sort={sort}
+			status={status}
+		/>
+	);
 }

@@ -86,3 +86,11 @@ export interface StatsProps {
 	ticketsCountPerStatus: { status: number; count: number }[];
 	ticketsPerMonth: { month: string; count: number }[];
 }
+
+export interface PaginatedResponse<T> {
+	data: T[];
+	total: number;
+	page: number;
+	size: number;
+	totalPages: number;
+}

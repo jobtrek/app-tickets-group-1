@@ -94,13 +94,9 @@ export default function TicketView({
 		}
 	};
 
-	const handleAssign = async (adminId: number, adminUsername: string) => {
+	const handleAssign = async (adminId: number) => {
 		try {
 			await assignTicket(ticketIdNumber, adminId);
-			await updateTicketStatus(ticketIdNumber, 2);
-			await router.invalidate();
-			setSupportUsername(adminUsername);
-			setStatusName("En cours");
 		} catch (e) {
 			console.error("Failed to assign ticket", e);
 		}

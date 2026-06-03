@@ -1,9 +1,8 @@
 import { apiClient } from "./clientApi";
-import type { Ticket } from "./types";
+import type { PaginatedResponse, Ticket } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
-const TICKET_URL = import.meta.env.VITE_TICKET_URL;
 
 export const createTicketFromForm = async (
 	ticket: FormData,
@@ -13,6 +12,7 @@ export const createTicketFromForm = async (
 	const postResponse = await apiClient.post(API_URL, ticket);
 	return { createdTicket: postResponse.data.createdTicket };
 };
+
 export const userLogout = async () => {
 	await apiClient.post(LOGOUT_URL);
 };
@@ -23,6 +23,7 @@ export const createComment = async (commentText: string, idTicket: number) => {
 	});
 	return data;
 };
+
 export const getComments = async (idTicket: number) => {
 	const { data } = await apiClient.get(`${API_URL}/${idTicket}/comment`);
 	return data;
@@ -36,6 +37,7 @@ export const assignTicket = async (idTicket: number, idSupport: number) => {
 	);
 	return data;
 };
+
 export const updateTicketStatus = async (
 	ticketId: number,
 	statusId: number,
@@ -46,9 +48,19 @@ export const updateTicketStatus = async (
 	return response.data;
 };
 
+export const updateTicketUrgencyLevel = async (
+	ticketId: number,
+	level: Ticket["level"] | null,
+) => {
+	const response = await apiClient.patch(`${API_URL}/${ticketId}/urgency`, {
+		level,
+	});
+	return response.data;
+};
+
 export const getTicketById = async (idTicket: number) => {
-	const id = await apiClient.get(`${TICKET_URL}/${idTicket}`);
-	return id;
+	const { data } = await apiClient.get(`${API_URL}/${idTicket}`);
+	return data;
 };
 
 export const updateTicketConfirmation = async (
@@ -61,12 +73,6 @@ export const updateTicketConfirmation = async (
 	return data.hasAdminConfirmed;
 };
 
-export const fetchTicketConfirmation = async (
-	idTicket: number,
-): Promise<boolean> => {
-	const { data } = await apiClient.get(`${TICKET_URL}/${idTicket}`);
-	return data.hasAdminConfirmed ?? false;
-};
 export const ownerConfirmTicket = async (
 	idTicket: number,
 	accepted: boolean,
@@ -78,13 +84,26 @@ export const ownerConfirmTicket = async (
 	return data;
 };
 
-// /api/tickets/:id/urgency
-export const updateTicketUrgencyLevel = async (
-	idTicket: number,
-	level: Ticket["level"],
+export const fetchTickets = async (
+	page: number,
+	size: number,
+	sort: string,
+	status: string[],
+	level?: string[],
 ) => {
-	const { data } = await apiClient.patch(`${API_URL}/${idTicket}/urgency`, {
-		level,
+	const params = new URLSearchParams({
+		page: String(page),
+		size: String(size),
+		sort,
 	});
-	return data;
+
+	for (const s of status) params.append("status", s);
+	if (level) {
+		for (const l of level) params.append("level", l);
+	}
+
+	const url = `${API_URL}?${params.toString()}`;
+
+	const response = await apiClient.get<PaginatedResponse<Ticket>>(url);
+	return response.data;
 };

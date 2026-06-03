@@ -5,6 +5,7 @@ import { updateStatusQuery } from "../repositories/statusQuery.ts";
 import { ticketQueries } from "../repositories/ticketQuery";
 import { userQueries } from "../repositories/userQuery";
 import { statusNames } from "../utils/constants/statusNames";
+import type { TicketFilters } from "../utils/constants/types.ts";
 import { verifyAndParseId } from "../utils/idParser";
 import { handleImageUpload } from "../utils/imageHandling.ts";
 import { publish } from "../utils/publisher";
@@ -18,13 +19,86 @@ import {
 	TicketPostSchema,
 } from "../validators/ticketValidator.ts";
 
+const PaginationSchema = v.object({
+	page: v.optional(
+		v.pipe(v.string(), v.transform(Number), v.number(), v.minValue(1)),
+		"1",
+	),
+	size: v.optional(
+		v.pipe(
+			v.string(),
+			v.transform(Number),
+			v.number(),
+			v.minValue(1),
+			v.maxValue(100),
+		),
+		"20",
+	),
+	sort: v.optional(v.picklist(["asc", "desc", "az"]), "desc"),
+	status: v.optional(v.array(v.string()), []),
+	level: v.optional(v.array(v.string()), []),
+});
+
 export const getAllTickets = async (req: AuthedRequest) => {
 	try {
-		const allTickets =
-			req.user.role === "admin"
-				? await ticketQueries.getAll()
-				: await ticketQueries.getAllByUser(req.user.idUser);
-		return jsonResponse(allTickets);
+		const url = new URL(req.url);
+		const rawParams = {
+			page: url.searchParams.get("page") ?? undefined,
+			size: url.searchParams.get("size") ?? undefined,
+			sort: url.searchParams.get("sort") ?? undefined,
+			status: url.searchParams.getAll("status"),
+			level: url.searchParams.getAll("level"),
+		};
+
+		const parsed = v.safeParse(PaginationSchema, rawParams);
+		if (!parsed.success) {
+			return jsonResponse({ error: "Invalid pagination params" }, 400);
+		}
+
+		const { page, size, sort, status, level } = parsed.output;
+		const offset = (page - 1) * size;
+
+		const filters: TicketFilters = { sort, status, level };
+
+		if (req.user.role === "admin") {
+			const data = await ticketQueries.getAll(size, offset, filters);
+			const [countResult] = await ticketQueries.countAll(filters);
+
+			if (!countResult) {
+				return errorResponse("Failed to fetch ticket count", 500);
+			}
+
+			return jsonResponse({
+				data,
+				total: countResult.total,
+				page,
+				size,
+				totalPages: Math.ceil(countResult.total / size),
+			});
+		}
+
+		const data = await ticketQueries.getAllByUser(
+			req.user.idUser,
+			size,
+			offset,
+			filters,
+		);
+		const [countResult] = await ticketQueries.countAllByUser(
+			req.user.idUser,
+			filters,
+		);
+
+		if (!countResult) {
+			return errorResponse("Failed to fetch ticket count", 500);
+		}
+
+		return jsonResponse({
+			data,
+			total: countResult.total,
+			page,
+			size,
+			totalPages: Math.ceil(countResult.total / size),
+		});
 	} catch (e) {
 		console.error("DB fetch error", e);
 		return errorResponse("DB Error", 500);
@@ -119,7 +193,6 @@ export const assignTicket = async (
 	}
 
 	const supportUser = await userQueries.getSupportById(idSupport);
-
 	if (!supportUser || supportUser.role !== "admin") {
 		return jsonResponse(
 			{ error: "L'utilisateur sélectionné n'est pas un admin" },
@@ -128,16 +201,33 @@ export const assignTicket = async (
 	}
 
 	const [currentTicket] = await ticketQueries.getById(idTicket);
-
-	await ticketQueries.assign(idTicket, idSupport);
-
-	publishTicketUpdate(idTicket, "assignment_update", {
-		supportUsername: supportUser.username,
-	});
-
+	if (!currentTicket) return errorResponse("Ticket not found", 404);
 	const commentText = currentTicket?.supportUsername
 		? `Ticket réassigné de ${currentTicket.supportUsername} à ${supportUser.username}`
 		: `Ticket assigné à ${supportUser.username}`;
+
+	await ticketQueries.assign(idTicket, idSupport);
+	publishTicketUpdate(idTicket, "status_update", { statusName: "En cours" });
+	publishTicketUpdate(idTicket, "assignment_update", {
+		supportUsername: supportUser.username,
+	});
+	const currentStatusName = statusNames[currentTicket.idStatus];
+	if (currentTicket.idStatus !== 2) {
+		publishTicketUpdate(idTicket, "status_update", {
+			statusName: statusNames[2],
+		});
+
+		const insertedStatus = await commentQuery.insert({
+			idTicket,
+			idUser: req.user.idUser,
+			commentText: `Statut changé de ${currentStatusName} à En cours`,
+			userRole: "system",
+		});
+		const fullStatusComment = await commentQuery.getById(
+			insertedStatus.idComment,
+		);
+		publish(`ticket-${idTicket}`, JSON.stringify(fullStatusComment));
+	}
 
 	const insertedAssign = await commentQuery.insert({
 		idTicket,
@@ -149,6 +239,11 @@ export const assignTicket = async (
 		insertedAssign.idComment,
 	);
 	publish(`ticket-${idTicket}`, JSON.stringify(fullAssignComment));
+
+	return jsonResponse({
+		message: "Ticket assigned",
+		supportUsername: supportUser.username,
+	});
 };
 
 export const updateStatus = async (

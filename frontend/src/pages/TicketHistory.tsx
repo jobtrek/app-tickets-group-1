@@ -1,10 +1,8 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useShallow } from "zustand/shallow";
+import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
+import { useSearchStore } from "../store/searchStore";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useTicketStore } from "../store/ticketStore";
-import { useUserStore } from "../store/userStore";
-import { getFilteredUserTickets } from "../utils/getFilteredUserTickets";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -28,54 +26,66 @@ const statusOptions: Ticket["statusName"][] = [
 	"Résolu",
 ];
 
-export default function TicketHistory() {
-	const navigate = useNavigate();
-	const sort = useTicketStore((state) => state.sort);
-	const setSort = useTicketStore((state) => state.setSort);
-	const query = useTicketStore((state) => state.query);
-	const setQuery = useTicketStore((state) => state.setQuery);
+interface TicketHistoryProps {
+	tickets: Ticket[];
+	totalPages: number;
+	page: number;
+	sort: string;
+	status: string[];
+}
 
-	const toggleStatusFilter = useTicketStore(
-		(state) => state.toggleStatusFilter,
-	);
-	const statusFilter = useTicketStore((state) => state.statusFilter);
-	const userId = useUserStore((state) => state.idUser);
-	const filteredTickets = useTicketStore(
-		useShallow(getFilteredUserTickets(userId)),
-	);
-	const hasAnyTickets = useTicketStore((state) =>
-		state.tickets.some((t) => t.idUser === userId),
-	);
-	const hasActiveFilters = useTicketStore(
-		(state) => !!state.query || state.statusFilter.length > 0,
-	);
+export default function TicketHistory({
+	tickets,
+	totalPages,
+	page,
+	sort,
+	status,
+}: TicketHistoryProps) {
+	const navigate = useNavigate({ from: "/ticket-history" });
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
 	);
+	const query = useSearchStore((state) => state.query);
+	const setQuery = useSearchStore((state) => state.setQuery);
+
+	const displayedTickets = query
+		? tickets.filter((t) => t.title.toLowerCase().includes(query.toLowerCase()))
+		: tickets;
+
+	const updateSearch = (updates: Record<string, unknown>) =>
+		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });
+
+	const toggleFilter = (
+		key: "status" | "level",
+		value: string,
+		current: string[],
+	) => {
+		const next = current.includes(value)
+			? current.filter((v) => v !== value)
+			: [...current, value];
+		updateSearch({ [key]: next });
+	};
 
 	return (
 		<div className="p-6 bg-white min-h-screen font-sans">
-			<h1 className="text-2xl font-bold pb-4">Historique des tickets</h1>
+			<h1 className="text-2xl font-bold pb-4">Historique de ticket</h1>
 
-			<div className="flex gap-8 pb-8 items-end">
-				<div className="flex flex-col gap-1">
-					<span className="text-xs text-gray-400 font-medium pb-1">
-						Rechercher
-					</span>
-					<input
-						type="text"
-						value={query}
-						onChange={(e) => setQuery(e.currentTarget.value)}
-						placeholder="Rechercher un ticket..."
-						className="w-xs border border-gray-200 rounded-md px-3 py-1.5 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300"
-					/>
-				</div>
-				<div className="flex flex-col gap-1 text-gray-500">
-					<span className="text-xs text-gray-400 font-medium pb-1">Tri</span>
+			<div className="pb-4">
+				<input
+					type="text"
+					placeholder="Rechercher par titre..."
+					value={query}
+					onChange={(e) => setQuery(e.currentTarget.value)}
+					className="w-full max-w-md px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+				/>
+			</div>
+
+			<div className="flex gap-8 pb-8">
+				<div className="w-xs text-gray-500">
 					<Select
 						id="sort"
 						value={sort}
-						onChange={(e) => setSort(e.currentTarget.value)}
+						onChange={(e) => updateSearch({ sort: e.currentTarget.value })}
 						options={sortOptions}
 					/>
 				</div>
@@ -83,20 +93,20 @@ export default function TicketHistory() {
 				<div className="flex flex-col gap-1 pr-6">
 					<span className="text-xs text-gray-400 font-medium pb-1">Statut</span>
 					<div className="flex gap-3">
-						{statusOptions.map((status) => (
+						{statusOptions.map((s) => (
 							<label
-								key={status}
+								key={s}
 								className="flex items-center gap-1.5 cursor-pointer"
 							>
 								<input
 									type="checkbox"
-									checked={statusFilter.includes(status)}
-									onChange={() => toggleStatusFilter(status)}
+									checked={status.includes(s)}
+									onChange={() => toggleFilter("status", s, status)}
 								/>
 								<span
-									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[status]}`}
+									className={`text-xs px-2 py-0.5 rounded-md font-medium ${statusStyles[s]}`}
 								>
-									{status}
+									{s}
 								</span>
 							</label>
 						))}
@@ -118,39 +128,30 @@ export default function TicketHistory() {
 					</tr>
 				</thead>
 				<tbody>
-					{filteredTickets.length === 0 ? (
+					{tickets.length === 0 || (query && displayedTickets.length === 0) ? (
 						<tr>
 							<td
 								colSpan={colonnes.length}
 								className="text-center py-16 text-gray-400"
 							>
-								{hasAnyTickets && hasActiveFilters ? (
-									<div className="flex flex-col items-center gap-2">
-										<span className="text-sm">
-											Aucun ticket ne correspond à vos filtres.
-										</span>
-										<span className="text-xs text-gray-300">
-											Essayez de modifier ou supprimer certains filtres.
-										</span>
-									</div>
-								) : (
-									<div className="flex flex-col items-center gap-4">
-										<span className="text-sm">
-											Vous n'avez créé aucun ticket pour l'instant.
-										</span>
-										<button
-											type="button"
-											onClick={() => navigate({ to: "/create-ticket" })}
-											className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-										>
-											Créer un ticket
-										</button>
-									</div>
-								)}
+								<div className="flex flex-col items-center gap-4">
+									<span className="text-sm">
+										{query && displayedTickets.length === 0
+											? "Aucun ticket ne correspond à votre recherche."
+											: "Vous n'avez créé aucun ticket pour l'instant."}
+									</span>
+									<button
+										type="button"
+										onClick={() => navigate({ to: "/create-ticket" })}
+										className="text-sm px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+									>
+										Créer un ticket
+									</button>
+								</div>
 							</td>
 						</tr>
 					) : (
-						filteredTickets.map((row) => (
+						displayedTickets.map((row) => (
 							<tr
 								onClick={() =>
 									navigate({
@@ -176,7 +177,6 @@ export default function TicketHistory() {
 								<td className="text-left text-sm text-gray-700 pr-6">
 									{row.title}
 								</td>
-
 								<td className="text-left pr-6">
 									{(() => {
 										const liveStatus = (statusByTicketId[row.idTicket] ??
@@ -198,13 +198,20 @@ export default function TicketHistory() {
 										hour: "numeric",
 										minute: "numeric",
 										second: "numeric",
-									})}{" "}
+									})}
 								</td>
 							</tr>
 						))
 					)}
 				</tbody>
 			</table>
+			<Pagination
+				page={page}
+				totalPages={totalPages}
+				onPageChange={(p) =>
+					navigate({ search: (prev) => ({ ...prev, page: p }) })
+				}
+			/>
 		</div>
 	);
 }
