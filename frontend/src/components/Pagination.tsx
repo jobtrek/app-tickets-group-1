@@ -36,6 +36,7 @@ export function Pagination({
 	return (
 		<div className="mt-auto flex w-full items-center justify-center gap-1 border-t border-gray-100 bg-white py-8">
 			<button
+				type="button"
 				disabled={page <= 1}
 				onClick={() => onPageChange(page - 1)}
 				className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-blue-500 disabled:opacity-30"
@@ -48,6 +49,7 @@ export function Pagination({
 
 				{pages.map((p) => (
 					<button
+						type="button"
 						key={p}
 						onClick={() => onPageChange(p)}
 						className={`h-9 w-9 rounded-lg text-sm font-medium transition-all
@@ -65,6 +67,7 @@ export function Pagination({
 			</div>
 
 			<button
+				type="button"
 				disabled={page >= totalPages}
 				onClick={() => onPageChange(page + 1)}
 				className="px-3 py-2 text-sm font-medium text-gray-500 hover:text-blue-500 disabled:opacity-30"
