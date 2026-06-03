@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { AlertCircle, RefreshCw } from "lucide-react";
-import { useEffect } from "react";
+import { AlertCircle, Menu, RefreshCw, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Alert } from "../src/components/ErrorMessage";
 import { Spinner } from "../src/components/Loading";
 import { Navbar } from "../src/pages/Navbar";
@@ -51,6 +51,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 		const error = useErrorStore((state) => state.error);
 		const clearError = useErrorStore((state) => state.clearError);
 
+		const [sidebarOpen, setSidebarOpen] = useState(false);
+
 		useEffect(() => {
 			if (!error) return;
 			const timer = setTimeout(clearError, 5000);
@@ -63,11 +65,53 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 			<div className="flex h-screen">
 				{error && <Alert variant="error" message={error} />}
 				{username && (
-					<nav>
-						<Navbar />
-					</nav>
+					<>
+						{!sidebarOpen && (
+							<button
+								type="button"
+								aria-label="Ouvrir le menu"
+								className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md border border-gray-200"
+								onClick={() => setSidebarOpen(true)}
+							>
+								<Menu size={20} />
+							</button>
+						)}
+
+						{sidebarOpen && (
+							<div
+								role="presentation"
+								aria-hidden="true"
+								className="md:hidden fixed inset-0 z-30 bg-black/30 cursor-pointer"
+								onClick={() => setSidebarOpen(false)}
+							/>
+						)}
+
+						<nav
+							className={`md:hidden fixed inset-y-0 left-0 z-40 w-50 bg-white shadow-lg flex flex-col transition-transform duration-200 ease-in-out ${
+								sidebarOpen ? "translate-x-0" : "-translate-x-full"
+							}`}
+						>
+							<div className="flex justify-end p-2 shrink-0">
+								<button
+									type="button"
+									aria-label="Fermer le menu"
+									onClick={() => setSidebarOpen(false)}
+									className="p-1.5 rounded-md hover:bg-gray-100 text-zinc-400 hover:text-zinc-600"
+								>
+									<X size={18} />
+								</button>
+							</div>
+							<div className="flex-1 min-h-0">
+								<Navbar />
+							</div>
+						</nav>
+
+						<nav className="max-md:hidden">
+							<Navbar />
+						</nav>
+					</>
 				)}
-				<main className="flex-1 overflow-auto">
+				<main className="flex-1 overflow-auto pt-12 md:pt-0">
 					<Outlet />
 				</main>
 			</div>
