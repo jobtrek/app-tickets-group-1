@@ -43,7 +43,6 @@ function TicketHistoryPage() {
 			page={page}
 			sort={sort}
 			status={status}
-			level={level}
 		/>
 	);
 }

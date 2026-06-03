@@ -32,7 +32,6 @@ interface TicketHistoryProps {
 	page: number;
 	sort: string;
 	status: string[];
-	level: string[];
 }
 
 export default function TicketHistory({
@@ -41,7 +40,6 @@ export default function TicketHistory({
 	page,
 	sort,
 	status,
-	level,
 }: TicketHistoryProps) {
 	const navigate = useNavigate({ from: "/ticket-history" });
 	const statusByTicketId = useTicketStatusStore(
