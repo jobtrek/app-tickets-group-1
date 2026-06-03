@@ -225,7 +225,7 @@ export default function Dashboard({
 									)}
 								</td>
 								<td className="text-left text-sm text-gray-600 pr-6 whitespace-nowrap">
-									{new Date(row.createdAt).toLocaleDateString("fr-CH", {
+									{new Date(row.createdAt).toLocaleString("fr-CH", {
 										day: "numeric",
 										month: "short",
 										year: "numeric",
