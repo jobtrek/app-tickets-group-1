@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Pagination } from "../components/Pagination";
 import Select from "../components/Select";
 import { useTicketStatusStore } from "../store/ticketStatusStore";
-import { useDebounce } from "../utils/useDebounce";
 import { statusStyles } from "../utils/statusStyles";
 import type { Ticket } from "../utils/types";
 
@@ -48,19 +47,22 @@ export default function TicketHistory({
 	const statusByTicketId = useTicketStatusStore(
 		(state) => state.statusByTicketId,
 	);
-
 	const [localSearch, setLocalSearch] = useState(search);
-	const debouncedSearch = useDebounce(localSearch, 300);
 
 	useEffect(() => {
 		setLocalSearch(search);
 	}, [search]);
 
 	useEffect(() => {
-		if (debouncedSearch !== search) {
-			navigate({ search: (prev) => ({ ...prev, search: debouncedSearch, page: 1 }) });
-		}
-	}, [debouncedSearch]);
+		const timer = setTimeout(() => {
+			if (localSearch !== search) {
+				navigate({
+					search: (prev) => ({ ...prev, search: localSearch, page: 1 }),
+				});
+			}
+		}, 300);
+		return () => clearTimeout(timer);
+	}, [localSearch, search, navigate]);
 
 	const updateSearch = (updates: Record<string, unknown>) =>
 		navigate({ search: (prev) => ({ ...prev, ...updates, page: 1 }) });

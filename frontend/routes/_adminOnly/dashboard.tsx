@@ -16,7 +16,14 @@ export const Route = createFileRoute("/_adminOnly/dashboard")({
 		level: search.level,
 	}),
 	loader: async ({ deps }) =>
-		fetchTickets(deps.page, deps.size, deps.sort, deps.status, deps.search,deps.level),
+		fetchTickets(
+			deps.page,
+			deps.size,
+			deps.sort,
+			deps.status,
+			deps.search,
+			deps.level,
+		),
 	component: DashboardPage,
 });
 
