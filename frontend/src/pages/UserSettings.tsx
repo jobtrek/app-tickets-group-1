@@ -8,18 +8,15 @@ import { Spinner } from "../components/Loading";
 import { useUserStore } from "../store/userStore";
 import { createUpdateUserAction } from "../utils/userSettingsActions.ts";
 export default function UserSettings() {
-	const { idUser, username, email, setUser, role, clearVerified, isVerified } =
-		useUserStore();
+	const { idUser, username, email, setUser, role, isVerified } = useUserStore();
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		if (!isVerified) {
 			navigate({ to: "/" });
 		}
-		return () => {
-			clearVerified();
-		};
-	}, [isVerified, navigate, clearVerified]);
+		return () => {};
+	}, [isVerified, navigate]);
 
 	const action = useMemo(
 		() => createUpdateUserAction({ idUser, role, setUser }),

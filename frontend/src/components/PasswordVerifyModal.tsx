@@ -25,7 +25,7 @@ export function PasswordVerifyModal({
 
 		try {
 			const res = await fetch(
-				`${VITE_USER_URL.replace(/\/api\/user/i, "")}/api/user/verify-password`,
+				`${VITE_USER_URL.replace(/\/+$/, "")}/verify-password`,
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
