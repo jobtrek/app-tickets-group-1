@@ -7,6 +7,9 @@ import {
 	getTableColumns,
 	ilike,
 	inArray,
+	isNotNull,
+	isNull,
+	or,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, ticket_assignment, tickets, users } from "../data/schema";
@@ -36,7 +39,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				or(
+					and(isNotNull(tickets.adminLevel), inArray(tickets.adminLevel, filters.level)),
+					and(isNull(tickets.adminLevel), inArray(tickets.level, filters.level)),
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -63,7 +71,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				or(
+					and(isNotNull(tickets.adminLevel), inArray(tickets.adminLevel, filters.level)),
+					and(isNull(tickets.adminLevel), inArray(tickets.level, filters.level)),
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -91,7 +104,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				or(
+					and(isNotNull(tickets.adminLevel), inArray(tickets.adminLevel, filters.level)),
+					and(isNull(tickets.adminLevel), inArray(tickets.level, filters.level)),
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -118,7 +136,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				or(
+					and(isNotNull(tickets.adminLevel), inArray(tickets.adminLevel, filters.level)),
+					and(isNull(tickets.adminLevel), inArray(tickets.level, filters.level)),
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
