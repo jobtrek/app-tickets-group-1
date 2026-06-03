@@ -2,6 +2,7 @@ import { apiClient } from "./clientApi";
 import type { PaginatedResponse, Ticket } from "./types";
 
 const API_URL = import.meta.env.VITE_API_URL;
+const LOGOUT_URL = import.meta.env.VITE_LOGOUT_URL;
 
 export const createTicketFromForm = async (
 	ticket: FormData,
@@ -9,22 +10,20 @@ export const createTicketFromForm = async (
 ) => {
 	ticket.append("idUser", idUser.toString());
 	const postResponse = await apiClient.post(API_URL, ticket);
-	const createdTicket = postResponse.data.createdTicket;
-	return { createdTicket };
+	return { createdTicket: postResponse.data.createdTicket };
 };
 
-export const createComment = async (
-	commentText: string,
-	idUser: number,
-	idTicket: number,
-) => {
+export const userLogout = async () => {
+	await apiClient.post(LOGOUT_URL);
+};
+
+export const createComment = async (commentText: string, idTicket: number) => {
 	const { data } = await apiClient.post(`${API_URL}/${idTicket}/comment`, {
 		commentText,
-		idUser,
-		idTicket,
 	});
 	return data;
 };
+
 export const getComments = async (idTicket: number) => {
 	const { data } = await apiClient.get(`${API_URL}/${idTicket}/comment`);
 	return data;
@@ -38,6 +37,7 @@ export const assignTicket = async (idTicket: number, idSupport: number) => {
 	);
 	return data;
 };
+
 export const updateTicketStatus = async (
 	ticketId: number,
 	statusId: number,
@@ -46,6 +46,21 @@ export const updateTicketStatus = async (
 		statusId,
 	});
 	return response.data;
+};
+
+export const updateTicketUrgencyLevel = async (
+	ticketId: number,
+	level: Ticket["level"] | null,
+) => {
+	const response = await apiClient.patch(`${API_URL}/${ticketId}/urgency`, {
+		level,
+	});
+	return response.data;
+};
+
+export const getTicketById = async (idTicket: number) => {
+	const { data } = await apiClient.get(`${API_URL}/${idTicket}`);
+	return data;
 };
 
 export const updateTicketConfirmation = async (

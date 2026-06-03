@@ -43,6 +43,7 @@ export const cookies = pgTable("cookies", {
 	sessionToken: varchar("session_token").notNull(),
 	createdAt: timestamp("created_at").defaultNow(),
 	updatedAt: timestamp("updated_at").defaultNow(),
+	expiresAt: timestamp("expires_at").notNull(),
 	idUser: integer("id_user").references(() => users.idUser),
 });
 

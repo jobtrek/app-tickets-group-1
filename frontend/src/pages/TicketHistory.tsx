@@ -177,7 +177,6 @@ export default function TicketHistory({
 								<td className="text-left text-sm text-gray-700 pr-6">
 									{row.title}
 								</td>
-
 								<td className="text-left pr-6">
 									{(() => {
 										const liveStatus = (statusByTicketId[row.idTicket] ??
@@ -199,7 +198,7 @@ export default function TicketHistory({
 										hour: "numeric",
 										minute: "numeric",
 										second: "numeric",
-									})}{" "}
+									})}
 								</td>
 							</tr>
 						))

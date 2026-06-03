@@ -1,18 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import TicketHistory from "../../src/pages/TicketHistory";
+import { ticketHistorySearchSchema } from "../../src/utils/ticketSearch";
 import { fetchTickets } from "../../src/utils/ticketsApi";
 
 export const Route = createFileRoute("/_authenticated/ticket-history")({
-	validateSearch: (search) => ({
-		page: Number(search.page ?? 1),
-		size: Number(search.size ?? 20),
-		sort: (search.sort as string) ?? "desc",
-		status: Array.isArray(search.status)
-			? (search.status as string[])
-			: search.status
-				? [search.status as string]
-				: [],
-	}),
+	validateSearch: ticketHistorySearchSchema,
 	loaderDeps: ({ search }) => ({
 		page: search.page,
 		size: search.size,

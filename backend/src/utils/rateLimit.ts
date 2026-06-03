@@ -1,3 +1,6 @@
+// WARNING: in-memory store — counters reset on every server restart or hot-reload.
+// For the login route this weakens brute-force protection. Persist to Redis or
+// the database if that becomes a concern.
 const store = new Map<string, number[]>();
 
 const WINDOW_MS = 60 * 1000;
