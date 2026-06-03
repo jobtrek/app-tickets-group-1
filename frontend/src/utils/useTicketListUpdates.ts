@@ -37,5 +37,5 @@ export function useTicketListUpdates() {
 		};
 
 		return () => ws.close();
-	}, []);
+	}, [setTicketAssignment, setTicketStatus]);
 }
