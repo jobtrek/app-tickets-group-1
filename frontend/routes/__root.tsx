@@ -9,7 +9,6 @@ export const Route = createRootRoute({
 	component: () => {
 		const username = useUserStore((state) => state.username);
 		const error = useErrorStore((state) => state.error);
-		const _clearError = useErrorStore((state) => state.clearError);
 
 		useTicketListUpdates();
 
