@@ -37,6 +37,7 @@ const PaginationSchema = v.object({
 	sort: v.optional(v.picklist(["asc", "desc", "az"]), "desc"),
 	status: v.optional(v.array(v.string()), []),
 	level: v.optional(v.array(v.string()), []),
+	search: v.optional(v.pipe(v.string(), v.trim(), v.minLength(0)), undefined),
 });
 
 export const getAllTickets = async (req: AuthedRequest) => {
@@ -48,6 +49,7 @@ export const getAllTickets = async (req: AuthedRequest) => {
 			sort: url.searchParams.get("sort") ?? undefined,
 			status: url.searchParams.getAll("status"),
 			level: url.searchParams.getAll("level"),
+			search: url.searchParams.get("search") ?? undefined,
 		};
 
 		const parsed = v.safeParse(PaginationSchema, rawParams);
@@ -55,10 +57,10 @@ export const getAllTickets = async (req: AuthedRequest) => {
 			return jsonResponse({ error: "Invalid pagination params" }, 400);
 		}
 
-		const { page, size, sort, status, level } = parsed.output;
+		const { page, size, sort, status, level, search } = parsed.output;
 		const offset = (page - 1) * size;
 
-		const filters: TicketFilters = { sort, status, level };
+		const filters: TicketFilters = { sort, status, level, search };
 
 		if (req.user.role === "admin") {
 			const data = await ticketQueries.getAll(size, offset, filters);

@@ -5,6 +5,7 @@ import {
 	desc,
 	eq,
 	getTableColumns,
+	ilike,
 	inArray,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
@@ -37,6 +38,9 @@ export const ticketQueries = {
 		if (filters.level?.length) {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
+		if (filters.search) {
+			conditions.push(ilike(tickets.title, `%${filters.search}%`));
+		}
 
 		const order =
 			filters.sort === "asc"
@@ -60,6 +64,9 @@ export const ticketQueries = {
 		}
 		if (filters.level?.length) {
 			conditions.push(inArray(tickets.level, filters.level));
+		}
+		if (filters.search) {
+			conditions.push(ilike(tickets.title, `%${filters.search}%`));
 		}
 
 		return db
@@ -86,6 +93,9 @@ export const ticketQueries = {
 		if (filters.level?.length) {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
+		if (filters.search) {
+			conditions.push(ilike(tickets.title, `%${filters.search}%`));
+		}
 
 		const order =
 			filters.sort === "asc"
@@ -110,6 +120,9 @@ export const ticketQueries = {
 		if (filters.level?.length) {
 			conditions.push(inArray(tickets.level, filters.level));
 		}
+		if (filters.search) {
+			conditions.push(ilike(tickets.title, `%${filters.search}%`));
+		}
 
 		return db
 			.select({ total: count() })
@@ -123,6 +136,7 @@ export const ticketQueries = {
 			.select({ idUser: users.idUser, username: users.username })
 			.from(users)
 			.where(eq(users.role, "admin")),
+
 	insert: async (
 		title: string,
 		description: string,
@@ -140,13 +154,14 @@ export const ticketQueries = {
 	confirmed: async (idTicket: number, value: boolean) => {
 		const [row] = await db
 			.update(tickets)
-			.set({ hasAdminConfirmed: value }) // explicit, not a toggle
+			.set({ hasAdminConfirmed: value })
 			.where(eq(tickets.idTicket, idTicket))
 			.returning({ hasAdminConfirmed: tickets.hasAdminConfirmed });
 
 		if (!row) throw new Error("Ticket not found");
 		return row.hasAdminConfirmed;
 	},
+
 	assign: (idTicket: number, idSupport: number) =>
 		db.transaction(async (tx) => {
 			await tx

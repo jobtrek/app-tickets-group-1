@@ -15,4 +15,5 @@ export type TicketFilters = {
 	sort?: "asc" | "desc" | "az";
 	status?: string[];
 	level?: string[];
+	search?: string;
 };
