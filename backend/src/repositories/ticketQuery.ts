@@ -7,6 +7,7 @@ import {
 	getTableColumns,
 	ilike,
 	inArray,
+	sql,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, ticket_assignment, tickets, users } from "../data/schema";
@@ -36,7 +37,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				inArray(
+					sql`coalesce(${tickets.adminLevel}, ${tickets.level})`,
+					filters.level,
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -63,7 +69,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				inArray(
+					sql`coalesce(${tickets.adminLevel}, ${tickets.level})`,
+					filters.level,
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -91,7 +102,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				inArray(
+					sql`coalesce(${tickets.adminLevel}, ${tickets.level})`,
+					filters.level,
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));
@@ -118,7 +134,12 @@ export const ticketQueries = {
 			conditions.push(inArray(status.statusName, filters.status));
 		}
 		if (filters.level?.length) {
-			conditions.push(inArray(tickets.level, filters.level));
+			conditions.push(
+				inArray(
+					sql`coalesce(${tickets.adminLevel}, ${tickets.level})`,
+					filters.level,
+				),
+			);
 		}
 		if (filters.search) {
 			conditions.push(ilike(tickets.title, `%${filters.search}%`));

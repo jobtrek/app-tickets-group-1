@@ -347,13 +347,9 @@ export const ownerConfirmTicket = async (
 	const fullOwnerComment = await commentQuery.getById(insertedOwner.idComment);
 	publish(`ticket-${idTicket}`, JSON.stringify(fullOwnerComment));
 
-	publish(
-		`ticket-${idTicket}`,
-		JSON.stringify({
-			type: "status_update",
-			statusName: newStatusName,
-		}),
-	);
+	publishTicketUpdate(idTicket, "status_update", {
+		statusName: newStatusName,
+	});
 
 	return jsonResponse({
 		message: accepted ? "Ticket closed" : "Ticket reopened",

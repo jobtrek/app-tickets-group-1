@@ -1,16 +1,7 @@
 import { useEffect } from "react";
 import { router } from "../router";
-import { useTicketStatusStore } from "../store/ticketStatusStore";
-import type { Ticket } from "./types";
 
 export function useTicketListUpdates() {
-	const setTicketStatus = useTicketStatusStore(
-		(state) => state.setTicketStatus,
-	);
-	const setTicketAssignment = useTicketStatusStore(
-		(state) => state.setTicketAssignment,
-	);
-
 	useEffect(() => {
 		const origin = new URL(import.meta.env.VITE_API_URL).origin.replace(
 			/^http/,
@@ -21,15 +12,18 @@ export function useTicketListUpdates() {
 		ws.onmessage = (event) => {
 			try {
 				const data = JSON.parse(event.data);
-				if (data.type === "ticket_created") {
+				// Anything that can change list membership, status, assignment or
+				// urgency requires re-running the server-side filtered/paginated
+				// query — so just invalidate and let the route loader refetch.
+				// This keeps the rows, the pagination count and the active filters
+				// consistent instead of patching individual cells client-side.
+				if (
+					data.type === "ticket_created" ||
+					data.type === "ticket_status_update" ||
+					data.type === "ticket_assignment_update" ||
+					data.type === "ticket_urgency_update"
+				) {
 					router.invalidate();
-				} else if (data.type === "ticket_status_update") {
-					setTicketStatus(
-						data.idTicket,
-						data.statusName as Ticket["statusName"],
-					);
-				} else if (data.type === "ticket_assignment_update") {
-					setTicketAssignment(data.idTicket, data.supportUsername);
 				}
 			} catch (error) {
 				console.error("Failed to parse WebSocket message:", error);
@@ -37,5 +31,5 @@ export function useTicketListUpdates() {
 		};
 
 		return () => ws.close();
-	}, [setTicketAssignment, setTicketStatus]);
+	}, []);
 }
