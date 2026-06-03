@@ -25,7 +25,7 @@ export function PasswordVerifyModal({
 
 		try {
 			const res = await fetch(
-				`${VITE_USER_URL.replace("/api/User", "")}/api/user/verify-password`,
+				`${VITE_USER_URL.replace(/\/api\/user/i, "")}/api/user/verify-password`,
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -38,6 +38,7 @@ export function PasswordVerifyModal({
 				onSuccess();
 			} else {
 				setError("Mot de passe incorrect. Veuillez réessayer.");
+				setPassword("");
 			}
 		} catch {
 			setError("Une erreur est survenue. Veuillez réessayer.");

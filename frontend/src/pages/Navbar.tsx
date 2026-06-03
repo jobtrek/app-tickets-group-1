@@ -11,12 +11,12 @@ export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
 	const role = useUserStore((state) => state.role);
-		const isVerified = useUserStore((state) => state.isVerified);
+	const isVerified = useUserStore((state) => state.isVerified);
 	const setVerified = useUserStore((state) => state.setVerified);
 	const isAdmin = role === "admin";
- 
+
 	const [showVerifyModal, setShowVerifyModal] = useState(false);
- 
+
 	const handleProfileClick = () => {
 		if (isVerified) {
 			navigate({ to: "/settings" });
@@ -24,13 +24,12 @@ export function Navbar() {
 			setShowVerifyModal(true);
 		}
 	};
- 
+
 	const handleVerifySuccess = () => {
 		setVerified();
 		setShowVerifyModal(false);
 		navigate({ to: "/settings" });
 	};
- 
 
 	return (
 		<div className="flex flex-col h-full w-50 bg-white border-r border-zinc-200 px-2.5 py-4 gap-1">

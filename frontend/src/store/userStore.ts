@@ -38,6 +38,14 @@ export const useUserStore = create<UserStore>()(
 			setVerified: () => set({ isVerified: true }),
 			clearVerified: () => set({ isVerified: false }),
 		}),
-		{ name: "user-storage" },
+		{
+			name: "user-storage",
+			partialize: (state) => ({
+				idUser: state.idUser,
+				username: state.username,
+				email: state.email,
+				role: state.role,
+			}),
+		},
 	),
 );
