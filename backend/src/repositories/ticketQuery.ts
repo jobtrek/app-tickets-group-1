@@ -137,9 +137,9 @@ export const ticketQueries = {
 		}
 		if (filters.level?.length) {
 			conditions.push(
-				inArray(
-					sql`coalesce(${tickets.adminLevel}, ${tickets.level})`,
-					filters.level,
+				or(
+					and(isNotNull(tickets.adminLevel), inArray(tickets.adminLevel, filters.level)),
+					and(isNull(tickets.adminLevel), inArray(tickets.level, filters.level)),
 				),
 			);
 		}
