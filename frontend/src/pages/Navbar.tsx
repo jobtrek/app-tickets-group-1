@@ -1,7 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { BarChart2, FilePlus, FileText, LayoutDashboard } from "lucide-react";
+import { useState } from "react";
 import { LogoutConfirmModal } from "../components/ConfirmationModal";
 import { NavbarButton } from "../components/NavbarButton";
+import { PasswordVerifyModal } from "../components/PasswordVerifyModal";
 import { useUserStore } from "../store/userStore";
 import { getInitials } from "../utils/initialsLogic";
 
@@ -9,7 +11,26 @@ export function Navbar() {
 	const navigate = useNavigate();
 	const username = useUserStore((state) => state.username);
 	const role = useUserStore((state) => state.role);
+		const isVerified = useUserStore((state) => state.isVerified);
+	const setVerified = useUserStore((state) => state.setVerified);
 	const isAdmin = role === "admin";
+ 
+	const [showVerifyModal, setShowVerifyModal] = useState(false);
+ 
+	const handleProfileClick = () => {
+		if (isVerified) {
+			navigate({ to: "/settings" });
+		} else {
+			setShowVerifyModal(true);
+		}
+	};
+ 
+	const handleVerifySuccess = () => {
+		setVerified();
+		setShowVerifyModal(false);
+		navigate({ to: "/settings" });
+	};
+ 
 
 	return (
 		<div className="flex flex-col h-full w-50 bg-white border-r border-zinc-200 px-2.5 py-4 gap-1">
@@ -49,7 +70,7 @@ export function Navbar() {
 						<button
 							type="button"
 							title="Modifier les identifiants"
-							onClick={() => navigate({ to: "/settings" })}
+							onClick={handleProfileClick}
 							className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer"
 						>
 							<div className="w-7.5 h-7.5 rounded-full bg-blue-100 flex items-center justify-center text-[11px] font-medium text-blue-700 shrink-0">
@@ -62,6 +83,12 @@ export function Navbar() {
 						<LogoutConfirmModal />
 					</div>
 				</div>
+			)}
+			{showVerifyModal && (
+				<PasswordVerifyModal
+					onSuccess={handleVerifySuccess}
+					onCancel={() => setShowVerifyModal(false)}
+				/>
 			)}
 		</div>
 	);
