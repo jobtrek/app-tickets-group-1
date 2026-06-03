@@ -10,6 +10,7 @@ import {
 	isNotNull,
 	isNull,
 	or,
+	type SQL,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, ticket_assignment, tickets, users } from "../data/schema";
@@ -98,7 +99,7 @@ export const ticketQueries = {
 		offset: number,
 		filters: TicketFilters = {},
 	) => {
-		const conditions = [eq(tickets.idUser, idUser)];
+		const conditions: (SQL | undefined)[] = [eq(tickets.idUser, idUser)];
 
 		if (filters.status?.length) {
 			conditions.push(inArray(status.statusName, filters.status));
@@ -130,7 +131,7 @@ export const ticketQueries = {
 	},
 
 	countAllByUser: (idUser: number, filters: TicketFilters = {}) => {
-		const conditions = [eq(tickets.idUser, idUser)];
+		const conditions: (SQL | undefined)[] = [eq(tickets.idUser, idUser)];
 
 		if (filters.status?.length) {
 			conditions.push(inArray(status.statusName, filters.status));
