@@ -1,4 +1,5 @@
 import { updateUserById } from "../controllers/userController";
+import { verifyPassword } from "../controllers/verifyPasswordController";
 import type { AuthedRequest } from "../middleware/auth.middleware";
 import { withAuth } from "../middleware/auth.middleware";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
@@ -15,5 +16,10 @@ export const UserRoutes = {
 		OPTIONS: (_req: Request) =>
 			new Response(null, { headers: corsHeaders, status: 204 }),
 		PATCH: withRateLimit(withAuth(updateUserById)),
+	},
+	"/api/user/verify-password": {
+		OPTIONS: (_req: Request) =>
+			new Response(null, { headers: corsHeaders, status: 204 }),
+		POST: withRateLimit(withAuth(verifyPassword), 10),
 	},
 };

@@ -6,6 +6,7 @@ interface UserStore {
 	username: string;
 	email: string;
 	role: string;
+	isVerified: boolean;
 	setUser: (user: {
 		idUser: number;
 		username: string;
@@ -13,6 +14,8 @@ interface UserStore {
 		role: string;
 	}) => void;
 	clearUser: () => void;
+	setVerified: () => void;
+	clearVerified: () => void;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -22,9 +25,27 @@ export const useUserStore = create<UserStore>()(
 			username: "",
 			email: "",
 			role: "",
+			isVerified: false,
 			setUser: (user) => set(user),
-			clearUser: () => set({ idUser: 0, username: "", email: "", role: "" }),
+			clearUser: () =>
+				set({
+					idUser: 0,
+					username: "",
+					email: "",
+					role: "",
+					isVerified: false,
+				}),
+			setVerified: () => set({ isVerified: true }),
+			clearVerified: () => set({ isVerified: false }),
 		}),
-		{ name: "user-storage" },
+		{
+			name: "user-storage",
+			partialize: (state) => ({
+				idUser: state.idUser,
+				username: state.username,
+				email: state.email,
+				role: state.role,
+			}),
+		},
 	),
 );

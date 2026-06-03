@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { useActionState, useMemo } from "react";
+import { useActionState, useEffect, useMemo } from "react";
 import Button from "../components/Button";
 import { Alert } from "../components/ErrorMessage";
 import FormField from "../components/FormField";
@@ -8,8 +8,15 @@ import { Spinner } from "../components/Loading";
 import { useUserStore } from "../store/userStore";
 import { createUpdateUserAction } from "../utils/userSettingsActions.ts";
 export default function UserSettings() {
-	const { idUser, username, email, setUser, role } = useUserStore();
+	const { idUser, username, email, setUser, role, isVerified } = useUserStore();
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (!isVerified) {
+			navigate({ to: "/" });
+		}
+		return () => {};
+	}, [isVerified, navigate]);
 
 	const action = useMemo(
 		() => createUpdateUserAction({ idUser, role, setUser }),
