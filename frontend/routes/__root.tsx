@@ -69,8 +69,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 						{!sidebarOpen && (
 							<button
 								type="button"
-																aria-label="Ouvrir le menu"
-
+								aria-label="Ouvrir le menu"
 								className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-md border border-gray-200"
 								onClick={() => setSidebarOpen(true)}
 							>
@@ -78,7 +77,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 							</button>
 						)}
 
-								{sidebarOpen && (
+						{sidebarOpen && (
 							<div
 								role="presentation"
 								aria-hidden="true"
@@ -95,8 +94,7 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 							<div className="flex justify-end p-2 shrink-0">
 								<button
 									type="button"
-																		aria-label="Fermer le menu"
-
+									aria-label="Fermer le menu"
 									onClick={() => setSidebarOpen(false)}
 									className="p-1.5 rounded-md hover:bg-gray-100 text-zinc-400 hover:text-zinc-600"
 								>
