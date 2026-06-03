@@ -7,25 +7,23 @@ export function useTicketComments(
 	onStatusUpdate?: (statusName: string) => void,
 	onConfirmationUpdate?: (hasAdminConfirmed: boolean) => void,
 	onAssignmentUpdate?: (supportUsername: string) => void,
+	onUrgencyUpdate?: (adminLevel: string) => void,
 ) {
-	// Stores the list of comments for the ticket
 	const [comments, setComments] = useState<Comment[]>([]);
-	// Ref to hold the latest onStatusUpdate callback without triggering re-renders
 	const onStatusUpdateRef = useRef(onStatusUpdate);
-	// Ref to hold the latest onConfirmationUpdate callback without triggering re-renders
+	// Ref to hold the latest onStatusUpdate callback without triggering re-renders
 	const onConfirmationUpdateRef = useRef(onConfirmationUpdate);
-	// Ref to hold the latest onAssignmentUpdate callback without triggering re-renders
 	const onAssignmentUpdateRef = useRef(onAssignmentUpdate);
+	const onUrgencyUpdateRef = useRef(onUrgencyUpdate);
 
-	// Keeps the refs in sync with the latest callback props on every render
 	useEffect(() => {
-		onStatusUpdateRef.current = onStatusUpdate; // Update status callback ref
-		onConfirmationUpdateRef.current = onConfirmationUpdate; // Update confirmation callback ref
-		onAssignmentUpdateRef.current = onAssignmentUpdate; // Update assignment callback ref
+		onStatusUpdateRef.current = onStatusUpdate;
+		onConfirmationUpdateRef.current = onConfirmationUpdate;
+		onAssignmentUpdateRef.current = onAssignmentUpdate;
+		onUrgencyUpdateRef.current = onUrgencyUpdate;
 	});
 
 	useEffect(() => {
-		// Fetch the initial list of comments for this ticket
 		getComments(ticketId).then(setComments);
 
 		const ws = new WebSocket(
@@ -33,27 +31,26 @@ export function useTicketComments(
 		);
 
 		ws.onmessage = (event) => {
-			// Parse the raw WebSocket message payload
 			const data = JSON.parse(event.data);
 			if (data.type === "status_update") {
-				// Notify the parent that the ticket's status has changed
 				onStatusUpdateRef.current?.(data.statusName);
 			} else if (data.type === "confirmation_update") {
-				// Notify the parent that the admin confirmation state has changed
 				onConfirmationUpdateRef.current?.(data.hasAdminConfirmed);
 			} else if (data.type === "assignment_update") {
-				// Notify the parent that the ticket has been assigned to a support user
 				onAssignmentUpdateRef.current?.(data.supportUsername);
+			} else if (data.type === "urgency_update") {
+				onUrgencyUpdateRef.current?.(data.adminLevel);
 			} else {
-				// Treat any other message as a new comment and append it to the list
-				setComments((prev) => [...prev, data]);
+				setComments((prev) =>
+					prev.some((c) => c.idComment === data.idComment)
+						? prev
+						: [...prev, data],
+				);
 			}
 		};
 
-		// Close the WebSocket when the component unmounts or ticketId changes
 		return () => ws.close();
-	}, [ticketId]); // Re-run this effect only when the ticketId changes
+	}, [ticketId]);
 
-	// Expose the comments list to the consuming component
 	return { comments };
 }
