@@ -1,4 +1,4 @@
-import { corsHeaders } from "backend/src/utils/headers";
+import { corsHeaders } from "../utils/headers";
 import {
 	assignTicket,
 	createTicket,

@@ -1,4 +1,4 @@
-import { loginCorsHeaders } from "backend/src/utils/headers";
+import { loginCorsHeaders } from "../utils/headers";
 import { logoutUser } from "../controllers/logoutController";
 import { withAuth } from "../middleware/auth.middleware";
 import { withRateLimit } from "../middleware/rateLimit.middleware";

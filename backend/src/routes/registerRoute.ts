@@ -1,4 +1,4 @@
-import { corsHeaders } from "backend/src/utils/headers";
+import { corsHeaders } from "../utils/headers";
 import { postUser } from "../controllers/registerController";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
 
