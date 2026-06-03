@@ -152,7 +152,13 @@ export default function TicketView({
 				isAdmin={isAdmin}
 				isAssignedAdmin={isAssignedAdmin}
 				pendingConfirmation={pendingConfirmation}
-				onBack={() => navigate({ to: "/" })}
+				onBack={() => {
+					if (window.history.length > 1) {
+						window.history.back();
+					} else {
+						navigate({ to: "/" });
+					}
+				}}
 				onResolve={handleResolve}
 				onOwnerClose={handleOwnerClose}
 				onConfirmResolve={handleConfirmClose}
