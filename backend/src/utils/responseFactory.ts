@@ -1,4 +1,4 @@
-import { corsHeaders, loginCorsHeaders } from "backend/src/utils/headers";
+import { corsHeaders, loginCorsHeaders } from "../utils/headers";
 
 export const jsonResponse = (
 	data: unknown,

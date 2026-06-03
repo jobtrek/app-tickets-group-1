@@ -1,7 +1,7 @@
-import { loginCorsHeaders } from "backend/src/utils/headers";
 import * as v from "valibot";
 import { CookieQuery } from "../repositories/cookieQuery";
 import { LoginUserQuery } from "../repositories/loginUserQuery";
+import { loginCorsHeaders } from "../utils/headers";
 import { isRateLimited } from "../utils/rateLimit";
 import {
 	errorResponse,
@@ -11,6 +11,12 @@ import {
 import { UserLoginSchema } from "../validators/authValidator";
 
 const ONE_DAY = 60 * 60 * 24;
+
+export const hashToken = async (token: string): Promise<string> => {
+	const encoded = new TextEncoder().encode(token);
+	const hashBuffer = await crypto.subtle.digest("SHA-256", encoded);
+	return Buffer.from(hashBuffer).toString("hex");
+};
 
 export const loginUser = async (req: Request) => {
 	const ip = req.headers.get("x-forwarded-for") ?? "unknown";
@@ -48,7 +54,8 @@ export const loginUser = async (req: Request) => {
 			crypto.getRandomValues(new Uint8Array(32)),
 		).toString("hex");
 
-		await CookieQuery.create(sessionToken, user.idUser);
+		const hashedToken = await hashToken(sessionToken);
+		await CookieQuery.create(hashedToken, user.idUser);
 
 		const cookie = new Bun.Cookie("session", sessionToken, {
 			httpOnly: true,
