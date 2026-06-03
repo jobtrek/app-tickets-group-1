@@ -1,4 +1,5 @@
 import { and, eq, gt } from "drizzle-orm";
+import { hashToken } from "../controllers/loginController";
 import { cookies, users } from "../data/schema";
 import { db } from "../db/database";
 import { corsHeaders } from "../utils/headers";
@@ -30,6 +31,8 @@ export const getSessionUser = async (
 
 	if (!sessionToken) return null;
 
+	const hashedToken = await hashToken(sessionToken);
+
 	const [session] = await db
 		.select({
 			idUser: users.idUser,
@@ -41,7 +44,7 @@ export const getSessionUser = async (
 		.innerJoin(users, eq(cookies.idUser, users.idUser))
 		.where(
 			and(
-				eq(cookies.sessionToken, sessionToken),
+				eq(cookies.sessionToken, hashedToken),
 				gt(cookies.expiresAt, new Date()),
 			),
 		);

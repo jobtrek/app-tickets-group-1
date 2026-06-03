@@ -1,6 +1,6 @@
-import { corsHeaders } from "backend/src/utils/headers";
 import { postUser } from "../controllers/registerController";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
+import { corsHeaders } from "../utils/headers";
 
 export const registerRoutes = {
 	"/api/User": {

@@ -1,4 +1,3 @@
-import { corsHeaders } from "backend/src/utils/headers";
 import {
 	assignTicket,
 	createTicket,
@@ -12,6 +11,7 @@ import {
 } from "../controllers/ticketController";
 import { withAuth } from "../middleware/auth.middleware";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
+import { corsHeaders } from "../utils/headers";
 
 export const ticketRoutes = {
 	"/api/tickets": {

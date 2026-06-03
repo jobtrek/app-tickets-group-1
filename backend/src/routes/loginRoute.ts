@@ -1,6 +1,6 @@
-import { loginCorsHeaders } from "backend/src/utils/headers";
 import { loginUser } from "../controllers/loginController";
 import { withRateLimit } from "../middleware/rateLimit.middleware";
+import { loginCorsHeaders } from "../utils/headers";
 
 export const LoginRoutes = {
 	"/api/login": {

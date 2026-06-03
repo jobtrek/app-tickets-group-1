@@ -1,7 +1,8 @@
-import { loginCorsHeaders } from "backend/src/utils/headers";
 import { eq } from "drizzle-orm";
 import { cookies } from "../data/schema";
 import { db } from "../db/database";
+import { loginCorsHeaders } from "../utils/headers";
+import { hashToken } from "./loginController";
 
 export const logoutUser = async (req: Request) => {
 	try {
@@ -18,7 +19,8 @@ export const logoutUser = async (req: Request) => {
 			);
 		}
 
-		await db.delete(cookies).where(eq(cookies.sessionToken, sessionToken));
+		const hashedToken = await hashToken(sessionToken);
+		await db.delete(cookies).where(eq(cookies.sessionToken, hashedToken));
 
 		const expiredCookie = new Bun.Cookie("session", "", {
 			httpOnly: true,
