@@ -7,7 +7,9 @@ import {
 	getTableColumns,
 	ilike,
 	inArray,
-	sql,
+	isNotNull,
+	isNull,
+	or,
 } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { status, ticket_assignment, tickets, users } from "../data/schema";
