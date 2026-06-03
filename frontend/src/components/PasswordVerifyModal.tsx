@@ -3,7 +3,7 @@ import { Alert } from "./ErrorMessage";
 import InputText from "./InputText";
 import { Spinner } from "./Loading";
 
-const VITE_USER_URL = import.meta.env.VITE_USER_URL;
+const VITE_USER_URL = import.meta.env.VITE_UPDATE_USER;
 
 interface PasswordVerifyModalProps {
 	onSuccess: () => void;
