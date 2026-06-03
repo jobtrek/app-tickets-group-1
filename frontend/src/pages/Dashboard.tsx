@@ -39,11 +39,22 @@ const urgencyOptions: Ticket["level"][] = ["urgent", "haut", "moyen", "bas"];
 
 export default function Dashboard() {
 	const navigate = useNavigate();
+
+	const tickets = useTicketStore((state) => state.tickets);
+	const adminOptions = [
+		{ value: "", label: "Trier par: Technicien - tous" },
+		...Array.from(
+			new Set(tickets.map((t) => t.supportUsername).filter(Boolean)),
+		).map((name) => ({ value: name, label: name })),
+	];
+
 	const query = useTicketStore((state) => state.query);
 	const setQuery = useTicketStore((state) => state.setQuery);
 
 	const sort = useTicketStore((state) => state.sort);
 	const setSort = useTicketStore((state) => state.setSort);
+	const supportFilter = useTicketStore((state) => state.supportFilter);
+	const setSupportFilter = useTicketStore((state) => state.setSupportFilter);
 	const toggleStatusFilter = useTicketStore(
 		(state) => state.toggleStatusFilter,
 	);
@@ -78,6 +89,15 @@ export default function Dashboard() {
 						value={sort}
 						onChange={(e) => setSort(e.currentTarget.value)}
 						options={sortOptions}
+					/>
+				</div>
+
+				<div className="w-xs text-gray-500">
+					<Select
+						id="support-filter"
+						value={supportFilter}
+						onChange={(e) => setSupportFilter(e.currentTarget.value)}
+						options={adminOptions}
 					/>
 				</div>
 

@@ -59,7 +59,9 @@ export default function TicketHistory() {
 
 			<div className="flex gap-8 pb-8 items-end">
 				<div className="flex flex-col gap-1">
-					<span className="text-xs text-gray-400 font-medium pb-1">Rechercher</span>
+					<span className="text-xs text-gray-400 font-medium pb-1">
+						Rechercher
+					</span>
 					<input
 						type="text"
 						value={query}

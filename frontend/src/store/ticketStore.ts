@@ -11,9 +11,11 @@ export interface TicketStore {
 	sort: string;
 	statusFilter: string[];
 	urgencyFilter: string[];
+	supportFilter: string;
 	query: string;
 	toggleStatusFilter: (status: Ticket["statusName"]) => void;
 	toggleUrgencyFilter: (status: Ticket["level"]) => void;
+	setSupportFilter: (username: string) => void;
 	setQuery: (query: string) => void;
 }
 
@@ -24,6 +26,7 @@ export const useTicketStore = create<TicketStore>()(
 			sort: "desc",
 			statusFilter: [],
 			urgencyFilter: [],
+			supportFilter: "",
 			query: "",
 			setTickets: (tickets) => set({ tickets }),
 			addTicket: (ticket) =>
@@ -48,6 +51,7 @@ export const useTicketStore = create<TicketStore>()(
 						? state.urgencyFilter.filter((u) => u !== urgency)
 						: [...state.urgencyFilter, urgency],
 				})),
+			setSupportFilter: (username) => set({ supportFilter: username }),
 			setQuery: (query) => set({ query }),
 		}),
 		{
